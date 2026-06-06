@@ -1,0 +1,48 @@
+services:
+  # ── Backend: Express API ──────────────────────────────────────────────────
+  - type: web
+    name: mytrade-api
+    env: node
+    region: oregon
+    plan: free
+    rootDir: backend
+    buildCommand: npm ci
+    startCommand: node src/index.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGO_URI
+        sync: false           # Set this in Render dashboard → Environment
+      - key: CACHE_TTL_MINUTES
+        value: 60
+      - key: CRON_SCHEDULE
+        value: "0 */2 * * *"
+      - key: ALLOWED_ORIGIN
+        sync: false           # Set to your Render frontend URL, e.g. https://mytrade-ui.onrender.com
+      - key: NEWS_API_KEY
+        sync: false           # NewsAPI.org key — optional; falls back to Google News RSS
+      - key: NEWS_PROVIDER
+        value: newsapi        # newsapi | googlerss
+
+  # ── Frontend: Vite SPA (static) ───────────────────────────────────────────
+  - type: static
+    name: mytrade-ui
+    region: oregon
+    plan: free
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_EXPRESS_URL
+        sync: false           # Set to your Render API URL, e.g. https://mytrade-api.onrender.com

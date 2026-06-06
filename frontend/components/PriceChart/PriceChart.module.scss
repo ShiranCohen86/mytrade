@@ -1,0 +1,41 @@
+@use '../../styles/variables' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: $space-3;
+}
+
+.title {
+  font-family: $font-data;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: $text-primary;
+}
+
+.subtitle {
+  font-family: $font-ui;
+  font-size: 11px;
+  color: $text-tertiary;
+}
+
+.empty {
+  height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: $font-data;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $text-tertiary;
+  border: 1px dashed $chrome-mid;
+  border-radius: $radius-lg;
+}

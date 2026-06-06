@@ -1,0 +1,37 @@
+@use 'variables' as *;
+
+// Monospaced numeric value — all prices, scores, percentages
+@mixin mono-value($size: 13px) {
+  font-family: $font-data;
+  font-size: $size;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+// Section / column header label
+@mixin section-label {
+  font-family: $font-ui;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: $text-tertiary;
+}
+
+// Panel border — all panels share this
+@mixin panel-border {
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-lg;
+}
+
+// Focus ring
+@mixin focus-ring {
+  outline: none;
+  box-shadow: 0 0 0 2px $accent-glow;
+}
+
+// Semantic value color — use with $pos/$neg/$warn
+@mixin value-color($color, $bg) {
+  color: $color;
+  background: $bg;
+}

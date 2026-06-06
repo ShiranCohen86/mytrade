@@ -1,0 +1,87 @@
+@use '../../styles/variables' as *;
+
+// Column widths must mirror StockRow.module.scss $cols grid
+// drag / ticker / name / price / chg% / pnl / risk / expect / regime / earnings / spark / actions
+$cols: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
+
+.table {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+}
+
+// ─── Header ──────────────────────────────────────────────────────────────────
+
+.thead {
+  display: grid;
+  grid-template-columns: $cols;
+  align-items: center;
+  gap: 0 $space-3;
+  padding: 0 $space-4;
+  height: 32px;
+  position: sticky;
+  top: 36px; // below SummaryStrip (36px)
+  z-index: 9;
+  background: $surface-panel;
+  border-bottom: 1px solid $chrome-mid;
+  flex-shrink: 0;
+}
+
+.th {
+  font-family: $font-ui;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: $text-secondary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: none;
+}
+
+.sortable {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  transition: color $motion-fast;
+
+  &:hover {
+    color: $text-secondary;
+    // Show affordance on inactive sortable columns
+    .sortArrow:empty::after { content: '⇅'; opacity: 0.4; }
+  }
+}
+
+.sortActive {
+  color: $accent;
+}
+
+.sortArrow {
+  font-size: 9px;
+  opacity: 0.7;
+}
+
+// ─── Column alignment overrides ───────────────────────────────────────────────
+
+.colDrag    { }
+.colTicker  { }
+.colName    { }
+.colPrice   { justify-content: flex-end; text-align: right; }
+.colChange  { text-align: right; }
+.colPnl     { text-align: right; }
+.colRisk    { text-align: right; justify-content: flex-end; }
+.colExpect  { text-align: center; justify-content: center; }
+.colRegime  { }
+.colEarnings { text-align: right; justify-content: flex-end; }
+.colSpark   { text-align: center; justify-content: center; }
+.colActions { }
+
+// ─── Body ────────────────────────────────────────────────────────────────────
+
+.tbody {
+  display: flex;
+  flex-direction: column;
+}

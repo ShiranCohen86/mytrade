@@ -1,0 +1,69 @@
+@use '../../styles/variables' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  flex-wrap: wrap;
+}
+
+.label {
+  font-family: $font-ui;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: $text-tertiary;
+  flex-shrink: 0;
+}
+
+.arrow {
+  font-size: 13px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.drift {
+  font-family: $font-ui;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.percent {
+  font-family: $font-data;
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.period {
+  font-family: $font-ui;
+  font-size: 10px;
+  color: $text-tertiary;
+}
+
+.rising  { color: $pos; }
+.flat    { color: $text-secondary; }
+.falling { color: $neg; }
+
+.warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-family: $font-ui;
+  font-size: 11px;
+  color: $warn;
+  padding: $space-2 $space-3;
+  background: $warn-bg;
+  border-radius: $radius-sm;
+  border-left: 2px solid $warn;
+  line-height: 1.4;
+}

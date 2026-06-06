@@ -1,0 +1,280 @@
+@use '../../styles/variables' as *;
+
+// ─── Column Grid ──────────────────────────────────────────────────────────────
+// drag / ticker / name / price / chg% / pnl / risk / expect / regime / earnings / spark / actions
+$cols: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
+
+.rowWrapper {
+  border-bottom: 1px solid $chrome-dim;
+  transition: background $motion-fast;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: $surface-hover; }
+
+  &.dragging {
+    opacity: 0.4;
+    background: $surface-hover;
+  }
+
+  &.dropTarget {
+    box-shadow: inset 0 2px 0 $accent;
+  }
+
+  &.analyzing {
+    background: rgba(61, 126, 255, 0.04);
+  }
+
+  &.alertRing {
+    box-shadow: inset 3px 0 0 $warn;
+  }
+}
+
+.row {
+  display: grid;
+  grid-template-columns: $cols;
+  align-items: center;
+  gap: 0 $space-3;
+  padding: 0 $space-4;
+  height: 40px;
+  cursor: pointer;
+  user-select: none;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 1px $accent;
+  }
+}
+
+// ─── Drag handle ─────────────────────────────────────────────────────────────
+
+.dragHandle {
+  font-size: 12px;
+  color: $text-tertiary;
+  cursor: grab;
+  opacity: 0;
+  transition: opacity $motion-fast;
+  text-align: center;
+
+  .rowWrapper:hover & { opacity: 1; }
+
+  &:active { cursor: grabbing; }
+}
+
+// ─── Ticker ──────────────────────────────────────────────────────────────────
+
+.ticker {
+  font-family: $font-data;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: $accent;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &:hover { color: #6B9EFF; text-decoration: underline; }
+}
+
+// ─── Name ────────────────────────────────────────────────────────────────────
+
+.name {
+  font-family: $font-ui;
+  font-size: 12px;
+  color: $text-secondary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// ─── Price ───────────────────────────────────────────────────────────────────
+
+.priceCell {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  justify-content: flex-end;
+}
+
+.price {
+  font-family: $font-data;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  color: $text-primary;
+  white-space: nowrap;
+  transition: color $motion-fast;
+}
+
+@keyframes flashUp {
+  0%   { color: $pos; background: $pos-bg; }
+  100% { color: $text-primary; background: transparent; }
+}
+
+@keyframes flashDown {
+  0%   { color: $neg; background: $neg-bg; }
+  100% { color: $text-primary; background: transparent; }
+}
+
+.flashUp   { animation: flashUp 0.6s ease forwards; }
+.flashDown { animation: flashDown 0.6s ease forwards; }
+
+.connDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.connOnline  { background: $pos; }
+.connOffline { background: $neg; }
+
+// ─── Change % ────────────────────────────────────────────────────────────────
+
+.change {
+  font-family: $font-data;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  padding: 2px 5px;
+  border-radius: $radius-sm;
+  white-space: nowrap;
+  text-align: right;
+}
+
+// ─── P&L ─────────────────────────────────────────────────────────────────────
+
+.pnl {
+  font-family: $font-data;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  white-space: nowrap;
+  text-align: right;
+}
+
+// ─── Semantic colors ─────────────────────────────────────────────────────────
+
+.pos { color: $pos; background: $pos-bg; }
+.neg { color: $neg; background: $neg-bg; }
+
+// ─── Risk score ──────────────────────────────────────────────────────────────
+
+.risk {
+  font-family: $font-data;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  text-align: right;
+}
+
+.risk_high   { color: $neg; }
+.risk_medium { color: $warn; }
+.risk_low    { color: $pos; }
+
+// ─── Expectation ─────────────────────────────────────────────────────────────
+
+.expect {
+  font-family: $font-ui;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.exp_high   { color: $neg; }
+.exp_medium { color: $warn; }
+.exp_low    { color: $text-secondary; }
+
+// ─── Market regime ───────────────────────────────────────────────────────────
+
+.regime {
+  font-family: $font-ui;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.regime_bullish  { color: $pos; }
+.regime_bearish  { color: $neg; }
+.regime_volatile { color: $warn; }
+.regime_neutral  { color: $text-secondary; }
+
+// ─── Earnings ────────────────────────────────────────────────────────────────
+
+.earnings {
+  font-family: $font-data;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: $text-secondary;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.earningsUrgent { color: $warn; font-weight: 600; }
+.stnDot { color: $neg; }
+
+// ─── Sparkline ───────────────────────────────────────────────────────────────
+
+.sparklineCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sparkline { display: block; }
+
+// ─── Actions ─────────────────────────────────────────────────────────────────
+
+.actionsCell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.expandBtn {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: $text-secondary;
+  border-radius: $radius-sm;
+  transition: transform $motion-fast, color $motion-fast, background $motion-fast;
+
+  &:hover {
+    background: $chrome-mid;
+    color: $text-primary;
+  }
+}
+
+.expandBtnOpen {
+  transform: rotate(90deg);
+  color: $accent;
+}
+
+// ─── Per-row analyzing spinner ────────────────────────────────────────────────
+
+@keyframes rowSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.rowSpinner {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: $accent;
+  animation: rowSpin 1s linear infinite;
+}

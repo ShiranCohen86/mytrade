@@ -1,0 +1,120 @@
+@use '../../styles/variables' as *;
+
+.wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  font-family: $font-ui;
+  font-size: 10px;
+  font-style: italic;
+  color: $text-tertiary;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: help;
+  transition: color $motion-fast;
+  line-height: 1;
+
+  &:hover { color: $text-secondary; }
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 200;
+  width: 200px;
+  background: $surface-elevated;
+  border: 1px solid $chrome-mid;
+  border-radius: $radius-md;
+  padding: $space-3;
+  font-family: $font-ui;
+  font-size: 11px;
+  line-height: 1.55;
+  color: $text-secondary;
+  box-shadow: $shadow-popup;
+  pointer-events: none;
+
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+
+  @media (hover: hover) {
+    .wrap:hover & {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  &.open {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+// Position variants
+.top {
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+
+  .arrow {
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-color: $chrome-mid transparent transparent transparent;
+  }
+}
+
+.bottom {
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+
+  .arrow {
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-color: transparent transparent $chrome-mid transparent;
+  }
+}
+
+.left {
+  right: calc(100% + 6px);
+  top: 50%;
+  transform: translateY(-50%);
+
+  .arrow {
+    right: -4px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-color: transparent transparent transparent $chrome-mid;
+  }
+}
+
+.right {
+  left: calc(100% + 6px);
+  top: 50%;
+  transform: translateY(-50%);
+
+  .arrow {
+    left: -4px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-color: transparent $chrome-mid transparent transparent;
+  }
+}
+
+.arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 4px;
+}

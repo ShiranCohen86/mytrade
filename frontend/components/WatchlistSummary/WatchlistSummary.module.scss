@@ -1,0 +1,123 @@
+@use '../../styles/variables' as *;
+
+.wrapper {
+  border-top: 1px solid $border;
+  padding-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.heading {
+  font-size: 13px;
+  font-weight: 700;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.card {
+  background: $bg-card;
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  padding: 14px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 120px;
+}
+
+.label {
+  font-size: 11px;
+  color: $text-dim;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.value {
+  font-size: 28px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: $text;
+  line-height: 1;
+}
+
+.sub {
+  font-size: 11px;
+  color: $text-dim;
+}
+
+.danger { color: $negative; }
+.warn   { color: $warning; }
+.safe   { color: $positive; }
+
+// ─── Sector breakdown ─────────────────────────────────────────────────────────
+
+.sectors {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sectLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: $text-dim;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.sectBars {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 400px;
+}
+
+.sectRow {
+  display: grid;
+  grid-template-columns: 130px 1fr 28px;
+  align-items: center;
+  gap: 10px;
+}
+
+.sectName {
+  font-size: 12px;
+  color: $text-muted;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.barTrack {
+  height: 6px;
+  background: $border;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  background: $accent;
+  border-radius: 3px;
+  transition: width $base;
+}
+
+.sectCount {
+  font-size: 11px;
+  font-weight: 600;
+  color: $text-muted;
+  text-align: right;
+}
+
+@media (max-width: 640px) {
+  .grid { flex-direction: column; }
+  .card { min-width: unset; }
+}

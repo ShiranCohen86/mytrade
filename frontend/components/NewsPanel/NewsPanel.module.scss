@@ -1,0 +1,107 @@
+@use '../../styles/variables' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.loading,
+.error,
+.empty {
+  font-family: $font-ui;
+  font-size: 12px;
+  color: $text-secondary;
+  padding: $space-3 0;
+  text-align: center;
+}
+
+.error { color: $neg; }
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+  padding: $space-3 0;
+  border-bottom: 1px solid $chrome-dim;
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+
+.sentDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.sent_positive { background: $pos; }
+.sent_negative { background: $neg; }
+.sent_neutral  { background: $text-tertiary; }
+
+.itemContent {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.headline {
+  font-family: $font-ui;
+  font-size: 12px;
+  color: $text-primary;
+  line-height: 1.5;
+  text-decoration: none;
+  transition: color $motion-fast;
+  display: block;
+
+  &:hover { color: $accent; }
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  flex-wrap: wrap;
+}
+
+.time {
+  font-family: $font-data;
+  font-size: 10px;
+  color: $text-tertiary;
+}
+
+.source {
+  font-family: $font-ui;
+  font-size: 10px;
+  color: $text-tertiary;
+}
+
+.guidanceBadge {
+  font-family: $font-data;
+  font-size: 9px;
+  font-weight: 700;
+  color: $warn;
+  letter-spacing: 0.06em;
+  padding: 1px 4px;
+  border: 1px solid rgba(245, 166, 35, 0.3);
+  border-radius: $radius-sm;
+}
+
+// Legacy - kept for backward compat but no longer used
+.header,
+.title,
+.sentiment { display: none; }

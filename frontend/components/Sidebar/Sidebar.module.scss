@@ -1,0 +1,147 @@
+@use '../../styles/variables' as *;
+
+.sidebar {
+  grid-area: sidebar;
+  display: flex;
+  flex-direction: column;
+  background: $surface-panel;
+  border-right: 1px solid $chrome-dim;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+
+  &::-webkit-scrollbar       { width: 3px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: $chrome-mid; }
+}
+
+// ─── Collapsed (≤900px auto or user toggle) ───────────────────────────────────
+
+.collapsed {
+  .sectionLabel,
+  .navLabel,
+  .soonBadge { display: none; }
+}
+
+// ─── Mobile drawer (≤640px) ───────────────────────────────────────────────────
+
+@media (max-width: 640px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 56px;
+    height: calc(100vh - 56px);
+    width: 220px;
+    z-index: 100;
+    transform: translateX(-100%);
+    transition: transform $motion-base;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.60);
+  }
+
+  .sidebar.mobileOpen {
+    transform: translateX(0);
+  }
+
+  // When open on mobile, always show labels regardless of collapsed state
+  .sidebar.mobileOpen .sectionLabel,
+  .sidebar.mobileOpen .navLabel,
+  .sidebar.mobileOpen .soonBadge {
+    display: revert;
+  }
+}
+
+// ─── Nav ──────────────────────────────────────────────────────────────────────
+
+.nav {
+  flex: 1;
+  padding: $space-4 0 $space-2;
+}
+
+.section {
+  margin-bottom: $space-4;
+}
+
+.sectionLabel {
+  display: block;
+  padding: 0 $space-4;
+  margin-bottom: $space-2;
+  font-family: $font-ui;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: $text-disabled;
+  white-space: nowrap;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-2 $space-4;
+  height: 36px;
+  border-radius: 0;
+  color: $text-secondary;
+  font-family: $font-ui;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background $motion-fast, color $motion-fast;
+  white-space: nowrap;
+  position: relative;
+  border-left: 2px solid transparent;
+
+  &:hover:not(.navSoon) {
+    background: $surface-hover;
+    color: $text-primary;
+  }
+}
+
+.navActive {
+  color: $text-primary;
+  border-left-color: $accent;
+  background: $accent-faint;
+
+  &:hover { background: $accent-faint; }
+
+  .navIcon { color: $accent; }
+}
+
+
+.navIcon {
+  font-size: 13px;
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+  color: $text-tertiary;
+  transition: color $motion-fast;
+}
+
+.navLabel {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+// ─── Bottom ───────────────────────────────────────────────────────────────────
+
+.bottom {
+  padding: $space-3 $space-2;
+  border-top: 1px solid $chrome-dim;
+
+  :global(.triggerBtn), button {
+    width: 100%;
+    padding: $space-2 $space-3;
+    border-radius: $radius-md;
+    font-size: 11px;
+    font-family: $font-ui;
+    color: $text-tertiary;
+    text-align: left;
+    transition: background $motion-fast, color $motion-fast;
+
+    &:hover {
+      background: $surface-hover;
+      color: $text-secondary;
+    }
+  }
+}

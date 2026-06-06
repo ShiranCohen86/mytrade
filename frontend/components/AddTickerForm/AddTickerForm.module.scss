@@ -1,0 +1,104 @@
+@use '../../styles/variables' as *;
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.inputRow {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid $chrome-mid;
+  border-radius: $radius-sm;
+  background: $surface-raised;
+  overflow: hidden;
+  transition: border-color $motion-fast;
+
+  &:focus-within { border-color: $accent; }
+}
+
+.input {
+  flex: 1;
+  max-width: 200px;
+  background: transparent;
+  border: none;
+  color: $text-primary;
+  font-family: $font-data;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  padding: $space-1 $space-3;
+  min-width: 0;
+
+  &::placeholder {
+    color: $text-disabled;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    font-family: $font-ui;
+    text-transform: none;
+  }
+
+  &:disabled { opacity: 0.45; }
+}
+
+.button {
+  background: transparent;
+  color: $accent;
+  border: none;
+  border-left: 1px solid $chrome-mid;
+  padding: $space-1 $space-3;
+  font-family: $font-data;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  transition: background $motion-fast, color $motion-fast;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &:hover:not(:disabled) {
+    background: $accent-faint;
+    color: $accent;
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+}
+
+.spinner {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  border: 1.5px solid $chrome-mid;
+  border-top-color: $accent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.error {
+  font-family: $font-ui;
+  font-size: 11px;
+  color: $neg;
+  padding: 0 $space-1;
+}
+
+.progress {
+  font-family: $font-ui;
+  font-size: 11px;
+  color: $text-secondary;
+  padding: 0 $space-1;
+}
+
+.progressText {
+  font-family: $font-data;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}

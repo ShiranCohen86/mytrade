@@ -1,0 +1,35 @@
+@use '../../styles/variables' as *;
+
+.panel {
+  background: $surface-raised;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-lg;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $space-3 $space-4;
+  border-bottom: 1px solid $chrome-dim;
+}
+
+.title {
+  font-family: $font-ui;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: $text-tertiary;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.body {
+  padding: $space-4;
+}

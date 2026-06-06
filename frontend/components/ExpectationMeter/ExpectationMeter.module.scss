@@ -1,0 +1,84 @@
+@use '../../styles/variables' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  font-family: $font-ui;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: $text-tertiary;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.label {
+  font-family: $font-ui;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
+  border-radius: $radius-sm;
+}
+
+.low       { color: $text-secondary; background: $chrome-mid; }
+.moderate  { color: $warn; background: $warn-bg; }
+.high      { color: $neg; background: $neg-bg; }
+.very_high { color: $neg; background: $neg-bg; }
+
+.trackWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+}
+
+.track {
+  flex: 1;
+  height: 2px;
+  background: $chrome-mid;
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  border-radius: 1px;
+  transition: width $motion-base;
+}
+
+.fill_low      { background: $text-tertiary; }
+.fill_moderate { background: $warn; }
+.fill_high     { background: $neg; }
+.fill_very_high { background: $neg; }
+
+.score {
+  font-family: $font-data;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: $text-primary;
+  min-width: 24px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.guidance {
+  font-family: $font-ui;
+  font-size: 11px;
+  color: $text-tertiary;
+  font-style: italic;
+  line-height: 1.5;
+}

@@ -1,0 +1,129 @@
+@use '../../styles/variables' as *;
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-6;
+  animation: fadeIn 130ms ease;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal {
+  background: $surface-raised;
+  border: 1px solid $chrome-mid;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-popup;
+  width: 100%;
+  max-width: 520px;
+  max-height: 85vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 160ms ease;
+}
+
+@keyframes slideUp { from { transform: translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $space-4;
+  border-bottom: 1px solid $chrome-dim;
+  flex-shrink: 0;
+}
+
+.title {
+  font-family: $font-ui;
+  font-size: 13px;
+  font-weight: 700;
+  color: $text-primary;
+  letter-spacing: -0.01em;
+}
+
+.closeBtn {
+  font-size: 13px;
+  color: $text-tertiary;
+  padding: 3px $space-2;
+  border-radius: $radius-sm;
+  transition: color $motion-fast;
+  &:hover { color: $text-primary; }
+}
+
+.intro {
+  font-family: $font-ui;
+  font-size: 12px;
+  color: $text-secondary;
+  line-height: 1.6;
+  padding: $space-4;
+  border-bottom: 1px solid $chrome-dim;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: $space-2 0;
+}
+
+.item {
+  padding: $space-3 $space-4;
+  border-bottom: 1px solid $chrome-dim;
+
+  &:last-child { border-bottom: none; }
+}
+
+.term {
+  font-family: $font-data;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: $text-primary;
+  margin-bottom: $space-1;
+  text-transform: uppercase;
+}
+
+.desc {
+  font-family: $font-ui;
+  font-size: 12px;
+  color: $text-secondary;
+  line-height: 1.6;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: $space-4;
+  border-top: 1px solid $chrome-dim;
+  flex-shrink: 0;
+}
+
+.gotItBtn {
+  padding: $space-2 $space-6;
+  font-family: $font-ui;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  background: $accent;
+  border-radius: $radius-sm;
+  transition: opacity $motion-fast;
+
+  &:hover { opacity: 0.9; }
+}
+
+.triggerBtn {
+  font-family: $font-ui;
+  font-size: 11px;
+  color: $text-tertiary;
+  transition: color $motion-fast;
+  padding: 0;
+
+  &:hover { color: $text-secondary; }
+}

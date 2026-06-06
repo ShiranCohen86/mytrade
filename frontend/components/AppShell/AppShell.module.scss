@@ -1,0 +1,67 @@
+@use '../../styles/variables' as *;
+
+.shell {
+  display: grid;
+  grid-template-rows: 56px 1fr;
+  grid-template-columns: 220px 1fr;
+  grid-template-areas:
+    'topbar  topbar'
+    'sidebar content';
+  height: 100vh;
+  overflow: hidden;
+  background: $surface-base;
+}
+
+.shell.collapsed {
+  grid-template-columns: 48px 1fr;
+}
+
+.content {
+  grid-area: content;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: $surface-base;
+
+  &::-webkit-scrollbar       { width: 5px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: $chrome-mid; border-radius: 3px; }
+  &::-webkit-scrollbar-thumb:hover { background: $text-secondary; }
+}
+
+// ─── Responsive ───────────────────────────────────────────────────────────────
+
+@media (max-width: 900px) {
+  .shell {
+    grid-template-columns: 48px 1fr;
+  }
+
+  .shell.collapsed {
+    grid-template-columns: 48px 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .shell,
+  .shell.collapsed {
+    grid-template-columns: 0 1fr;
+  }
+}
+
+// ─── Mobile backdrop ──────────────────────────────────────────────────────────
+
+.backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  top: 56px;
+  background: rgba(0, 0, 0, 0.60);
+  z-index: 90;
+  backdrop-filter: blur(2px);
+  animation: fadeIn 140ms ease;
+
+  @media (max-width: 640px) {
+    display: block;
+  }
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

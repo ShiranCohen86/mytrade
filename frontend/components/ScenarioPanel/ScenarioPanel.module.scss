@@ -1,0 +1,146 @@
+@use '../../styles/variables' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.headerRow {
+  display: grid;
+  grid-template-columns: 56px 1fr 52px 52px 1fr;
+  gap: $space-2;
+  padding: 0 0 $space-1;
+  border-bottom: 1px solid $chrome-mid;
+}
+
+.colLabel {
+  font-family: $font-ui;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: $text-tertiary;
+
+  &:last-child { text-align: right; }
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 56px 1fr 52px 52px 1fr;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-1 0;
+  border-bottom: 1px solid $chrome-dim;
+
+  &:last-child { border-bottom: none; }
+}
+
+.scenarioCell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.icon {
+  font-size: 10px;
+}
+
+.scenarioLabel {
+  font-family: $font-ui;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.bullish .icon,
+.bullish .scenarioLabel { color: $pos; }
+.neutral .icon,
+.neutral .scenarioLabel { color: $text-secondary; }
+.bearish .icon,
+.bearish .scenarioLabel { color: $neg; }
+
+.target {
+  font-family: $font-data;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.move {
+  font-family: $font-data;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  text-align: right;
+}
+
+.pos { color: $pos; }
+.neg { color: $neg; }
+
+.probCell {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.probVal {
+  font-family: $font-data;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: $text-secondary;
+  min-width: 28px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.probBar {
+  flex: 1;
+  height: 2px;
+  background: $chrome-mid;
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.probFill {
+  height: 100%;
+  border-radius: 1px;
+  transition: width $motion-base;
+
+  &.bullish { background: $pos; }
+  &.neutral { background: $text-tertiary; }
+  &.bearish { background: $neg; }
+}
+
+.empty {
+  font-family: $font-ui;
+  color: $text-tertiary;
+  font-size: 12px;
+  text-align: center;
+  padding: $space-4 0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $space-2;
+}
+
+.title {
+  font-family: $font-ui;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: $text-tertiary;
+}
+
+.current {
+  font-family: $font-data;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: $text-secondary;
+}

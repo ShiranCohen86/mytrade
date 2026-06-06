@@ -1,0 +1,109 @@
+// ─── Trading Terminal Design System ──────────────────────────────────────────
+// Color tokens are CSS custom properties defined in globals.scss per theme.
+// These SCSS variables are wrappers so component SCSS files can use $token syntax.
+
+// ─── Surfaces ─────────────────────────────────────────────────────────────────
+$surface-base:     var(--surface-base);
+$surface-panel:    var(--surface-panel);
+$surface-raised:   var(--surface-raised);
+$surface-hover:    var(--surface-hover);
+$surface-elevated: var(--surface-elevated);
+
+// ─── Chrome ───────────────────────────────────────────────────────────────────
+$chrome-dim:    var(--chrome-dim);
+$chrome-mid:    var(--chrome-mid);
+$chrome-bright: var(--chrome-bright);
+
+// ─── Accent ───────────────────────────────────────────────────────────────────
+$accent:       var(--accent);
+$accent-faint: var(--accent-faint);
+$accent-glow:  var(--accent-glow);
+$accent-dim:   var(--accent-dim);
+
+// ─── Semantic — price movement and risk ───────────────────────────────────────
+$pos:     var(--pos);
+$pos-bg:  var(--pos-bg);
+$neg:     var(--neg);
+$neg-bg:  var(--neg-bg);
+$warn:    var(--warn);
+$warn-bg: var(--warn-bg);
+
+// ─── Text hierarchy ───────────────────────────────────────────────────────────
+$text-primary:   var(--text-primary);
+$text-secondary: var(--text-secondary);
+$text-tertiary:  var(--text-tertiary);
+$text-disabled:  var(--text-disabled);
+$text-inverse:   #FFFFFF; // always white — text on accent/colored backgrounds
+
+// ─── Shadows ──────────────────────────────────────────────────────────────────
+$shadow-panel: var(--shadow-panel);
+$shadow-popup: var(--shadow-popup);
+
+// ─── Typography (static) ─────────────────────────────────────────────────────
+$font-ui:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+$font-data:  'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+// ─── Geometry (static) ───────────────────────────────────────────────────────
+$radius-lg:   10px;
+$radius-md:    6px;
+$radius-sm:    3px;
+$radius-pill:  99px;
+
+// ─── Spacing — 4px base unit (static) ────────────────────────────────────────
+$space-1:  4px;
+$space-2:  8px;
+$space-3:  12px;
+$space-4:  16px;
+$space-5:  20px;
+$space-6:  24px;
+$space-8:  32px;
+
+// ─── Motion (static) ─────────────────────────────────────────────────────────
+$motion-fast: 100ms ease;
+$motion-base: 180ms ease;
+
+// ─── Backward-compat aliases ──────────────────────────────────────────────────
+$bg-primary:     $surface-base;
+$bg-secondary:   $surface-panel;
+$bg-card:        $surface-raised;
+$bg-card-hover:  $surface-hover;
+$bg-elevated:    $surface-elevated;
+
+$border:         $chrome-dim;
+$border-bright:  $chrome-mid;
+
+$radius:         $radius-lg;
+$radius-xs:      $radius-sm;
+
+$positive:       $pos;
+$positive-glow:  $pos-bg;
+$negative:       $neg;
+$negative-glow:  $neg-bg;
+$warning:        $warn;
+$warning-glow:   $warn-bg;
+
+$text:           $text-primary;
+$text-muted:     $text-secondary;
+$text-dim:       $text-tertiary;
+
+$font-sans:      $font-ui;
+$font-mono:      $font-data;
+
+$fast:           $motion-fast;
+$base:           $motion-base;
+
+$shadow-card:    $shadow-panel;
+$shadow-hover:   $shadow-popup;
+
+$color-positive:   $pos;
+$color-negative:   $neg;
+$color-neutral:    $warn;
+$color-accent:     $accent;
+$color-text:       $text-primary;
+$color-text-muted: $text-secondary;
+$color-text-dim:   $text-tertiary;
+$border-color:     $chrome-dim;
+$border-radius:    $radius-lg;
+$border-radius-sm: $radius-md;
+$transition-fast:  $motion-fast;
+$transition-base:  $motion-base;

@@ -1,0 +1,540 @@
+@use '../../styles/variables' as *;
+
+// ─── Card Shell ───────────────────────────────────────────────────────────────
+
+.card {
+  position: relative;
+  background: $bg-card;
+  border: 1px solid $border;
+  border-left: 3px solid $border-bright;
+  border-radius: $radius;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: border-color $base, box-shadow $base, transform $base;
+
+  &:hover {
+    box-shadow: $shadow-hover;
+    transform: translateY(-2px);
+  }
+}
+
+.cardUp   { border-left-color: $positive; }
+.cardDown { border-left-color: $negative; }
+
+.removing {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+// ─── Top Row ──────────────────────────────────────────────────────────────────
+
+.topRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.tickerGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.ticker {
+  font-family: $font-mono;
+  font-size: 17px;
+  font-weight: 700;
+  color: $accent;
+  letter-spacing: 0.06em;
+
+  &:hover { text-decoration: underline; }
+}
+
+.name {
+  font-size: 11px;
+  color: $text-muted;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.removeBtn {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: $text-dim;
+  background: transparent;
+  border: 1px solid $border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color $fast, border-color $fast, background $fast;
+
+  &:hover:not(:disabled) {
+    color: $negative;
+    border-color: rgba(246, 70, 93, 0.4);
+    background: rgba(246, 70, 93, 0.08);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+}
+
+.dotSpinner {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border: 2px solid rgba(255,255,255,0.1);
+  border-top-color: $negative;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// ─── Price Row ────────────────────────────────────────────────────────────────
+
+.priceRow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.price {
+  font-family: $font-mono;
+  font-size: 24px;
+  font-weight: 700;
+  color: $text;
+  letter-spacing: -0.01em;
+  transition: color 0.15s ease;
+}
+
+.flashUp   { animation: flashGreen 0.3s ease-out forwards; }
+.flashDown { animation: flashRed   0.3s ease-out forwards; }
+
+@keyframes flashGreen {
+  0%   { color: $positive; }
+  100% { color: $text; }
+}
+
+@keyframes flashRed {
+  0%   { color: $negative; }
+  100% { color: $text; }
+}
+
+.connDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.connOnline {
+  background: $positive;
+  box-shadow: 0 0 6px rgba(14, 203, 129, 0.7);
+  animation: connPulse 2s ease-in-out infinite;
+}
+
+.connOffline {
+  background: $negative;
+  box-shadow: none;
+}
+
+@keyframes connPulse {
+  0%, 100% { opacity: 1;   box-shadow: 0 0 6px  rgba(14, 203, 129, 0.7); }
+  50%       { opacity: 0.4; box-shadow: 0 0 12px rgba(14, 203, 129, 0.25); }
+}
+
+.change {
+  font-family: $font-mono;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: $radius-pill;
+}
+
+.positive {
+  color: $positive;
+  background: $positive-glow;
+}
+
+.negative {
+  color: $negative;
+  background: $negative-glow;
+}
+
+// ─── Stats Strip ──────────────────────────────────────────────────────────────
+
+.statsRow {
+  display: flex;
+  gap: 20px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.statLabel {
+  font-size: 10px;
+  color: $text-dim;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.statValue {
+  font-family: $font-mono;
+  font-size: 13px;
+  color: $text-muted;
+}
+
+.earningsClose { color: $warning; font-weight: 700; }
+.relPerfPos    { color: $positive; font-weight: 700; }
+.relPerfNeg    { color: $negative; font-weight: 700; }
+
+// ─── Badge Row ───────────────────────────────────────────────────────────────
+
+.badgeRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  padding: 7px 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 64px;
+  transition: border-color $fast;
+
+  &:hover { border-color: $border-bright; }
+}
+
+.badgeLabel {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: $text-dim;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.badgeValue {
+  font-family: $font-mono;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+// Risk score colors
+.risk_low    { color: $positive; }
+.risk_medium { color: $warning; }
+.risk_high   { color: $negative; }
+
+// Expectation colors
+.exp_low     { color: $positive; }
+.exp_medium  { color: $warning; }
+.exp_high    { color: $negative; }
+
+// Regime colors
+.regime_bullish  { color: $positive; }
+.regime_bearish  { color: $negative; }
+.regime_volatile { color: $warning; }
+.regime_neutral  { color: $text-muted; }
+
+// ─── STN Warning ─────────────────────────────────────────────────────────────
+
+.stnWarning {
+  font-size: 12px;
+  font-weight: 600;
+  color: $warning;
+  background: rgba(240, 185, 11, 0.12);
+  border: 1px solid rgba(240, 185, 11, 0.4);
+  border-left: 3px solid $warning;
+  border-radius: $radius-sm;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.4;
+  order: -1; // Move above badge row via flex ordering
+}
+
+// ─── Analyzing overlay ────────────────────────────────────────────────────────
+
+.analyzing {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.analyzingOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: inherit;
+}
+
+// ─── Card Error ───────────────────────────────────────────────────────────────
+
+.cardError {
+  font-size: 11px;
+  color: $negative;
+  background: $negative-glow;
+  border: 1px solid rgba(246, 70, 93, 0.2);
+  border-radius: $radius-sm;
+  padding: 5px 10px;
+}
+
+// ─── Detail Link ──────────────────────────────────────────────────────────────
+
+.detailLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: $text-dim;
+  border: 1px solid $border-bright;
+  border-radius: $radius-sm;
+  padding: 6px 12px;
+  text-align: center;
+  letter-spacing: 0.01em;
+  transition: color $fast, border-color $fast, background $fast;
+  margin-top: auto;
+
+  &:hover {
+    color: $accent;
+    border-color: rgba(79, 126, 247, 0.4);
+    background: rgba(79, 126, 247, 0.06);
+  }
+}
+
+.card:hover { cursor: pointer; }
+
+.dragging {
+  opacity: 0.45;
+  transform: scale(0.98);
+  box-shadow: none;
+}
+
+.alertRing {
+  border-color: $warning !important;
+  box-shadow: 0 0 0 1px rgba(240, 185, 11, 0.25);
+}
+
+// ─── Action buttons (bell, $) ─────────────────────────────────────────────────
+
+.actionBtn {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: $text-dim;
+  background: transparent;
+  border: 1px solid $border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color $fast, border-color $fast, background $fast;
+
+  &:hover { color: $text-muted; border-color: $border-bright; }
+}
+
+.actionBtnActive {
+  color: $accent;
+  border-color: rgba(79, 126, 247, 0.4);
+  background: $accent-dim;
+}
+
+.actionBtnTriggered {
+  color: $warning;
+  border-color: rgba(240, 185, 11, 0.4);
+  background: $warning-glow;
+  animation: alertPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes alertPulse {
+  0%, 100% { box-shadow: none; }
+  50% { box-shadow: 0 0 8px rgba(240, 185, 11, 0.4); }
+}
+
+// ─── P&L badge ───────────────────────────────────────────────────────────────
+
+.pnlBadge {
+  font-family: $font-mono;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: $radius-pill;
+  margin-left: auto;
+}
+
+// ─── Alert banner ─────────────────────────────────────────────────────────────
+
+.alertBanner {
+  font-size: 11px;
+  font-weight: 600;
+  color: $warning;
+  background: $warning-glow;
+  border: 1px solid rgba(240, 185, 11, 0.25);
+  border-radius: $radius-sm;
+  padding: 7px 11px;
+}
+
+// ─── Inline form (entry price / alert) ───────────────────────────────────────
+
+.inlineForm {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+}
+
+.inlineLabel {
+  font-size: 12px;
+  color: $text-dim;
+  white-space: nowrap;
+}
+
+.inlineSelect {
+  font-size: 11px;
+  color: $text-muted;
+  background: $bg-elevated;
+  border: 1px solid $border-bright;
+  border-radius: $radius-xs;
+  padding: 3px 6px;
+  cursor: pointer;
+  option { background: $bg-secondary; }
+}
+
+.inlineInput {
+  width: 90px;
+  background: $bg-elevated;
+  border: 1px solid $border-bright;
+  border-radius: $radius-xs;
+  color: $text;
+  font-size: 13px;
+  font-family: $font-mono;
+  padding: 4px 8px;
+  transition: border-color $fast;
+
+  &:focus { border-color: $accent; }
+  &:disabled { opacity: 0.45; }
+
+  // remove number input spinners
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  &[type=number] { -moz-appearance: textfield; }
+}
+
+.inlineBtn {
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  background: $accent;
+  border-radius: $radius-xs;
+  transition: opacity $fast;
+  white-space: nowrap;
+
+  &:disabled { opacity: 0.35; cursor: not-allowed; }
+}
+
+.inlineClearBtn {
+  padding: 4px 8px;
+  font-size: 11px;
+  color: $negative;
+  border: 1px solid rgba(246, 70, 93, 0.3);
+  border-radius: $radius-xs;
+  transition: background $fast;
+
+  &:hover:not(:disabled) { background: $negative-glow; }
+  &:disabled { opacity: 0.35; cursor: not-allowed; }
+}
+
+// ─── Notes panel ─────────────────────────────────────────────────────────────
+
+.notesPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid $border;
+  border-radius: $radius-xs;
+}
+
+.notesTextarea {
+  width: 100%;
+  resize: vertical;
+  background: transparent;
+  border: 1px solid $border;
+  border-radius: $radius-xs;
+  color: $text;
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 6px 8px;
+  font-family: inherit;
+  transition: border-color $fast;
+
+  &:focus { outline: none; border-color: $accent; }
+  &::placeholder { color: $text-dim; }
+}
+
+.notesActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.notesCount {
+  font-size: 10px;
+  color: $text-dim;
+  margin-right: auto;
+}
+
+// ─── Score history sparkline ──────────────────────────────────────────────────
+
+.sparklineRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sparklineLabel {
+  font-size: 10px;
+  color: $text-dim;
+  white-space: nowrap;
+  min-width: 58px;
+}
+
+.sparklineLast {
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 24px;
+  text-align: right;
+}

@@ -1,0 +1,164 @@
+@use '../styles/variables' as *;
+
+// ─── Theme tokens — light (default) ──────────────────────────────────────────
+:root, [data-theme="light"] {
+  --surface-base:     #F8FAFC;
+  --surface-panel:    #FFFFFF;
+  --surface-raised:   #F1F5F9;
+  --surface-hover:    #E2EDFF;
+  --surface-elevated: #FFFFFF;
+
+  --chrome-dim:       #E2E8F0;
+  --chrome-mid:       #CBD5E1;
+  --chrome-bright:    #94A3B8;
+
+  --text-primary:     #0F172A;
+  --text-secondary:   #334155;
+  --text-tertiary:    #64748B;
+  --text-disabled:    #94A3B8;
+
+  --accent:           #2563EB;
+  --accent-faint:     rgba(37, 99, 235, 0.08);
+  --accent-glow:      rgba(37, 99, 235, 0.18);
+  --accent-dim:       rgba(37, 99, 235, 0.06);
+  --accent-hover:     #1D4ED8;
+
+  --pos:              #16A34A;
+  --pos-bg:           rgba(22, 163, 74, 0.10);
+  --neg:              #DC2626;
+  --neg-bg:           rgba(220, 38, 38, 0.10);
+  --warn:             #D97706;
+  --warn-bg:          rgba(217, 119, 6, 0.10);
+
+  --shadow-panel:     0 2px 12px rgba(0, 0, 0, 0.08);
+  --shadow-popup:     0 8px 32px rgba(0, 0, 0, 0.14);
+}
+
+// ─── Theme tokens — dark ──────────────────────────────────────────────────────
+[data-theme="dark"] {
+  --surface-base:     #0D0D0F;
+  --surface-panel:    #131316;
+  --surface-raised:   #1A1A1F;
+  --surface-hover:    #222228;
+  --surface-elevated: #2A2A32;
+
+  --chrome-dim:       #222228;
+  --chrome-mid:       #2E2E38;
+  --chrome-bright:    #3E3E50;
+
+  --text-primary:     #F4F4F5;
+  --text-secondary:   #A1A1AA;
+  --text-tertiary:    #71717A;
+  --text-disabled:    #52525B;
+
+  --accent:           #3B82F6;
+  --accent-faint:     rgba(59, 130, 246, 0.08);
+  --accent-glow:      rgba(59, 130, 246, 0.18);
+  --accent-dim:       rgba(59, 130, 246, 0.06);
+  --accent-hover:     #60A5FA;
+
+  --pos:              #00C076;
+  --pos-bg:           rgba(0, 192, 118, 0.10);
+  --neg:              #F23645;
+  --neg-bg:           rgba(242, 54, 69, 0.10);
+  --warn:             #F5A623;
+  --warn-bg:          rgba(245, 166, 35, 0.10);
+
+  --shadow-panel:     0 2px 16px rgba(0, 0, 0, 0.60);
+  --shadow-popup:     0 8px 32px rgba(0, 0, 0, 0.80);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; }
+
+body {
+  background: $surface-base;
+  color: $text-primary;
+  font-family: $font-ui;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a   { color: inherit; text-decoration: none; }
+button { cursor: pointer; border: none; background: none; font: inherit; }
+input, button, textarea, select { outline: none; }
+
+::-webkit-scrollbar       { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: $chrome-mid; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: $text-secondary; }
+
+// ─── App Shell (Phase 2+ — grid layout) ──────────────────────────────────────
+// The .app-header / .app-main classes below are used only during Phase 1.
+// Once AppShell replaces layout.tsx these are superseded.
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  height: 56px;
+  background: $surface-panel;
+  border-bottom: 1px solid $chrome-dim;
+  display: flex;
+  align-items: center;
+  padding: 0 $space-6;
+}
+
+.header-inner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-logo {
+  width: 28px;
+  height: 28px;
+  background: $accent;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.brand-name {
+  font-family: $font-ui;
+  font-size: 15px;
+  font-weight: 700;
+  color: $text-primary;
+  letter-spacing: -0.01em;
+}
+
+.app-main {
+  padding: $space-6 $space-8;
+  min-height: calc(100vh - 56px);
+}
+
+@media (max-width: 640px) {
+  .app-header { padding: 0 $space-4; }
+  .app-main   { padding: $space-4; }
+}
+
+// ─── Recharts global overrides ────────────────────────────────────────────────
+
+.recharts-cartesian-grid line { stroke: $chrome-dim !important; opacity: 0.5; }
+.recharts-text { fill: $text-secondary !important; font-size: 11px !important; font-family: $font-data !important; }
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: $surface-elevated !important;
+  border: 1px solid $chrome-mid !important;
+  border-radius: $radius-md !important;
+  color: $text-primary !important;
+  box-shadow: $shadow-popup !important;
+}

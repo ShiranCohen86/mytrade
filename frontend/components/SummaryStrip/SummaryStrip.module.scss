@@ -1,0 +1,53 @@
+@use '../../styles/variables' as *;
+
+.strip {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 $space-6;
+  height: 36px;
+  background: $surface-panel;
+  border-bottom: 1px solid $chrome-dim;
+  flex-shrink: 0;
+}
+
+.sep {
+  width: 1px;
+  height: 16px;
+  background: $chrome-mid;
+  margin: 0 $space-4;
+  flex-shrink: 0;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  flex-shrink: 0;
+}
+
+.cellLabel {
+  font-family: $font-ui;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: $text-tertiary;
+  white-space: nowrap;
+}
+
+.cellValue {
+  font-family: $font-data;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  color: $text-secondary;
+  white-space: nowrap;
+}
+
+.alert {
+  color: $warn;
+}

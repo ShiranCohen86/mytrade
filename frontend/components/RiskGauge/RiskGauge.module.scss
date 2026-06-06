@@ -1,0 +1,103 @@
+@use '../../styles/variables' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.gaugeWrap {
+  position: relative;
+  height: 140px;
+}
+
+.scaleLeft,
+.scaleRight {
+  position: absolute;
+  bottom: 0;
+  font-size: 9px;
+  color: $text-tertiary;
+  font-family: $font-data;
+  letter-spacing: 0.04em;
+}
+
+.scaleLeft  { left: 4px; }
+.scaleRight { right: 4px; }
+
+.overlay {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  pointer-events: none;
+}
+
+.score {
+  font-family: $font-data;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.label {
+  font-family: $font-ui;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.low    { color: $pos; }
+.medium { color: $warn; }
+.high   { color: $neg; }
+
+// ─── Breakdown ────────────────────────────────────────────────────────────────
+
+.breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 72px 1fr 40px;
+  align-items: center;
+  gap: $space-2;
+}
+
+.rowLabel {
+  font-family: $font-ui;
+  font-size: 10px;
+  color: $text-tertiary;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.bar {
+  height: 2px;
+  background: $chrome-mid;
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  background: $neg;
+  border-radius: 1px;
+  transition: width $motion-base;
+}
+
+.rowValue {
+  font-family: $font-data;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: $text-secondary;
+  text-align: right;
+}
