@@ -5,14 +5,14 @@ services:
     env: node
     region: oregon
     plan: free
+    branch: main
+    autoDeploy: true
     buildCommand: npm ci && npm run build
     startCommand: node backend/src/index.js
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 10000
       - key: MONGO_URI
         sync: false           # Set in Render dashboard → Environment
       - key: CACHE_TTL_MINUTES
