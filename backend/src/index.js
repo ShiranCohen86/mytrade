@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -19,7 +20,7 @@ app.use((_req, res, next) => {
     "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: https:",
-    `connect-src 'self' ${process.env.ALLOWED_ORIGIN || 'http://localhost:3000'} https:`,
+    "connect-src 'self' https:",
     "font-src 'self'",
   ].join('; '));
   next();
@@ -36,7 +37,7 @@ app.use((req, res, next) => {
 // Response compression
 app.use(compression());
 
-// CORS — explicit allowed origin; never wildcard with credentials
+// CORS — needed for local dev (Vite on :3000 → Express on :5000); not needed in prod (same origin)
 const allowedOrigin = process.env.ALLOWED_ORIGIN || 'http://localhost:3000';
 app.use(cors({
   origin: allowedOrigin,
@@ -93,6 +94,13 @@ app.get('/health', async (_req, res) => {
     provider: providerStatus,
   });
 });
+
+// Serve Vite build + SPA fallback in production
+if (process.env.NODE_ENV === 'production') {
+  const distDir = path.join(__dirname, '../../frontend/dist');
+  app.use(express.static(distDir));
+  app.get('*', (_req, res) => res.sendFile(path.join(distDir, 'index.html')));
+}
 
 // Catch-all error handler — MUST be registered last, after all routes
 // eslint-disable-next-line no-unused-vars
