@@ -28,7 +28,7 @@ export function Sidebar({ isCollapsed, isMobileOpen = false }) {
     >
       <nav className={styles.nav}>
         <div className={styles.section}>
-          <span className={styles.sectionLabel}>{isCollapsed ? '' : 'Navigate'}</span>
+          <span className={styles.sectionLabel}>{(!isCollapsed || isMobileOpen) ? 'Navigate' : ''}</span>
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.href}
@@ -38,14 +38,14 @@ export function Sidebar({ isCollapsed, isMobileOpen = false }) {
               aria-label={item.label}
             >
               <span className={styles.navIcon}>{item.icon}</span>
-              {!isCollapsed && <span className={styles.navLabel}>{item.label}</span>}
+              {(!isCollapsed || isMobileOpen) && <span className={styles.navLabel}>{item.label}</span>}
             </Link>
           ))}
         </div>
       </nav>
 
       <div className={styles.bottom}>
-        <HelpModal trigger={isCollapsed ? '?' : '[?] Help'} />
+        <HelpModal trigger={(!isCollapsed || isMobileOpen) ? '[?] Help' : '?'} />
       </div>
     </aside>
   );

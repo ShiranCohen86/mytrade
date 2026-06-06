@@ -42,7 +42,7 @@ export function TopBar({ onToggleSidebar }) {
           <span /><span /><span />
         </button>
         <Link to="/" className={styles.brand}>
-          <span className={styles.brandMark}>M</span>
+          <img src="/favicon.svg" alt="MyTrade" className={styles.brandMark} />
           <span className={styles.brandName}>MyTrade</span>
         </Link>
       </div>

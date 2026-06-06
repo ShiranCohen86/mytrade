@@ -113,63 +113,6 @@ input, button, textarea, select { outline: none; }
 ::-webkit-scrollbar-thumb { background: $chrome-mid; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: $text-tertiary; }
 
-// ─── App Shell (legacy Phase 1 header) ───────────────────────────────────────
-.app-header {
-  position: sticky;
-  top: 0;
-  z-index: 200;
-  height: 60px;
-  background: $surface-panel;
-  border-bottom: 1px solid $chrome-dim;
-  display: flex;
-  align-items: center;
-  padding: 0 $space-6;
-}
-
-.header-inner {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.header-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.brand-logo {
-  width: 30px;
-  height: 30px;
-  background: linear-gradient(135deg, $accent 0%, #A78BFA 100%);
-  border-radius: $radius-md;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 800;
-  color: #fff;
-  flex-shrink: 0;
-}
-
-.brand-name {
-  font-family: $font-ui;
-  font-size: 15px;
-  font-weight: 700;
-  color: $text-primary;
-  letter-spacing: -0.02em;
-}
-
-.app-main {
-  padding: $space-6 $space-8;
-  min-height: calc(100vh - 60px);
-}
-
-@media (max-width: 640px) {
-  .app-header { padding: 0 $space-4; }
-  .app-main   { padding: $space-4; }
-}
 
 // ─── Touch optimizations ──────────────────────────────────────────────────────
 // Removes the blue flash on tap on iOS/Android

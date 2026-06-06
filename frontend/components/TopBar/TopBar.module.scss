@@ -80,17 +80,11 @@
 .brandMark {
   width: 30px;
   height: 30px;
-  background: linear-gradient(135deg, $accent 0%, #A78BFA 100%);
   border-radius: $radius-md;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 800;
-  color: #fff;
   flex-shrink: 0;
-  font-family: $font-ui;
   box-shadow: $shadow-xs;
+  display: block;
+  object-fit: contain;
 }
 
 .brandName {

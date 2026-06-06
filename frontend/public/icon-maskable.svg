@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Background fills full canvas (Android will crop to circle/squircle) -->
+  <rect width="512" height="512" rx="0" fill="#0d1117"/>
+  <!-- Artwork scaled to 60% and centered — all content within safe zone (102,102)–(410,410) -->
+  <g transform="translate(102.4 102.4) scale(0.6)">
+    <polyline points="48,352 128,240 208,288 304,144 432,208" stroke="#4F7EF7" stroke-width="35" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="432" cy="208" r="32" fill="#4F7EF7"/>
+    <text x="48" y="480" font-family="Arial, sans-serif" font-size="112" font-weight="700" fill="#ffffff" letter-spacing="8">MT</text>
+  </g>
+</svg>

@@ -6,7 +6,7 @@
 $cols-desktop: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
 $cols-lg:      20px 52px 1fr 100px 72px 64px 46px 72px 88px 32px;   // –spark –earnings
 $cols-md:      20px 52px 1fr 100px 72px 64px 46px 32px;             // –regime –expect
-$cols-sm:      52px 1fr 80px 64px 32px;                             // –drag –pnl
+$cols-sm:      52px 1fr 80px 64px 46px 32px;                        // –drag –pnl
 $cols-xs:      40px 1fr 72px 58px 32px;                             // –risk
 
 .table {
@@ -30,6 +30,7 @@ $cols-xs:      40px 1fr 72px 58px 32px;                             // –risk
   position: sticky;
   top: 40px; // below SummaryStrip (40px)
   z-index: 9;
+  overflow: hidden;
   background: $surface-panel;
   border-bottom: 2px solid $chrome-dim;
   flex-shrink: 0;

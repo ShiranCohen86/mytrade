@@ -5,7 +5,7 @@ export const metadata = {
   title: 'MyTrade — Stock Intelligence',
   description: 'Personal hedge-fund-style stock analysis dashboard',
   icons: {
-    icon: [{ url: '/favicon.svg', type: 'image/svg+xml' }],
+    icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
   },
   manifest: '/manifest.webmanifest',
 };

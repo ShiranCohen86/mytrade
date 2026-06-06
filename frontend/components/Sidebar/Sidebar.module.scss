@@ -59,6 +59,20 @@
   .sidebar.mobileOpen .soonBadge {
     display: revert;
   }
+
+  .sidebar.mobileOpen .navItem,
+  .sidebar.mobileOpen.collapsed .navItem {
+    justify-content: flex-start;
+    padding: 0 $space-3;
+    border-left: 2px solid transparent;
+    margin: 1px 0;
+    width: auto;
+  }
+
+  .sidebar.mobileOpen .navActive,
+  .sidebar.mobileOpen.collapsed .navActive {
+    border-left-color: $accent;
+  }
 }
 
 // ─── Nav ──────────────────────────────────────────────────────────────────────
