@@ -14,7 +14,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 $space-6;
-  height: 52px;
+  height: 56px;
   background: $surface-panel;
   border-bottom: 1px solid $chrome-dim;
   flex-shrink: 0;
@@ -23,20 +23,21 @@
 
 .pageTitle {
   font-family: $font-ui;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   color: $text-primary;
 }
 
 .count {
   font-family: $font-data;
   font-size: 11px;
+  font-weight: 600;
   color: $text-tertiary;
   background: $surface-raised;
   border: 1px solid $chrome-dim;
   border-radius: $radius-pill;
-  padding: 1px 8px;
+  padding: 2px 9px;
 }
 
 // ─── Summary strip ────────────────────────────────────────────────────────────
@@ -54,30 +55,38 @@
   display: flex;
   flex-direction: column;
   gap: $space-1;
-  min-width: 120px;
+  min-width: 130px;
   padding: $space-4 $space-5;
   background: $surface-raised;
   border: 1px solid $chrome-dim;
-  border-radius: $radius-lg;
+  border-radius: $radius-xl;
   box-shadow: $shadow-xs;
+  flex: 1;
+  transition: box-shadow $motion-fast, transform $motion-fast;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-1px);
+  }
 }
 
 .summaryLabel {
   font-family: $font-ui;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: $text-tertiary;
+  letter-spacing: 0.09em;
+  color: $text-disabled;
 }
 
 .summaryValue {
   font-family: $font-data;
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 700;
   color: $text-primary;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
 .pos { color: $pos; }
@@ -99,17 +108,19 @@
 .th {
   padding: $space-3 $space-4;
   font-family: $font-ui;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: $text-tertiary;
+  letter-spacing: 0.08em;
+  color: $text-disabled;
   text-align: right;
-  border-bottom: 2px solid $chrome-dim;
+  border-bottom: 1px solid $chrome-dim;
   white-space: nowrap;
   position: sticky;
   top: 0;
-  background: $surface-panel;
+  background: $surface-glass;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   z-index: 1;
 
   &:first-child { text-align: left; }
@@ -120,6 +131,11 @@
   transition: background $motion-fast;
 
   &:hover { background: $surface-hover; }
+
+  &:nth-child(even) {
+    background: rgba(99, 102, 241, 0.02);
+    &:hover { background: $surface-hover; }
+  }
 }
 
 .td {
@@ -131,7 +147,7 @@
   white-space: nowrap;
   vertical-align: middle;
   font-variant-numeric: tabular-nums;
-  height: 44px;
+  height: 46px;
 }
 
 .tickerCell {
@@ -139,9 +155,9 @@
 }
 
 .tickerLink {
-  font-family: $font-ui;
+  font-family: $font-data;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   color: $accent-text;
   letter-spacing: 0.02em;
   transition: color $motion-fast;
@@ -155,7 +171,7 @@
   font-size: 11px;
   color: $text-tertiary;
   font-weight: 400;
-  max-width: 150px;
+  max-width: 160px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -167,15 +183,18 @@
   color: $text-tertiary;
   background: $surface-raised;
   border: 1px solid $chrome-dim;
-  border-radius: $radius-xs;
-  padding: 2px 6px;
+  border-radius: $radius-pill;
+  padding: 2px 7px;
   white-space: nowrap;
 }
 
 .riskBadge {
-  display: inline-block;
-  padding: 2px 7px;
-  border-radius: $radius-xs;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: $radius-pill;
+  font-family: $font-data;
   font-size: 11px;
   font-weight: 700;
   min-width: 36px;
@@ -194,17 +213,17 @@
   align-items: center;
   justify-content: center;
   flex: 1;
-  gap: $space-4;
-  min-height: 360px;
-  padding: $space-8;
+  gap: $space-5;
+  min-height: 400px;
+  padding: $space-10;
 }
 
 .emptyTitle {
   font-family: $font-ui;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   color: $text-secondary;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 .emptySubtitle {
@@ -212,8 +231,8 @@
   font-size: 14px;
   color: $text-tertiary;
   text-align: center;
-  max-width: 340px;
-  line-height: 1.6;
+  max-width: 360px;
+  line-height: 1.7;
 }
 
 // ─── Mobile layout ────────────────────────────────────────────────────────────
@@ -226,19 +245,18 @@
   }
 
   .summary {
-    padding: $space-3 $space-4;
+    padding: $space-4 $space-4;
     gap: $space-3;
   }
 
   .summaryCard {
-    min-width: 100px;
+    min-width: 110px;
     padding: $space-3 $space-4;
-    flex: 1;
   }
 
-  .summaryValue { font-size: 18px; }
+  .summaryValue { font-size: 22px; }
 }
 
 @include below-xs {
-  .summaryCard { min-width: 80px; }
+  .summaryCard { min-width: 90px; }
 }

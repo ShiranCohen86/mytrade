@@ -16,10 +16,11 @@
   position: absolute;
   bottom: 0;
   font-size: 10px;
-  color: $text-tertiary;
+  color: $text-disabled;
   font-family: $font-data;
   letter-spacing: 0.04em;
   font-variant-numeric: tabular-nums;
+  font-weight: 600;
 }
 
 .scaleLeft  { left: 4px; }
@@ -27,7 +28,7 @@
 
 .overlay {
   position: absolute;
-  bottom: 6px;
+  bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -39,11 +40,11 @@
 
 .score {
   font-family: $font-data;
-  font-size: 34px;
+  font-size: 38px;
   font-weight: 800;
   line-height: 1;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
 }
 
 .label {
@@ -63,12 +64,12 @@
 .breakdown {
   display: flex;
   flex-direction: column;
-  gap: $space-2;
+  gap: $space-3;
 }
 
 .row {
   display: grid;
-  grid-template-columns: 76px 1fr 40px;
+  grid-template-columns: 80px 1fr 42px;
   align-items: center;
   gap: $space-2;
 }
@@ -83,7 +84,7 @@
 }
 
 .bar {
-  height: 5px;
+  height: 6px;
   background: $chrome-dim;
   border-radius: $radius-pill;
   overflow: hidden;
@@ -91,7 +92,7 @@
 
 .barFill {
   height: 100%;
-  background: $neg;
+  background: linear-gradient(90deg, var(--warn), var(--neg));
   border-radius: $radius-pill;
   transition: width $motion-base;
 }
@@ -100,7 +101,7 @@
   font-family: $font-data;
   font-size: 11px;
   font-variant-numeric: tabular-nums;
-  font-weight: 500;
+  font-weight: 600;
   color: $text-secondary;
   text-align: right;
 }

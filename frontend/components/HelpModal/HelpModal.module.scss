@@ -5,7 +5,8 @@
   position: fixed;
   inset: 0;
   background: var(--surface-overlay);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -19,7 +20,7 @@
 .modal {
   background: $surface-panel;
   border: 1px solid $chrome-mid;
-  border-radius: $radius-xl;
+  border-radius: $radius-2xl;
   box-shadow: $shadow-popup;
   width: 100%;
   max-width: 540px;
@@ -27,7 +28,7 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  animation: slideUp 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  animation: slideUp 220ms cubic-bezier(0.16, 1, 0.3, 1);
 
   &::-webkit-scrollbar { width: 4px; }
   &::-webkit-scrollbar-track { background: transparent; }
@@ -35,8 +36,8 @@
 }
 
 @keyframes slideUp {
-  from { transform: translateY(24px); opacity: 0; }
-  to   { transform: translateY(0); opacity: 1; }
+  from { transform: translateY(28px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
 }
 
 .header {
@@ -50,7 +51,7 @@
 
 .title {
   font-family: $font-ui;
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 700;
   color: $text-primary;
   letter-spacing: -0.02em;
@@ -59,13 +60,14 @@
 .closeBtn {
   font-size: 15px;
   color: $text-tertiary;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: $radius-md;
-  transition: color $motion-fast, background $motion-fast;
+  border: 1px solid $chrome-dim;
+  transition: color $motion-fast, background $motion-fast, border-color $motion-fast;
   position: relative;
 
   @media (hover: none) {
@@ -82,6 +84,7 @@
   &:hover {
     color: $text-primary;
     background: $surface-raised;
+    border-color: $chrome-mid;
   }
 }
 
@@ -89,7 +92,7 @@
   font-family: $font-ui;
   font-size: 13px;
   color: $text-secondary;
-  line-height: 1.65;
+  line-height: 1.70;
   padding: $space-5 $space-6;
   border-bottom: 1px solid $chrome-dim;
 }
@@ -114,8 +117,8 @@
   font-family: $font-data;
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.05em;
-  color: $text-primary;
+  letter-spacing: 0.06em;
+  color: $accent-text;
   margin-bottom: $space-2;
   text-transform: uppercase;
 }
@@ -124,7 +127,7 @@
   font-family: $font-ui;
   font-size: 13px;
   color: $text-secondary;
-  line-height: 1.65;
+  line-height: 1.70;
 }
 
 .footer {
@@ -139,24 +142,26 @@
   display: inline-flex;
   align-items: center;
   padding: 0 $space-8;
-  height: 40px;
+  height: 42px;
   font-family: $font-ui;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   color: #fff;
-  background: $accent;
-  border-radius: $radius-md;
-  transition: background $motion-fast, transform $motion-fast, box-shadow $motion-fast;
+  background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+  border-radius: $radius-lg;
+  transition: filter $motion-fast, transform $motion-fast, box-shadow $motion-fast;
+  box-shadow: 0 2px 8px rgba(91, 95, 227, 0.25);
 
   &:hover {
-    background: $accent-hover;
+    filter: brightness(1.08);
     transform: translateY(-1px);
-    box-shadow: $shadow-md;
+    box-shadow: 0 4px 14px rgba(91, 95, 227, 0.38);
   }
 
   &:active {
     transform: translateY(0);
-    box-shadow: none;
+    box-shadow: 0 1px 4px rgba(91, 95, 227, 0.20);
+    filter: brightness(0.96);
   }
 }
 
@@ -173,7 +178,7 @@
   &:hover { color: $text-secondary; }
 }
 
-// ─── Mobile: bottom-sheet presentation ───────────────────────────────────────
+// ─── Mobile: bottom-sheet ───────────────────────────────────────────────────
 @include below-sm {
   .overlay {
     align-items: flex-end;
@@ -183,7 +188,7 @@
   .modal {
     max-width: 100%;
     max-height: 90dvh;
-    border-radius: $radius-xl $radius-xl 0 0;
+    border-radius: $radius-2xl $radius-2xl 0 0;
     padding-bottom: env(safe-area-inset-bottom, 0px);
     animation: slideUpSheet 250ms cubic-bezier(0.16, 1, 0.3, 1);
   }

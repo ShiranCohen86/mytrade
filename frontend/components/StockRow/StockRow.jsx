@@ -17,12 +17,12 @@ function MiniSparkline({ history }) {
   const toX = (i) => PAD + (i / (pts.length - 1)) * (W - PAD * 2);
   const toY = (v) => H - PAD - ((v - minV) / range) * (H - PAD * 2);
   const last = values[values.length - 1];
-  const color = last >= 70 ? '#F23645' : last >= 40 ? '#F5A623' : '#00C076';
+  const color = last >= 70 ? 'var(--neg)' : last >= 40 ? 'var(--warn)' : 'var(--pos)';
   const pointsStr = pts.map((p, i) => `${toX(i).toFixed(1)},${toY(p.riskScore).toFixed(1)}`).join(' ');
   return (
     <svg width={W} height={H} aria-hidden="true" className={styles.sparkline}>
-      <polyline points={pointsStr} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
-      <circle cx={toX(pts.length - 1)} cy={toY(last)} r="2" fill={color} />
+      <polyline points={pointsStr} fill="none" style={{ stroke: color }} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
+      <circle cx={toX(pts.length - 1)} cy={toY(last)} r="2" style={{ fill: color }} />
     </svg>
   );
 }
@@ -48,7 +48,7 @@ function StockRowInner({
     const prev = prevPriceRef.current;
     if (prev !== null && current != null && current !== prev) {
       setFlash(current > prev ? 'up' : 'down');
-      const t = setTimeout(() => setFlash(null), 600);
+      const t = setTimeout(() => setFlash(null), 300);
       prevPriceRef.current = current;
       return () => clearTimeout(t);
     }

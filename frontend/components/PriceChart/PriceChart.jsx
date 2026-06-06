@@ -29,14 +29,21 @@ function PriceTooltip({ active, payload }) {
   if (!active || !payload?.length) return null;
   const { fullDate, price, open, high, low, sma20 } = payload[0].payload;
   return (
-    <div style={{ background: '#0C1525', border: '1px solid #1A2840', borderRadius: 6, padding: '8px 12px', fontSize: 12 }}>
-      <div style={{ color: '#8A97AA', marginBottom: 4, fontFamily: 'Inter, sans-serif' }}>{fullDate}</div>
+    <div style={{
+      background: 'var(--surface-elevated)',
+      border: '1px solid var(--chrome-mid)',
+      borderRadius: 8,
+      padding: '8px 12px',
+      fontSize: 12,
+      boxShadow: 'var(--shadow-popup)',
+    }}>
+      <div style={{ color: 'var(--text-tertiary)', marginBottom: 4, fontFamily: 'Inter, sans-serif' }}>{fullDate}</div>
       <div style={{ display: 'grid', gridTemplateColumns: 'auto auto', gap: '2px 12px', fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>
-        <span style={{ color: '#4E5E72' }}>Close</span><span style={{ color: '#3D7EFF', fontWeight: 600 }}>${price?.toFixed(2)}</span>
-        <span style={{ color: '#4E5E72' }}>Open</span><span style={{ color: '#DCE4F0' }}>${open?.toFixed(2)}</span>
-        <span style={{ color: '#4E5E72' }}>High</span><span style={{ color: '#00C076' }}>${high?.toFixed(2)}</span>
-        <span style={{ color: '#4E5E72' }}>Low</span><span style={{ color: '#F23645' }}>${low?.toFixed(2)}</span>
-        {sma20 != null && <><span style={{ color: '#4E5E72' }}>SMA 20</span><span style={{ color: '#F5A623' }}>${sma20?.toFixed(2)}</span></>}
+        <span style={{ color: 'var(--text-disabled)' }}>Close</span><span style={{ color: 'var(--accent)', fontWeight: 600 }}>${price?.toFixed(2)}</span>
+        <span style={{ color: 'var(--text-disabled)' }}>Open</span><span style={{ color: 'var(--text-primary)' }}>${open?.toFixed(2)}</span>
+        <span style={{ color: 'var(--text-disabled)' }}>High</span><span style={{ color: 'var(--pos)' }}>${high?.toFixed(2)}</span>
+        <span style={{ color: 'var(--text-disabled)' }}>Low</span><span style={{ color: 'var(--neg)' }}>${low?.toFixed(2)}</span>
+        {sma20 != null && <><span style={{ color: 'var(--text-disabled)' }}>SMA 20</span><span style={{ color: 'var(--warn)' }}>${sma20?.toFixed(2)}</span></>}
       </div>
     </div>
   );
@@ -74,21 +81,21 @@ export function PriceChart({ historical, ticker }) {
         <ComposedChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
           <defs>
             <linearGradient id="priceGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#3D7EFF" stopOpacity={0.20} />
-              <stop offset="95%" stopColor="#3D7EFF" stopOpacity={0} />
+              <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.20} />
+              <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#101928" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--chrome-dim)" />
           <XAxis
             dataKey="date"
-            tick={{ fontSize: 10, fill: '#4E5E72', fontFamily: 'Inter, sans-serif' }}
-            axisLine={{ stroke: '#101928' }}
+            tick={{ fontSize: 10, fill: 'var(--text-disabled)', fontFamily: 'Inter, sans-serif' }}
+            axisLine={{ stroke: 'var(--chrome-dim)' }}
             tickLine={false}
             interval={Math.floor(chartData.length / 6)}
           />
           <YAxis
             domain={[minP - padding, maxP + padding]}
-            tick={{ fontSize: 10, fill: '#4E5E72', fontFamily: "'JetBrains Mono', monospace" }}
+            tick={{ fontSize: 10, fill: 'var(--text-disabled)', fontFamily: "'JetBrains Mono', monospace" }}
             axisLine={false}
             tickLine={false}
             tickFormatter={(v) => `$${v.toFixed(0)}`}
@@ -99,12 +106,12 @@ export function PriceChart({ historical, ticker }) {
             formatter={(v) => v === 'price' ? 'Close' : 'SMA 20'}
             iconType="line"
             iconSize={10}
-            wrapperStyle={{ fontSize: '10px', fontFamily: 'Inter, sans-serif', color: '#8A97AA' }}
+            wrapperStyle={{ fontSize: '10px', fontFamily: 'Inter, sans-serif', color: 'var(--text-tertiary)' }}
           />
           <Area
             type="monotone"
             dataKey="price"
-            stroke="#3D7EFF"
+            stroke="var(--accent)"
             strokeWidth={1.5}
             fill="url(#priceGrad)"
             dot={false}
@@ -113,7 +120,7 @@ export function PriceChart({ historical, ticker }) {
           <Line
             type="monotone"
             dataKey="sma20"
-            stroke="#F5A623"
+            stroke="var(--warn)"
             strokeWidth={1.5}
             dot={false}
             strokeDasharray="4 2"

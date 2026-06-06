@@ -13,7 +13,7 @@
   display: flex;
   align-items: center;
   padding: 0 $space-6;
-  height: 52px;
+  height: 56px;
   background: $surface-panel;
   border-bottom: 1px solid $chrome-dim;
   flex-shrink: 0;
@@ -24,20 +24,21 @@
 
 .pageTitle {
   font-family: $font-ui;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   color: $text-primary;
 }
 
 .count {
   font-family: $font-data;
   font-size: 11px;
+  font-weight: 600;
   color: $text-tertiary;
   background: $surface-raised;
   border: 1px solid $chrome-dim;
   border-radius: $radius-pill;
-  padding: 1px 8px;
+  padding: 2px 9px;
 }
 
 // ─── Grid of sector cards ─────────────────────────────────────────────────────
@@ -59,14 +60,14 @@
 .card {
   background: $surface-panel;
   border: 1px solid $chrome-dim;
-  border-radius: $radius-lg;
+  border-radius: $radius-xl;
   box-shadow: $shadow-sm;
   overflow: hidden;
   transition: box-shadow $motion-fast, transform $motion-fast;
 
   &:hover {
     box-shadow: $shadow-md;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
   }
 }
 
@@ -76,6 +77,7 @@
   justify-content: space-between;
   padding: $space-4 $space-5;
   border-bottom: 1px solid $chrome-dim;
+  background: $surface-raised;
   gap: $space-3;
 }
 
@@ -103,10 +105,10 @@
 .statLabel {
   font-family: $font-ui;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: $text-tertiary;
+  letter-spacing: 0.08em;
+  color: $text-disabled;
 }
 
 .statValue {
@@ -127,7 +129,7 @@
 
 .barFill {
   height: 100%;
-  background: $accent;
+  background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
   transition: width $motion-base;
 }
 
@@ -153,9 +155,9 @@
 .stockTicker {
   font-family: $font-data;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   color: $accent-text;
-  min-width: 48px;
+  min-width: 52px;
   letter-spacing: 0.02em;
   transition: color $motion-fast;
 
@@ -191,21 +193,23 @@
   font-family: $font-data;
   font-size: 11px;
   font-variant-numeric: tabular-nums;
-  font-weight: 600;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: $radius-pill;
 
-  &.pos { color: $pos; }
-  &.neg { color: $neg; }
+  &.pos { color: $pos; background: $pos-bg; }
+  &.neg { color: $neg; background: $neg-bg; }
 }
 
 .riskPip {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
 
-  &.low  { background: $pos; }
+  &.low  { background: $pos; box-shadow: 0 0 5px var(--pos); }
   &.mid  { background: $warn; }
-  &.high { background: $neg; }
+  &.high { background: $neg; box-shadow: 0 0 5px var(--neg); }
 }
 
 // ─── Empty state ──────────────────────────────────────────────────────────────
@@ -216,17 +220,17 @@
   align-items: center;
   justify-content: center;
   flex: 1;
-  gap: $space-4;
-  min-height: 360px;
-  padding: $space-8;
+  gap: $space-5;
+  min-height: 400px;
+  padding: $space-10;
 }
 
 .emptyTitle {
   font-family: $font-ui;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   color: $text-secondary;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 .emptySubtitle {
@@ -234,6 +238,6 @@
   font-size: 14px;
   color: $text-tertiary;
   text-align: center;
-  max-width: 340px;
-  line-height: 1.6;
+  max-width: 360px;
+  line-height: 1.7;
 }

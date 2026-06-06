@@ -1,6 +1,6 @@
-// ─── Meridian Design System — Variable Tokens ─────────────────────────────────
-// CSS custom properties are defined per-theme in globals.scss.
-// These SCSS variables are wrappers so component files can use $token syntax.
+// ─── Meridian 2.0 Design System — Variable Tokens ─────────────────────────────
+// CSS custom properties (themes) live in globals.scss.
+// These SCSS variables are thin wrappers so component files use $token syntax.
 
 // ─── Surfaces ─────────────────────────────────────────────────────────────────
 $surface-base:     var(--surface-base);
@@ -9,21 +9,23 @@ $surface-raised:   var(--surface-raised);
 $surface-hover:    var(--surface-hover);
 $surface-elevated: var(--surface-elevated);
 $surface-overlay:  var(--surface-overlay);
+$surface-glass:    var(--surface-glass);
 
-// ─── Chrome (borders/dividers) ────────────────────────────────────────────────
+// ─── Chrome (borders / dividers) ─────────────────────────────────────────────
 $chrome-dim:    var(--chrome-dim);
 $chrome-mid:    var(--chrome-mid);
 $chrome-bright: var(--chrome-bright);
 
 // ─── Accent ───────────────────────────────────────────────────────────────────
-$accent:       var(--accent);
-$accent-hover: var(--accent-hover);
-$accent-faint: var(--accent-faint);
-$accent-glow:  var(--accent-glow);
-$accent-dim:   var(--accent-dim);
-$accent-text:  var(--accent-text);
+$accent:           var(--accent);
+$accent-hover:     var(--accent-hover);
+$accent-secondary: var(--accent-secondary);
+$accent-faint:     var(--accent-faint);
+$accent-glow:      var(--accent-glow);
+$accent-dim:       var(--accent-dim);
+$accent-text:      var(--accent-text);
 
-// ─── Semantic — price movement and risk ───────────────────────────────────────
+// ─── Semantic ─────────────────────────────────────────────────────────────────
 $pos:     var(--pos);
 $pos-bg:  var(--pos-bg);
 $neg:     var(--neg);
@@ -45,21 +47,38 @@ $shadow-md:    var(--shadow-md);
 $shadow-lg:    var(--shadow-lg);
 $shadow-popup: var(--shadow-popup);
 $shadow-glow:  var(--shadow-glow);
+$shadow-glow-pos: var(--shadow-glow-pos);
+$shadow-glow-neg: var(--shadow-glow-neg);
 $shadow-panel: var(--shadow-sm);
 
-// ─── Typography (static) ─────────────────────────────────────────────────────
+// ─── Typography ───────────────────────────────────────────────────────────────
 $font-ui:   'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 $font-data: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
 
-// ─── Geometry (static) ───────────────────────────────────────────────────────
+// ─── Type scale ───────────────────────────────────────────────────────────────
+$text-2xs:  10px;
+$text-xs:   11px;
+$text-sm:   12px;
+$text-base: 13px;
+$text-md:   14px;
+$text-lg:   15px;
+$text-xl:   17px;
+$text-2xl:  20px;
+$text-3xl:  24px;
+$text-4xl:  30px;
+$text-5xl:  38px;
+$text-hero: 48px;
+
+// ─── Geometry ─────────────────────────────────────────────────────────────────
 $radius-xs:   4px;
 $radius-sm:   6px;
 $radius-md:   10px;
 $radius-lg:   14px;
 $radius-xl:   20px;
+$radius-2xl:  28px;
 $radius-pill: 9999px;
 
-// ─── Spacing — 4px base unit ──────────────────────────────────────────────────
+// ─── Spacing — 4 px base ──────────────────────────────────────────────────────
 $space-1:  4px;
 $space-2:  8px;
 $space-3:  12px;
@@ -70,62 +89,59 @@ $space-7:  28px;
 $space-8:  32px;
 $space-10: 40px;
 $space-12: 48px;
+$space-14: 56px;
+$space-16: 64px;
 
-// ─── Motion ───────────────────────────────────────────────────────────────────
-$motion-fast: 120ms cubic-bezier(0.16, 1, 0.3, 1);
-$motion-base: 200ms cubic-bezier(0.16, 1, 0.3, 1);
-$motion-slow: 350ms cubic-bezier(0.16, 1, 0.3, 1);
-
-// ─── Backward-compat aliases ──────────────────────────────────────────────────
-$bg-primary:     $surface-base;
-$bg-secondary:   $surface-panel;
-$bg-card:        $surface-raised;
-$bg-card-hover:  $surface-hover;
-$bg-elevated:    $surface-elevated;
-
-$border:        $chrome-dim;
-$border-bright: $chrome-mid;
-
-$radius:    $radius-lg;
-$radius-xs-compat: $radius-xs;
-
-$positive:      $pos;
-$positive-glow: $pos-bg;
-$negative:      $neg;
-$negative-glow: $neg-bg;
-$warning:       $warn;
-$warning-glow:  $warn-bg;
-
-$text:           $text-primary;
-$text-muted:     $text-secondary;
-$text-dim:       $text-tertiary;
-
-$font-sans: $font-ui;
-$font-mono: $font-data;
-
-$fast: $motion-fast;
-$base: $motion-base;
-
-$shadow-card:  $shadow-sm;
-$shadow-hover: $shadow-popup;
-$shadow-popup-compat: $shadow-popup;
-
-$color-positive:   $pos;
-$color-negative:   $neg;
-$color-neutral:    $warn;
-$color-accent:     $accent;
-$color-text:       $text-primary;
-$color-text-muted: $text-secondary;
-$color-text-dim:   $text-tertiary;
-$border-color:     $chrome-dim;
-$border-radius:    $radius-lg;
-$border-radius-sm: $radius-md;
-$transition-fast:  $motion-fast;
-$transition-base:  $motion-base;
+// ─── Motion (spring-based) ────────────────────────────────────────────────────
+$motion-fast:   120ms cubic-bezier(0.16, 1, 0.3, 1);
+$motion-base:   200ms cubic-bezier(0.16, 1, 0.3, 1);
+$motion-slow:   350ms cubic-bezier(0.16, 1, 0.3, 1);
+$motion-spring: 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
 
 // ─── Responsive breakpoints ───────────────────────────────────────────────────
-$bp-xs: 480px;   // very small phones (iPhone SE, small Android)
-$bp-sm: 640px;   // mobile (AppShell drawer breakpoint)
-$bp-md: 768px;   // tablet portrait
-$bp-lg: 900px;   // tablet landscape / medium desktop
-$bp-xl: 1100px;  // large desktop
+$bp-xs:  480px;
+$bp-sm:  640px;
+$bp-md:  768px;
+$bp-lg:  900px;
+$bp-xl:  1100px;
+$bp-2xl: 1400px;
+$bp-3xl: 1600px;
+
+// ─── Backward-compat aliases ──────────────────────────────────────────────────
+$bg-primary:        $surface-base;
+$bg-secondary:      $surface-panel;
+$bg-card:           $surface-raised;
+$bg-card-hover:     $surface-hover;
+$bg-elevated:       $surface-elevated;
+$border:            $chrome-dim;
+$border-bright:     $chrome-mid;
+$radius:            $radius-lg;
+$radius-xs-compat:  $radius-xs;
+$positive:          $pos;
+$positive-glow:     $pos-bg;
+$negative:          $neg;
+$negative-glow:     $neg-bg;
+$warning:           $warn;
+$warning-glow:      $warn-bg;
+$text:              $text-primary;
+$text-muted:        $text-secondary;
+$text-dim:          $text-tertiary;
+$font-sans:         $font-ui;
+$font-mono:         $font-data;
+$fast:              $motion-fast;
+$base:              $motion-base;
+$shadow-card:       $shadow-sm;
+$shadow-hover:      $shadow-popup;
+$shadow-popup-compat: $shadow-popup;
+$color-positive:    $pos;
+$color-negative:    $neg;
+$color-neutral:     $warn;
+$color-accent:      $accent;
+$color-text:        $text-primary;
+$color-text-muted:  $text-secondary;
+$color-text-dim:    $text-tertiary;
+$border-color:      $chrome-dim;
+$border-radius:     $radius-lg;
+$border-radius-sm:  $radius-md;
+$transition-fast:   $motion-fast;
+$transition-base:   $motion-base;

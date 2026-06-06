@@ -13,22 +13,6 @@
   gap: $space-2;
 }
 
-.inputWrapper {
-  display: flex;
-  align-items: center;
-  flex: 1;
-  border: 1px solid $chrome-mid;
-  border-radius: $radius-md;
-  background: $surface-panel;
-  overflow: hidden;
-  transition: border-color $motion-fast, box-shadow $motion-fast;
-
-  &:focus-within {
-    border-color: $accent;
-    box-shadow: $shadow-glow;
-  }
-}
-
 .input {
   flex: 1;
   max-width: 220px;
@@ -36,12 +20,12 @@
   border: none;
   color: $text-primary;
   font-family: $font-data;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 0 $space-4;
-  height: 40px;
+  height: 42px;
   min-width: 0;
 
   &::placeholder {
@@ -56,41 +40,43 @@
 }
 
 .button {
-  background: $accent;
+  background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
   color: #fff;
   border: none;
-  border-radius: $radius-md;
-  padding: 0 $space-4;
-  height: 40px;
+  border-radius: $radius-lg;
+  padding: 0 $space-5;
+  height: 42px;
   font-family: $font-ui;
   font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  transition: background $motion-fast, transform $motion-fast, box-shadow $motion-fast;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: filter $motion-fast, transform $motion-fast, box-shadow $motion-fast;
   white-space: nowrap;
   flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(91, 95, 227, 0.25);
 
   &:hover:not(:disabled) {
-    background: $accent-hover;
+    filter: brightness(1.08);
     transform: translateY(-1px);
-    box-shadow: $shadow-md;
+    box-shadow: 0 4px 14px rgba(91, 95, 227, 0.38);
   }
 
   &:active:not(:disabled) {
     transform: translateY(0);
-    box-shadow: none;
+    box-shadow: 0 1px 4px rgba(91, 95, 227, 0.20);
+    filter: brightness(0.96);
   }
 
   &:disabled {
-    opacity: 0.40;
+    opacity: 0.38;
     cursor: not-allowed;
   }
 }
 
 .spinner {
   display: inline-block;
-  width: 13px;
-  height: 13px;
+  width: 14px;
+  height: 14px;
   border: 2px solid rgba(255, 255, 255, 0.30);
   border-top-color: #fff;
   border-radius: 50%;
@@ -125,10 +111,10 @@
   white-space: nowrap;
 }
 
-// ─── Mobile: 44px touch targets + vertical stack ──────────────────────────────
+// ─── Mobile ───────────────────────────────────────────────────────────────────
 @include below-sm {
-  .input  { height: 44px; }
-  .button { height: 44px; }
+  .input  { height: 46px; }
+  .button { height: 46px; }
 }
 
 @include below-xs {

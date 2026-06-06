@@ -1,12 +1,8 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useStocks } from '@/hooks/useStocks';
+import { fmtPrice } from '@/lib/format';
 import styles from './PortfolioPage.module.scss';
-
-function fmtPrice(n) {
-  if (n == null) return '—';
-  return n.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
-}
 
 function fmtPct(n) {
   if (n == null) return '—';

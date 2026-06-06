@@ -2,13 +2,12 @@
 @use '../../styles/mixins' as *;
 
 // ─── Column Grid ──────────────────────────────────────────────────────────────
-// drag / ticker / name / price / chg% / pnl / risk / expect / regime / earnings / spark / actions
 // Must mirror WatchlistTable.module.scss
-$cols-desktop: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
-$cols-lg:      20px 52px 1fr 100px 72px 64px 46px 72px 88px 32px;
-$cols-md:      20px 52px 1fr 100px 72px 64px 46px 32px;
-$cols-sm:      52px 1fr 80px 64px 46px 32px;
-$cols-xs:      40px 1fr 72px 58px 32px;
+$cols-desktop: 20px 56px 1fr 104px 76px 68px 48px 76px 92px 56px 60px 34px;
+$cols-lg:      20px 56px 1fr 104px 76px 68px 48px 76px 92px 34px;
+$cols-md:      20px 56px 1fr 104px 76px 68px 48px 34px;
+$cols-sm:      56px 1fr 84px 68px 48px 34px;
+$cols-xs:      44px 1fr 76px 60px 34px;
 
 .rowWrapper {
   border-bottom: 1px solid $chrome-dim;
@@ -18,7 +17,8 @@ $cols-xs:      40px 1fr 72px 58px 32px;
   &:hover { background: $surface-hover; }
 
   &:nth-child(even) {
-    background: rgba(0, 0, 0, 0.015);
+    background: rgba(99, 102, 241, 0.02);
+    [data-theme="dark"] & { background: rgba(129, 140, 248, 0.015); }
     &:hover { background: $surface-hover; }
   }
 
@@ -46,7 +46,7 @@ $cols-xs:      40px 1fr 72px 58px 32px;
   align-items: center;
   gap: 0 $space-3;
   padding: 0 $space-4;
-  height: 44px;
+  height: 46px;
   cursor: pointer;
   user-select: none;
 
@@ -55,10 +55,10 @@ $cols-xs:      40px 1fr 72px 58px 32px;
     box-shadow: inset 0 0 0 2px $accent;
   }
 
-  // Column grid + visibility nested together: 2-class specificity (.row .xxx)
-  // beats .sparklineCell { display: flex } which has only 1-class specificity
   @include below-lg {
-    grid-template-columns: $cols-lg; padding: 0 $space-3; gap: 0 $space-2;
+    grid-template-columns: $cols-lg;
+    padding: 0 $space-3;
+    gap: 0 $space-2;
     .sparklineCell, .earnings { display: none; }
   }
   @include below-md {
@@ -70,7 +70,8 @@ $cols-xs:      40px 1fr 72px 58px 32px;
     .dragHandle, .pnl { display: none; }
   }
   @include below-xs {
-    grid-template-columns: $cols-xs; padding: 0 $space-2;
+    grid-template-columns: $cols-xs;
+    padding: 0 $space-2;
     .risk { display: none; }
   }
 }
@@ -98,7 +99,7 @@ $cols-xs:      40px 1fr 72px 58px 32px;
 .ticker {
   font-family: $font-data;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.02em;
   color: $accent-text;
   text-decoration: none;
@@ -109,6 +110,7 @@ $cols-xs:      40px 1fr 72px 58px 32px;
   &:hover {
     color: $accent;
     text-decoration: underline;
+    text-decoration-thickness: 1px;
   }
 }
 
@@ -137,7 +139,7 @@ $cols-xs:      40px 1fr 72px 58px 32px;
   font-family: $font-data;
   font-size: 13px;
   font-variant-numeric: tabular-nums;
-  font-weight: 500;
+  font-weight: 600;
   color: $text-primary;
   white-space: nowrap;
   transition: color $motion-fast;
@@ -153,8 +155,8 @@ $cols-xs:      40px 1fr 72px 58px 32px;
   100% { color: $text-primary; background: transparent; }
 }
 
-.flashUp   { animation: flashUp 0.7s ease forwards; }
-.flashDown { animation: flashDown 0.7s ease forwards; }
+.flashUp   { animation: flashUp   280ms ease-out forwards; }
+.flashDown { animation: flashDown 280ms ease-out forwards; }
 
 .connDot {
   width: 6px;
@@ -163,7 +165,10 @@ $cols-xs:      40px 1fr 72px 58px 32px;
   flex-shrink: 0;
 }
 
-.connOnline  { background: $pos; }
+.connOnline  {
+  background: $pos;
+  box-shadow: 0 0 5px var(--pos);
+}
 .connOffline { background: $neg; }
 
 // ─── Change % ────────────────────────────────────────────────────────────────
@@ -173,8 +178,8 @@ $cols-xs:      40px 1fr 72px 58px 32px;
   font-size: 11px;
   font-variant-numeric: tabular-nums;
   font-weight: 700;
-  padding: 2px 6px;
-  border-radius: $radius-xs;
+  padding: 2px 7px;
+  border-radius: $radius-pill;
   white-space: nowrap;
   text-align: right;
 }
@@ -185,7 +190,7 @@ $cols-xs:      40px 1fr 72px 58px 32px;
   font-family: $font-data;
   font-size: 11px;
   font-variant-numeric: tabular-nums;
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
   text-align: right;
 }
@@ -203,11 +208,13 @@ $cols-xs:      40px 1fr 72px 58px 32px;
   font-variant-numeric: tabular-nums;
   font-weight: 700;
   text-align: right;
+  padding: 2px 7px;
+  border-radius: $radius-pill;
 }
 
-.risk_high   { color: $neg; }
-.risk_medium { color: $warn; }
-.risk_low    { color: $pos; }
+.risk_high   { color: $neg;  background: $neg-bg; }
+.risk_medium { color: $warn; background: $warn-bg; }
+.risk_low    { color: $pos;  background: $pos-bg; }
 
 // ─── Expectation ─────────────────────────────────────────────────────────────
 
@@ -216,14 +223,16 @@ $cols-xs:      40px 1fr 72px 58px 32px;
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   white-space: nowrap;
   text-align: center;
+  padding: 2px 7px;
+  border-radius: $radius-pill;
 }
 
-.exp_high   { color: $neg; }
-.exp_medium { color: $warn; }
-.exp_low    { color: $text-secondary; }
+.exp_high   { color: $neg;  background: $neg-bg; }
+.exp_medium { color: $warn; background: $warn-bg; }
+.exp_low    { color: $text-secondary; background: $surface-raised; }
 
 // ─── Market regime ───────────────────────────────────────────────────────────
 
@@ -254,7 +263,13 @@ $cols-xs:      40px 1fr 72px 58px 32px;
   text-align: right;
 }
 
-.earningsUrgent { color: $warn; font-weight: 700; }
+.earningsUrgent {
+  color: $warn;
+  font-weight: 700;
+  background: $warn-bg;
+  padding: 1px 6px;
+  border-radius: $radius-pill;
+}
 .stnDot { color: $neg; }
 
 // ─── Sparkline ───────────────────────────────────────────────────────────────
@@ -276,8 +291,8 @@ $cols-xs:      40px 1fr 72px 58px 32px;
 }
 
 .expandBtn {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -287,7 +302,6 @@ $cols-xs:      40px 1fr 72px 58px 32px;
   transition: transform $motion-fast, color $motion-fast, background $motion-fast;
   position: relative;
 
-  // Expand tap area to 44×44 on touch devices without changing visual size
   @media (hover: none) {
     &::after {
       content: '';
@@ -318,8 +332,8 @@ $cols-xs:      40px 1fr 72px 58px 32px;
 }
 
 .rowSpinner {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   display: flex;
   align-items: center;
   justify-content: center;

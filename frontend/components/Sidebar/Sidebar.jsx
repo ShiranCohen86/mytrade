@@ -1,15 +1,10 @@
 
 import { Link, useLocation } from 'react-router-dom';
 import { HelpModal } from '@/components/HelpModal/HelpModal';
+import { NAV_ITEMS } from '@/lib/navItems';
 import styles from './Sidebar.module.scss';
 
-const NAV_ITEMS = [
-  { label: 'Watchlist', href: '/', icon: '▤' },
-  { label: 'Portfolio', href: '/portfolio', icon: '◈' },
-  { label: 'Sectors', href: '/sectors', icon: '◧' },
-];
-
-export function Sidebar({ isCollapsed, isMobileOpen = false }) {
+export function Sidebar({ isCollapsed, isMobileOpen = false, onClose }) {
   const { pathname } = useLocation();
 
   const isActive = (href) => {
@@ -36,6 +31,7 @@ export function Sidebar({ isCollapsed, isMobileOpen = false }) {
               className={`${styles.navItem} ${isActive(item.href) ? styles.navActive : ''}`}
               title={isCollapsed ? item.label : undefined}
               aria-label={item.label}
+              onClick={isMobileOpen ? onClose : undefined}
             >
               <span className={styles.navIcon}>{item.icon}</span>
               {(!isCollapsed || isMobileOpen) && <span className={styles.navLabel}>{item.label}</span>}

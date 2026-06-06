@@ -2,18 +2,23 @@
 
 .wrapper {
   border-top: 1px solid $chrome-dim;
-  padding-top: $space-8;
+  padding: $space-8 $space-6;
   display: flex;
   flex-direction: column;
   gap: $space-6;
+  background: $surface-base;
+
+  @media (max-width: 640px) {
+    padding: $space-6 $space-4;
+  }
 }
 
 .heading {
-  font-size: 12px;
-  font-weight: 600;
-  color: $text-tertiary;
+  font-size: 11px;
+  font-weight: 700;
+  color: $text-disabled;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.10em;
 }
 
 .grid {
@@ -25,31 +30,36 @@
 .card {
   background: $surface-panel;
   border: 1px solid $chrome-dim;
-  border-radius: $radius-lg;
+  border-radius: $radius-xl;
   box-shadow: $shadow-sm;
   padding: $space-5;
   display: flex;
   flex-direction: column;
   gap: $space-2;
-  min-width: 130px;
-  transition: box-shadow $motion-fast;
+  min-width: 140px;
+  flex: 1;
+  transition: box-shadow $motion-fast, transform $motion-fast;
 
-  &:hover { box-shadow: $shadow-md; }
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-1px);
+  }
 }
 
 .label {
-  font-size: 11px;
-  font-weight: 600;
-  color: $text-tertiary;
+  font-size: 10px;
+  font-weight: 700;
+  color: $text-disabled;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.09em;
 }
 
 .value {
-  font-size: 22px;
+  font-family: $font-data;
+  font-size: 28px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   color: $text-primary;
   line-height: 1.1;
 }
@@ -72,23 +82,23 @@
 }
 
 .sectLabel {
-  font-size: 12px;
-  font-weight: 600;
-  color: $text-tertiary;
+  font-size: 11px;
+  font-weight: 700;
+  color: $text-disabled;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.09em;
 }
 
 .sectBars {
   display: flex;
   flex-direction: column;
   gap: $space-2;
-  max-width: 420px;
+  max-width: 440px;
 }
 
 .sectRow {
   display: grid;
-  grid-template-columns: 140px 1fr 30px;
+  grid-template-columns: 150px 1fr 30px;
   align-items: center;
   gap: $space-3;
 }
@@ -110,12 +120,13 @@
 
 .barFill {
   height: 100%;
-  background: $accent;
+  background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
   border-radius: $radius-pill;
   transition: width $motion-base;
 }
 
 .sectCount {
+  font-family: $font-data;
   font-size: 12px;
   font-weight: 600;
   color: $text-secondary;
@@ -126,4 +137,5 @@
 @media (max-width: 640px) {
   .grid { flex-direction: column; }
   .card { min-width: unset; }
+  .sectRow { grid-template-columns: 120px 1fr 28px; }
 }

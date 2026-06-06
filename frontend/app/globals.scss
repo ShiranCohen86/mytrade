@@ -2,42 +2,46 @@
 
 // ─── Theme tokens — light (default) ──────────────────────────────────────────
 :root, [data-theme="light"] {
-  --surface-base:     #F7F7FB;
+  --surface-base:     #F2F3FA;
   --surface-panel:    #FFFFFF;
-  --surface-raised:   #F0F1F8;
-  --surface-hover:    rgba(99, 102, 241, 0.07);
+  --surface-raised:   #ECEDF6;
+  --surface-hover:    rgba(99, 102, 241, 0.06);
   --surface-elevated: #FFFFFF;
-  --surface-overlay:  rgba(10, 10, 22, 0.60);
+  --surface-overlay:  rgba(8, 8, 28, 0.55);
+  --surface-glass:    rgba(255, 255, 255, 0.82);
 
-  --chrome-dim:    #E5E6EF;
-  --chrome-mid:    #CED0DE;
-  --chrome-bright: #9799B0;
+  --chrome-dim:    #E2E4EF;
+  --chrome-mid:    #CBD0E4;
+  --chrome-bright: #9BA0C0;
 
-  --text-primary:   #0B0D1A;
-  --text-secondary: #3A3F5C;
-  --text-tertiary:  #6B7191;
-  --text-disabled:  #9799B0;
+  --text-primary:   #09091C;
+  --text-secondary: #363B56;
+  --text-tertiary:  #636688;
+  --text-disabled:  #9EA3C2;
 
-  --accent:       #6366F1;
-  --accent-hover: #4F46E5;
-  --accent-faint: rgba(99, 102, 241, 0.09);
-  --accent-glow:  rgba(99, 102, 241, 0.24);
-  --accent-dim:   rgba(99, 102, 241, 0.05);
-  --accent-text:  #4338CA;
+  --accent:           #5B5FE3;
+  --accent-hover:     #4A4EC8;
+  --accent-secondary: #8B5CF6;
+  --accent-faint:     rgba(91, 95, 227, 0.08);
+  --accent-glow:      rgba(91, 95, 227, 0.20);
+  --accent-dim:       rgba(91, 95, 227, 0.05);
+  --accent-text:      #4338CA;
 
-  --pos:    #059669;
-  --pos-bg: rgba(5, 150, 105, 0.09);
-  --neg:    #DC2626;
-  --neg-bg: rgba(220, 38, 38, 0.09);
+  --pos:    #0AB47A;
+  --pos-bg: rgba(10, 180, 122, 0.09);
+  --neg:    #E53E3E;
+  --neg-bg: rgba(229, 62, 62, 0.08);
   --warn:   #D97706;
-  --warn-bg: rgba(217, 119, 6, 0.09);
+  --warn-bg: rgba(217, 119, 6, 0.08);
 
-  --shadow-xs:    0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-sm:    0 2px 8px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-xs:    0 1px 2px rgba(0, 0, 0, 0.04), 0 0 1px rgba(0, 0, 0, 0.02);
+  --shadow-sm:    0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
   --shadow-md:    0 4px 16px rgba(0, 0, 0, 0.09), 0 2px 6px rgba(0, 0, 0, 0.05);
-  --shadow-lg:    0 8px 28px rgba(0, 0, 0, 0.11), 0 4px 10px rgba(0, 0, 0, 0.06);
-  --shadow-popup: 0 20px 56px rgba(0, 0, 0, 0.16), 0 8px 20px rgba(0, 0, 0, 0.08);
-  --shadow-glow:  0 0 0 3px rgba(99, 102, 241, 0.24);
+  --shadow-lg:    0 8px 32px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-popup: 0 24px 64px rgba(0, 0, 0, 0.18), 0 8px 24px rgba(0, 0, 0, 0.10);
+  --shadow-glow:      0 0 0 3px rgba(91, 95, 227, 0.22);
+  --shadow-glow-pos:  0 0 0 3px rgba(10, 180, 122, 0.20);
+  --shadow-glow-neg:  0 0 0 3px rgba(229, 62, 62, 0.20);
 
   // Legacy compat
   --shadow-panel: var(--shadow-sm);
@@ -46,42 +50,46 @@
 
 // ─── Theme tokens — dark ──────────────────────────────────────────────────────
 [data-theme="dark"] {
-  --surface-base:     #08080F;
-  --surface-panel:    #0F0F18;
-  --surface-raised:   #161622;
-  --surface-hover:    #1C1C2C;
-  --surface-elevated: #22222F;
-  --surface-overlay:  rgba(0, 0, 10, 0.78);
+  --surface-base:     #07071A;
+  --surface-panel:    #0D0D22;
+  --surface-raised:   #13132A;
+  --surface-hover:    rgba(129, 140, 248, 0.07);
+  --surface-elevated: #1A1A30;
+  --surface-overlay:  rgba(0, 0, 16, 0.82);
+  --surface-glass:    rgba(13, 13, 34, 0.78);
 
-  --chrome-dim:    #1C1C2C;
-  --chrome-mid:    #282838;
-  --chrome-bright: #404058;
+  --chrome-dim:    #1C1C35;
+  --chrome-mid:    #272742;
+  --chrome-bright: #3A3A58;
 
-  --text-primary:   #EDEDFF;
-  --text-secondary: #C0C0D8;
-  --text-tertiary:  #7A7A98;
-  --text-disabled:  #4A4A60;
+  --text-primary:   #EEEEFF;
+  --text-secondary: #B8B8D4;
+  --text-tertiary:  #727290;
+  --text-disabled:  #44445C;
 
-  --accent:       #818CF8;
-  --accent-hover: #A5B4FC;
-  --accent-faint: rgba(129, 140, 248, 0.11);
-  --accent-glow:  rgba(129, 140, 248, 0.28);
-  --accent-dim:   rgba(129, 140, 248, 0.06);
-  --accent-text:  #A5B4FC;
+  --accent:           #818CF8;
+  --accent-hover:     #A5B4FC;
+  --accent-secondary: #C084FC;
+  --accent-faint:     rgba(129, 140, 248, 0.10);
+  --accent-glow:      rgba(129, 140, 248, 0.22);
+  --accent-dim:       rgba(129, 140, 248, 0.06);
+  --accent-text:      #A5B4FC;
 
-  --pos:    #10B981;
-  --pos-bg: rgba(16, 185, 129, 0.12);
-  --neg:    #EF4444;
-  --neg-bg: rgba(239, 68, 68, 0.12);
-  --warn:   #F59E0B;
-  --warn-bg: rgba(245, 158, 11, 0.12);
+  --pos:    #34D399;
+  --pos-bg: rgba(52, 211, 153, 0.11);
+  --neg:    #F87171;
+  --neg-bg: rgba(248, 113, 113, 0.11);
+  --warn:   #FBBF24;
+  --warn-bg: rgba(251, 191, 36, 0.10);
 
-  --shadow-xs:    0 1px 2px rgba(0, 0, 0, 0.35);
-  --shadow-sm:    0 2px 8px rgba(0, 0, 0, 0.50);
-  --shadow-md:    0 4px 16px rgba(0, 0, 0, 0.60);
-  --shadow-lg:    0 8px 28px rgba(0, 0, 0, 0.70);
-  --shadow-popup: 0 20px 60px rgba(0, 0, 0, 0.85), 0 8px 24px rgba(0, 0, 0, 0.60);
-  --shadow-glow:  0 0 0 3px rgba(129, 140, 248, 0.28);
+  --shadow-xs:    0 1px 2px rgba(0, 0, 0, 0.50);
+  --shadow-sm:    0 2px 10px rgba(0, 0, 0, 0.60), 0 1px 3px rgba(0, 0, 0, 0.40);
+  --shadow-md:    0 4px 20px rgba(0, 0, 0, 0.70), 0 2px 8px rgba(0, 0, 0, 0.50);
+  --shadow-lg:    0 8px 36px rgba(0, 0, 0, 0.80), 0 4px 12px rgba(0, 0, 0, 0.60);
+  --shadow-popup: 0 24px 70px rgba(0, 0, 0, 0.90), 0 8px 28px rgba(0, 0, 0, 0.70);
+  --shadow-glow:      0 0 0 3px rgba(129, 140, 248, 0.25);
+  --shadow-glow-pos:  0 0 0 3px rgba(52, 211, 153, 0.22);
+  --shadow-glow-neg:  0 0 0 3px rgba(248, 113, 113, 0.22);
 
   --shadow-panel: var(--shadow-sm);
   --shadow-popup-legacy: var(--shadow-popup);
@@ -90,7 +98,11 @@
 // ─── Global reset ─────────────────────────────────────────────────────────────
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { font-size: 16px; }
+html {
+  font-size: 16px;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
 
 body {
   background: $surface-base;
@@ -111,11 +123,9 @@ input, button, textarea, select { outline: none; }
 ::-webkit-scrollbar       { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: $chrome-mid; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: $text-tertiary; }
+::-webkit-scrollbar-thumb:hover { background: $chrome-bright; }
 
-
-// ─── Touch optimizations ──────────────────────────────────────────────────────
-// Removes the blue flash on tap on iOS/Android
+// ─── Touch ────────────────────────────────────────────────────────────────────
 * { -webkit-tap-highlight-color: transparent; }
 
 // ─── Global Button System ─────────────────────────────────────────────────────
@@ -124,8 +134,8 @@ input, button, textarea, select { outline: none; }
   align-items: center;
   justify-content: center;
   gap: 6px;
-  height: 34px;
-  padding: 0 14px;
+  height: 36px;
+  padding: 0 16px;
   font-family: $font-ui;
   font-size: 13px;
   font-weight: 500;
@@ -135,62 +145,65 @@ input, button, textarea, select { outline: none; }
   white-space: nowrap;
   user-select: none;
   text-decoration: none;
+  letter-spacing: -0.01em;
   transition:
-    background $motion-fast,
+    background   $motion-fast,
     border-color $motion-fast,
-    box-shadow $motion-fast,
-    transform $motion-fast,
-    color $motion-fast,
-    opacity $motion-fast;
+    box-shadow   $motion-fast,
+    transform    $motion-fast,
+    color        $motion-fast,
+    opacity      $motion-fast;
 
   &:focus-visible {
     box-shadow: $shadow-glow;
     outline: none;
   }
 
-  &:disabled,
-  &[disabled] {
-    opacity: 0.40;
+  &:disabled, &[disabled] {
+    opacity: 0.38;
     cursor: not-allowed;
     pointer-events: none;
   }
 }
 
 .btn-sm {
-  height: 28px;
-  padding: 0 10px;
+  height: 30px;
+  padding: 0 11px;
   font-size: 12px;
   border-radius: $radius-sm;
 }
 
 .btn-lg {
-  height: 40px;
-  padding: 0 18px;
+  height: 42px;
+  padding: 0 20px;
   font-size: 14px;
+  border-radius: $radius-lg;
 }
 
 .btn-xl {
-  height: 46px;
-  padding: 0 24px;
+  height: 48px;
+  padding: 0 26px;
   font-size: 15px;
+  font-weight: 600;
   border-radius: $radius-lg;
 }
 
 .btn-primary {
-  background: $accent;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
   color: #fff;
-  border-color: $accent;
+  border-color: transparent;
+  box-shadow: 0 2px 8px rgba(91, 95, 227, 0.30);
 
   &:hover:not(:disabled) {
-    background: $accent-hover;
-    border-color: $accent-hover;
+    filter: brightness(1.08);
     transform: translateY(-1px);
-    box-shadow: $shadow-md;
+    box-shadow: 0 4px 16px rgba(91, 95, 227, 0.40);
   }
 
   &:active:not(:disabled) {
     transform: translateY(0);
-    box-shadow: none;
+    box-shadow: 0 2px 6px rgba(91, 95, 227, 0.25);
+    filter: brightness(0.96);
   }
 }
 
@@ -206,6 +219,7 @@ input, button, textarea, select { outline: none; }
 
   &:active:not(:disabled) {
     background: $surface-raised;
+    transform: scale(0.98);
   }
 }
 
@@ -228,9 +242,11 @@ input, button, textarea, select { outline: none; }
   background: $accent-faint;
   color: $accent;
   border-color: transparent;
+  font-weight: 600;
 
   &:hover:not(:disabled) {
     background: $accent-glow;
+    box-shadow: $shadow-glow;
   }
 }
 
@@ -245,18 +261,61 @@ input, button, textarea, select { outline: none; }
   }
 }
 
-.btn-icon {
-  padding: 0;
-  width: 34px;
+.btn-pos {
+  background: $pos-bg;
+  color: $pos;
+  border-color: transparent;
+  font-weight: 600;
 
-  &.btn-sm {
-    width: 28px;
+  &:hover:not(:disabled) {
+    box-shadow: $shadow-glow-pos;
   }
 }
 
+.btn-neg {
+  background: $neg-bg;
+  color: $neg;
+  border-color: transparent;
+  font-weight: 600;
+
+  &:hover:not(:disabled) {
+    box-shadow: $shadow-glow-neg;
+  }
+}
+
+.btn-icon {
+  padding: 0;
+  width: 36px;
+
+  &.btn-sm  { width: 30px; }
+  &.btn-lg  { width: 42px; }
+}
+
+// ─── Input ────────────────────────────────────────────────────────────────────
+.input {
+  height: 36px;
+  padding: 0 12px;
+  background: $surface-panel;
+  border: 1px solid $chrome-mid;
+  border-radius: $radius-md;
+  color: $text-primary;
+  font-family: $font-ui;
+  font-size: 13px;
+  transition: border-color $motion-fast, box-shadow $motion-fast;
+
+  &:focus {
+    outline: none;
+    border-color: $accent;
+    box-shadow: $shadow-glow;
+  }
+
+  &::placeholder { color: $text-disabled; }
+  &:disabled { opacity: 0.45; }
+}
+
 // ─── Recharts global overrides ────────────────────────────────────────────────
-.recharts-cartesian-grid line { stroke: $chrome-dim !important; opacity: 0.4; }
-.recharts-text { fill: $text-secondary !important; font-size: 11px !important; font-family: $font-data !important; }
+.recharts-cartesian-grid line { stroke: $chrome-dim !important; opacity: 0.5; }
+.recharts-text                { fill: $text-tertiary !important; font-size: 11px !important; font-family: $font-data !important; }
 .recharts-tooltip-wrapper .recharts-default-tooltip {
   background: $surface-elevated !important;
   border: 1px solid $chrome-mid !important;

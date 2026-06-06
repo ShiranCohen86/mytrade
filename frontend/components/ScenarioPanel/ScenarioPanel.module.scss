@@ -4,7 +4,7 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: $space-2;
+  gap: $space-3;
 }
 
 .header {
@@ -17,10 +17,10 @@
 .title {
   font-family: $font-ui;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: $text-tertiary;
+  letter-spacing: 0.09em;
+  color: $text-disabled;
 }
 
 .current {
@@ -32,7 +32,7 @@
 
 .headerRow {
   display: grid;
-  grid-template-columns: 56px 1fr 52px 52px 1fr;
+  grid-template-columns: 60px 1fr 54px 54px 1fr;
   gap: $space-2;
   padding: 0 0 $space-2;
   border-bottom: 1px solid $chrome-mid;
@@ -41,20 +41,22 @@
 .colLabel {
   font-family: $font-ui;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: $text-tertiary;
+  letter-spacing: 0.09em;
+  color: $text-disabled;
 
   &:last-child { text-align: right; }
 }
 
+// ─── Scenario rows ────────────────────────────────────────────────────────────
+
 .row {
   display: grid;
-  grid-template-columns: 56px 1fr 52px 52px 1fr;
+  grid-template-columns: 60px 1fr 54px 54px 1fr;
   align-items: center;
   gap: $space-2;
-  padding: $space-2 0;
+  padding: $space-3 0;
   border-bottom: 1px solid $chrome-dim;
 
   &:last-child { border-bottom: none; }
@@ -73,21 +75,18 @@
 .scenarioLabel {
   font-family: $font-ui;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
-.bullish .icon,
-.bullish .scenarioLabel { color: $pos; }
-.neutral .icon,
-.neutral .scenarioLabel { color: $text-secondary; }
-.bearish .icon,
-.bearish .scenarioLabel { color: $neg; }
+.bullish .icon, .bullish .scenarioLabel { color: $pos; }
+.neutral .icon, .neutral .scenarioLabel { color: $text-secondary; }
+.bearish .icon, .bearish .scenarioLabel { color: $neg; }
 
 .target {
   font-family: $font-data;
-  font-size: 12px;
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
   color: $text-primary;
@@ -97,12 +96,16 @@
   font-family: $font-data;
   font-size: 11px;
   font-variant-numeric: tabular-nums;
-  font-weight: 600;
+  font-weight: 700;
   text-align: right;
+  padding: 2px 7px;
+  border-radius: $radius-pill;
 }
 
-.pos { color: $pos; }
-.neg { color: $neg; }
+.pos { color: $pos; background: $pos-bg; }
+.neg { color: $neg; background: $neg-bg; }
+
+// ─── Probability bar ─────────────────────────────────────────────────────────
 
 .probCell {
   display: flex;
@@ -112,17 +115,18 @@
 
 .probVal {
   font-family: $font-data;
-  font-size: 10px;
+  font-size: 11px;
   font-variant-numeric: tabular-nums;
+  font-weight: 600;
   color: $text-secondary;
-  min-width: 30px;
+  min-width: 32px;
   text-align: right;
   flex-shrink: 0;
 }
 
 .probBar {
   flex: 1;
-  height: 5px;
+  height: 6px;
   background: $chrome-dim;
   border-radius: $radius-pill;
   overflow: hidden;
@@ -134,7 +138,7 @@
   transition: width $motion-base;
 
   &.bullish { background: $pos; }
-  &.neutral { background: $text-tertiary; }
+  &.neutral { background: $chrome-bright; }
   &.bearish { background: $neg; }
 }
 
@@ -143,22 +147,20 @@
   color: $text-tertiary;
   font-size: 13px;
   text-align: center;
-  padding: $space-5 0;
+  padding: $space-6 0;
 }
 
-// ─── Responsive: collapse 5-column grid on smaller screens ───────────────────
+// ─── Responsive ───────────────────────────────────────────────────────────────
 @include below-sm {
-  .headerRow,
-  .row {
-    grid-template-columns: 1fr 52px 44px 1fr;
+  .headerRow, .row {
+    grid-template-columns: 1fr 54px 46px 1fr;
     gap: $space-1;
   }
 }
 
 @include below-xs {
-  .headerRow,
-  .row {
-    grid-template-columns: 1fr 52px 1fr;
+  .headerRow, .row {
+    grid-template-columns: 1fr 54px 1fr;
   }
   .move { display: none; }
 }

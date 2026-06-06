@@ -1,8 +1,5 @@
+import { fmtPrice } from '@/lib/format';
 import styles from './ScenarioPanel.module.scss';
-
-function fmtPrice(n) {
-  return n?.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
-}
 
 export function ScenarioPanel({ scenarios, currentPrice }) {
   if (!scenarios?.bullish) {

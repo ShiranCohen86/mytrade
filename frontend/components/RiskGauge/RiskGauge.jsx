@@ -12,9 +12,9 @@ const BREAKDOWN_TIPS = {
 };
 
 function gaugeColor(score) {
-  if (score >= 70) return '#e53e3e';
-  if (score >= 40) return '#f6c90e';
-  return '#00d97e';
+  if (score >= 70) return 'var(--neg)';
+  if (score >= 40) return 'var(--warn)';
+  return 'var(--pos)';
 }
 
 const BREAKDOWN_LABELS = {
@@ -59,8 +59,8 @@ export function RiskGauge({ riskScore, riskLabel, breakdown }) {
               isAnimationActive={false}
               strokeWidth={0}
             >
-              <Cell fill={color} />
-              <Cell fill="rgba(255,255,255,0.04)" />
+              <Cell style={{ fill: color }} />
+              <Cell style={{ fill: 'var(--chrome-dim)' }} />
             </Pie>
           </PieChart>
         </ResponsiveContainer>

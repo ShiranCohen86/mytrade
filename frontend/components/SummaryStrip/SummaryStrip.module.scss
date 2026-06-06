@@ -8,10 +8,11 @@
   align-items: center;
   gap: 0;
   padding: 0 $space-6;
-  height: 40px;
-  background: $surface-panel;
+  height: 44px;
+  background: $surface-glass;
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
   border-bottom: 1px solid $chrome-dim;
-  box-shadow: $shadow-xs;
   flex-shrink: 0;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -24,7 +25,7 @@
 
 .sep {
   width: 1px;
-  height: 14px;
+  height: 16px;
   background: $chrome-mid;
   margin: 0 $space-4;
   flex-shrink: 0;
@@ -42,10 +43,10 @@
 .cellLabel {
   font-family: $font-ui;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: $text-tertiary;
+  letter-spacing: 0.09em;
+  color: $text-disabled;
   white-space: nowrap;
 }
 
@@ -58,9 +59,6 @@
   white-space: nowrap;
 }
 
-.pos { color: $pos; }
-.neg { color: $neg; }
-
-.alert {
-  color: $warn;
-}
+.pos   { color: $pos; }
+.neg   { color: $neg; }
+.alert { color: $warn; }

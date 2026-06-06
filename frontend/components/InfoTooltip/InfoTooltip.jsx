@@ -12,11 +12,14 @@ export function InfoTooltip({ content, position = 'top' }) {
     const close = (e) => {
       if (ref.current && !ref.current.contains(e.target)) setOpen(false);
     };
+    const onKey = (e) => { if (e.key === 'Escape') setOpen(false); };
     document.addEventListener('mousedown', close);
     document.addEventListener('touchstart', close);
+    document.addEventListener('keydown', onKey);
     return () => {
       document.removeEventListener('mousedown', close);
       document.removeEventListener('touchstart', close);
+      document.removeEventListener('keydown', onKey);
     };
   }, [open]);
 

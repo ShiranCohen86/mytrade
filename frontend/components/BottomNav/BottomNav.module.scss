@@ -1,0 +1,93 @@
+@use '../../styles/variables' as *;
+
+.nav {
+  display: none;
+
+  @media (max-width: 640px) {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 110;
+    height: calc(64px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: $surface-glass;
+    backdrop-filter: blur(20px) saturate(1.6);
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
+    border-top: 1px solid $chrome-dim;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12);
+    align-items: stretch;
+
+    // Subtle gradient accent at top
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        var(--accent) 30%,
+        var(--accent-secondary) 70%,
+        transparent 100%
+      );
+      opacity: 0.30;
+    }
+  }
+}
+
+.item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: $text-tertiary;
+  text-decoration: none;
+  font-family: $font-ui;
+  transition: color $motion-fast, background $motion-fast;
+  position: relative;
+  min-height: 64px;
+  padding-bottom: 2px;
+
+  &:hover { color: $text-secondary; }
+
+  &:active {
+    background: $surface-raised;
+    transform: scale(0.95);
+  }
+}
+
+.itemActive {
+  color: $accent;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 25%;
+    right: 25%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+    border-radius: 0 0 $radius-pill $radius-pill;
+  }
+}
+
+.icon {
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}

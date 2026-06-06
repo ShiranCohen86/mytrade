@@ -15,10 +15,10 @@
 .title {
   font-family: $font-ui;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: $text-tertiary;
+  letter-spacing: 0.09em;
+  color: $text-disabled;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -29,14 +29,14 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  padding: 3px 8px;
-  border-radius: $radius-xs;
+  padding: 3px 10px;
+  border-radius: $radius-pill;
 }
 
-.low       { color: $text-secondary; background: $surface-raised; }
-.moderate  { color: $warn; background: $warn-bg; }
-.high      { color: $neg; background: $neg-bg; }
-.very_high { color: $neg; background: $neg-bg; }
+.low       { color: $text-secondary; background: $surface-raised; border: 1px solid $chrome-dim; }
+.moderate  { color: $warn; background: $warn-bg; border: 1px solid rgba(251, 191, 36, 0.20); }
+.high      { color: $neg;  background: $neg-bg;  border: 1px solid rgba(248, 113, 113, 0.20); }
+.very_high { color: $neg;  background: $neg-bg;  border: 1px solid rgba(248, 113, 113, 0.20); }
 
 .trackWrapper {
   position: relative;
@@ -47,7 +47,7 @@
 
 .track {
   flex: 1;
-  height: 6px;
+  height: 7px;
   background: $chrome-dim;
   border-radius: $radius-pill;
   overflow: hidden;
@@ -59,7 +59,7 @@
   transition: width $motion-base;
 }
 
-.fill_low       { background: $text-tertiary; }
+.fill_low       { background: $chrome-bright; }
 .fill_moderate  { background: $warn; }
 .fill_high      { background: $neg; }
 .fill_very_high { background: $neg; }
@@ -70,9 +70,17 @@
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   color: $text-primary;
-  min-width: 28px;
+  min-width: 30px;
   text-align: right;
   flex-shrink: 0;
+}
+
+.scale {
+  display: flex;
+  justify-content: space-between;
+  font-family: $font-ui;
+  font-size: 10px;
+  color: $text-disabled;
 }
 
 .guidance {
@@ -80,5 +88,5 @@
   font-size: 12px;
   color: $text-tertiary;
   font-style: italic;
-  line-height: 1.5;
+  line-height: 1.6;
 }

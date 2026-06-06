@@ -7,16 +7,17 @@
   font-family: $font-ui;
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  padding: 3px 10px;
+  padding: 4px 12px;
   border-radius: $radius-pill;
   white-space: nowrap;
+  transition: box-shadow $motion-fast;
 }
 
 .dot {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -24,17 +25,19 @@
 .open {
   color: $pos;
   background: $pos-bg;
+  border: 1px solid rgba(52, 211, 153, 0.20);
 
   .dot {
     background: $pos;
-    animation: pulse 2s ease-in-out infinite;
+    box-shadow: 0 0 6px var(--pos);
+    animation: pulse 2.2s ease-in-out infinite;
   }
 }
 
-.pre,
-.after {
+.pre, .after {
   color: $warn;
   background: $warn-bg;
+  border: 1px solid rgba(251, 191, 36, 0.20);
 
   .dot { background: $warn; }
 }
@@ -42,11 +45,12 @@
 .closed {
   color: $text-tertiary;
   background: $surface-raised;
+  border: 1px solid $chrome-dim;
 
   .dot { background: $text-tertiary; }
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.35; }
+  0%, 100% { opacity: 1;   box-shadow: 0 0 6px var(--pos); }
+  50%       { opacity: 0.4; box-shadow: 0 0 3px var(--pos); }
 }

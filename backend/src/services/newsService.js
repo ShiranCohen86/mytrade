@@ -2,7 +2,6 @@ const Parser = require('rss-parser');
 const Sentiment = require('sentiment');
 const axios = require('axios');
 const config = require('../config');
-const { News } = require('../db');
 const logger = require('../utils/logger');
 
 const rssParser = new Parser({ timeout: 4000 });
@@ -59,12 +58,7 @@ async function fetchFromNewsAPI(ticker) {
 // ─── Google News RSS provider ──────────────────────────────────────────────────
 
 async function fetchRSS(url) {
-  try {
-    return await rssParser.parseURL(url);
-  } catch {
-    await new Promise((r) => setTimeout(r, 500));
-    return rssParser.parseURL(url);
-  }
+  return rssParser.parseURL(url);
 }
 
 async function fetchFromRSS(ticker) {
@@ -87,58 +81,17 @@ async function fetchFromRSS(ticker) {
   });
 }
 
-// ─── Persistence helpers (MongoDB only) ───────────────────────────────────────
-
-async function saveToMongo(ticker, articles) {
-  if (!News) return;
-  try {
-    // Upsert by headline to avoid duplicates; TTL index on createdAt handles expiry
-    const ops = articles.map((a) => ({
-      updateOne: {
-        filter: { ticker: a.ticker, headline: a.headline },
-        update: { $setOnInsert: a },
-        upsert: true,
-      },
-    }));
-    if (ops.length > 0) await News.bulkWrite(ops, { ordered: false });
-  } catch (err) {
-    logger.warn('MongoDB write failed', { err: err.message });
-  }
-}
-
-async function loadFromMongo(ticker) {
-  if (!News) return null;
-  try {
-    const cutoff = new Date(Date.now() - CACHE_TTL_MS);
-    const docs = await News.find({ ticker: ticker.toUpperCase(), publishedAt: { $gte: cutoff } })
-      .sort({ publishedAt: -1 })
-      .limit(10)
-      .lean();
-    return docs.length >= 3 ? docs : null; // Only use DB cache if we have meaningful data
-  } catch {
-    return null;
-  }
-}
-
 // ─── Main fetch function ───────────────────────────────────────────────────────
 
 async function fetchAndStoreNews(ticker) {
   const t = ticker.toUpperCase();
 
-  // 1. In-memory cache
+  // In-memory cache
   const cached = memCache.get(t);
   if (cached && Date.now() - cached.fetchedAt < CACHE_TTL_MS) {
     return cached.data;
   }
 
-  // 2. MongoDB cache (if available and fresh)
-  const fromDB = await loadFromMongo(t);
-  if (fromDB) {
-    memCache.set(t, { data: fromDB, fetchedAt: Date.now() });
-    return fromDB;
-  }
-
-  // 3. Fetch fresh from provider
   let articles = [];
   const useNewsAPI = config.NEWS_API_KEY && config.NEWS_PROVIDER === 'newsapi';
 
@@ -174,7 +127,6 @@ async function fetchAndStoreNews(ticker) {
 
   if (articles.length > 0) {
     memCache.set(t, { data: articles, fetchedAt: Date.now() });
-    await saveToMongo(t, articles);
   }
 
   return articles;

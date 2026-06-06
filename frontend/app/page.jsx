@@ -3,6 +3,7 @@ import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useStocks } from '@/hooks/useStocks';
 import { WatchlistTable } from '@/components/WatchlistTable/WatchlistTable';
 import { SummaryStrip } from '@/components/SummaryStrip/SummaryStrip';
+import { WatchlistSummary } from '@/components/WatchlistSummary/WatchlistSummary';
 import { AddTickerForm } from '@/components/AddTickerForm/AddTickerForm';
 import { MarketRegimeBadge } from '@/components/MarketRegimeBadge/MarketRegimeBadge';
 import { EarningsCalendar } from '@/components/EarningsCalendar/EarningsCalendar';
@@ -186,6 +187,7 @@ export default function DashboardPage() {
             onUpdateNote={updateNote}
             onReorder={reorder}
           />
+          <WatchlistSummary stocks={stocks} />
         </>
       )}
     </div>

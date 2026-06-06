@@ -11,20 +11,8 @@ import { NewsPanel } from '@/components/NewsPanel/NewsPanel';
 import { HeroBar } from '@/components/HeroBar/HeroBar';
 import { StatsBar } from '@/components/StatsBar/StatsBar';
 import { PanelCard } from '@/components/PanelCard/PanelCard';
+import { fmtPrice, fmtBig } from '@/lib/format';
 import styles from './page.module.scss';
-
-function fmtPrice(n) {
-  if (n == null) return '—';
-  return n.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
-}
-
-function fmtBig(n) {
-  if (n == null || n === 0) return '—';
-  if (n >= 1e12) return `$${(n / 1e12).toFixed(2)}T`;
-  if (n >= 1e9) return `$${(n / 1e9).toFixed(2)}B`;
-  if (n >= 1e6) return `$${(n / 1e6).toFixed(2)}M`;
-  return `$${n.toLocaleString()}`;
-}
 
 function pctChange(historical, days) {
   if (!historical || historical.length < days + 1) return null;

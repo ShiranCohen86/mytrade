@@ -1,6 +1,8 @@
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as *;
 
+// ─── Top Bar ──────────────────────────────────────────────────────────────────
+
 .topBar {
   grid-area: topbar;
   display: flex;
@@ -9,12 +11,35 @@
   padding: 0 $space-5;
   padding-top: env(safe-area-inset-top, 0px);
   height: calc(60px + env(safe-area-inset-top, 0px));
-  background: $surface-panel;
+  background: $surface-glass;
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
   border-bottom: 1px solid $chrome-dim;
   z-index: 100;
   flex-shrink: 0;
-  box-shadow: $shadow-xs;
+  box-shadow: $shadow-sm;
+  position: relative;
+
+  // Subtle gradient accent line at bottom
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      var(--accent) 30%,
+      var(--accent-secondary) 70%,
+      transparent 100%
+    );
+    opacity: 0.35;
+    pointer-events: none;
+  }
 }
+
+// ─── Sections ─────────────────────────────────────────────────────────────────
 
 .left {
   display: flex;
@@ -28,12 +53,13 @@
   align-items: center;
   justify-content: center;
   flex: 1;
+  padding: 0 $space-3;
 }
 
 .right {
   display: flex;
   align-items: center;
-  gap: $space-3;
+  gap: $space-2;
   min-width: 0;
 }
 
@@ -43,27 +69,35 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 7px;
-  border-radius: $radius-sm;
+  padding: 8px;
+  border-radius: $radius-md;
   flex-shrink: 0;
-  transition: background $motion-fast;
   min-width: 44px;
   min-height: 44px;
   align-items: center;
   justify-content: center;
+  transition: background $motion-fast;
+  color: $text-tertiary;
 
-  &:hover { background: $surface-raised; }
+  &:hover {
+    background: $surface-raised;
+    color: $text-primary;
+
+    span { background: currentColor; }
+  }
 
   span {
     display: block;
     width: 16px;
     height: 1.5px;
     background: $text-tertiary;
-    border-radius: 1px;
-    transition: background $motion-fast;
+    border-radius: 2px;
+    transition: background $motion-fast, width $motion-fast;
+
+    &:nth-child(2) { width: 11px; }
   }
 
-  &:hover span { background: $text-primary; }
+  &:hover span:nth-child(2) { width: 16px; }
 }
 
 // ─── Brand ────────────────────────────────────────────────────────────────────
@@ -73,16 +107,23 @@
   align-items: center;
   gap: $space-2;
   text-decoration: none;
+  padding: 4px 6px;
+  border-radius: $radius-md;
+  transition: background $motion-fast;
 
-  &:hover .brandName { color: $accent-text; }
+  &:hover {
+    background: $surface-raised;
+
+    .brandName { color: $accent; }
+  }
 }
 
 .brandMark {
-  width: 30px;
-  height: 30px;
-  border-radius: $radius-md;
+  width: 28px;
+  height: 28px;
+  border-radius: $radius-sm;
   flex-shrink: 0;
-  box-shadow: $shadow-xs;
+  box-shadow: $shadow-sm;
   display: block;
   object-fit: contain;
 }
@@ -92,26 +133,24 @@
   font-size: 15px;
   font-weight: 700;
   color: $text-primary;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   transition: color $motion-fast;
 
-  @media (max-width: 640px) {
-    display: none;
-  }
+  @media (max-width: $bp-sm) { display: none; }
 }
 
 // ─── Theme toggle ─────────────────────────────────────────────────────────────
 
 .themeToggle {
-  font-size: 15px;
-  width: 32px;
-  height: 32px;
+  font-size: 14px;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: $radius-md;
   color: $text-tertiary;
-  transition: background $motion-fast, color $motion-fast;
+  transition: background $motion-fast, color $motion-fast, transform $motion-fast;
   flex-shrink: 0;
   position: relative;
 
@@ -129,6 +168,7 @@
   &:hover {
     background: $surface-raised;
     color: $text-primary;
+    transform: rotate(12deg);
   }
 }
 
@@ -139,10 +179,12 @@
   font-size: 12px;
   font-variant-numeric: tabular-nums;
   color: $text-tertiary;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
   white-space: nowrap;
+  padding: 3px 8px;
+  background: $surface-raised;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-sm;
 
-  @media (max-width: 640px) {
-    display: none;
-  }
+  @include below-sm { display: none; }
 }

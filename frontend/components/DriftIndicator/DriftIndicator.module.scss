@@ -13,17 +13,34 @@
   flex-wrap: wrap;
   padding: $space-3 $space-4;
   background: $surface-raised;
-  border-radius: $radius-md;
+  border-radius: $radius-lg;
+  border: 1px solid $chrome-dim;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-2;
 }
 
 .label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: $font-ui;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: $text-disabled;
+  flex-shrink: 0;
+}
+
+.subLabel {
   font-family: $font-ui;
   font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
   color: $text-tertiary;
-  flex-shrink: 0;
 }
 
 .arrow {
@@ -43,19 +60,15 @@
 .percent {
   font-family: $font-data;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
+  padding: 2px 8px;
+  border-radius: $radius-pill;
 }
 
-.period {
-  font-family: $font-ui;
-  font-size: 11px;
-  color: $text-tertiary;
-}
-
-.rising  { color: $pos; }
-.flat    { color: $text-secondary; }
-.falling { color: $neg; }
+.rising  { color: $pos; .percent { background: $pos-bg; color: $pos; } }
+.flat    { color: $text-secondary; .percent { background: $surface-elevated; color: $text-secondary; } }
+.falling { color: $neg; .percent { background: $neg-bg; color: $neg; } }
 
 .warning {
   display: flex;
@@ -66,7 +79,7 @@
   color: $warn;
   padding: $space-3 $space-4;
   background: $warn-bg;
-  border-radius: $radius-sm;
-  border: 1px solid $warn;
-  line-height: 1.5;
+  border-radius: $radius-md;
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  line-height: 1.55;
 }

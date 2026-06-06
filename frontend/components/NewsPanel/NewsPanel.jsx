@@ -1,14 +1,8 @@
 
 import { useState, useEffect } from 'react';
 import { getNews } from '@/lib/apiClient';
+import { fmtRelativeTime } from '@/lib/format';
 import styles from './NewsPanel.module.scss';
-
-function timeAgo(dateStr) {
-  const diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  return `${Math.floor(diff / 86400)}d ago`;
-}
 
 function sentDotClass(label) {
   if (label === 'positive') return styles.sent_positive;
@@ -57,8 +51,8 @@ export function NewsPanel({ ticker }) {
 
       {!isLoading && !error && news.length > 0 && (
         <ul className={styles.list}>
-          {news.map((item, i) => (
-            <li key={i} className={styles.item}>
+          {news.map((item) => (
+            <li key={item.url || item.headline} className={styles.item}>
               <span className={`${styles.sentDot} ${sentDotClass(item.sentiment.label)}`} />
               <div className={styles.itemContent}>
                 <a
@@ -73,7 +67,7 @@ export function NewsPanel({ ticker }) {
                   {item.isGuidanceRelated && (
                     <span className={styles.guidanceBadge}>Guidance</span>
                   )}
-                  <span className={styles.time}>{timeAgo(item.publishedAt)}</span>
+                  <span className={styles.time}>{fmtRelativeTime(item.publishedAt)}</span>
                 </div>
               </div>
             </li>

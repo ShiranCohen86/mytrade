@@ -7,7 +7,7 @@ export function StatsBar({ items }) {
   return (
     <div className={styles.bar} role="region" aria-label="Stock statistics">
       {visible.map((item, i) => (
-        <div key={i} className={styles.item}>
+        <div key={item.label} className={styles.item}>
           <span className={styles.label}>{item.label}</span>
           <span className={`${styles.value} ${item.highlight ? styles[item.highlight] : ''}`}>
             {item.value}

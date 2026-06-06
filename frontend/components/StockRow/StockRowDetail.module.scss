@@ -11,16 +11,20 @@
     flex-direction: column;
     gap: $space-4;
   }
+
+  @media (max-width: 640px) {
+    padding: $space-4 $space-4 $space-4 $space-4;
+  }
 }
 
 .sectionLabel {
   display: block;
   font-family: $font-ui;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: $text-tertiary;
+  letter-spacing: 0.09em;
+  color: $text-disabled;
   margin-bottom: $space-3;
 }
 
@@ -33,7 +37,7 @@
 
 .breakdownRow {
   display: grid;
-  grid-template-columns: 68px 1fr 40px;
+  grid-template-columns: 72px 1fr 42px;
   align-items: center;
   gap: $space-2;
   margin-bottom: $space-2;
@@ -47,7 +51,7 @@
 }
 
 .bBar {
-  height: 4px;
+  height: 5px;
   background: $chrome-dim;
   border-radius: $radius-pill;
   overflow: hidden;
@@ -55,7 +59,7 @@
 
 .bFill {
   height: 100%;
-  background: $neg;
+  background: linear-gradient(90deg, var(--warn), var(--neg));
   border-radius: $radius-pill;
   transition: width $motion-base;
 }
@@ -72,8 +76,13 @@
 .stnTag {
   font-family: $font-ui;
   font-size: 11px;
+  font-weight: 600;
   color: $warn;
   margin-top: $space-2;
+  padding: 2px 8px;
+  background: $warn-bg;
+  border-radius: $radius-pill;
+  display: inline-block;
 }
 
 // ─── Forms ────────────────────────────────────────────────────────────────────
@@ -105,11 +114,13 @@
 .pnlVal {
   font-family: $font-data;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: $radius-pill;
 }
 
-.pos { color: $pos; }
-.neg { color: $neg; }
+.pos { color: $pos; background: $pos-bg; }
+.neg { color: $neg; background: $neg-bg; }
 
 .inlineForm {
   display: flex;
@@ -122,7 +133,7 @@
   font-size: 12px;
   background: $surface-panel;
   border: 1px solid $chrome-mid;
-  border-radius: $radius-sm;
+  border-radius: $radius-md;
   color: $text-primary;
   padding: 4px $space-2;
   height: 32px;
@@ -132,13 +143,14 @@
   &:focus {
     border-color: $accent;
     box-shadow: $shadow-glow;
+    outline: none;
   }
 
   &::placeholder { color: $text-disabled; }
 
   &::-webkit-outer-spin-button,
   &::-webkit-inner-spin-button { -webkit-appearance: none; }
-  -moz-appearance: textfield;
+  &[type=number] { -moz-appearance: textfield; }
 }
 
 .select {
@@ -146,28 +158,32 @@
   font-size: 12px;
   background: $surface-panel;
   border: 1px solid $chrome-mid;
-  border-radius: $radius-sm;
+  border-radius: $radius-md;
   color: $text-primary;
   padding: 4px $space-2;
   height: 32px;
   transition: border-color $motion-fast;
 
-  &:focus { border-color: $accent; }
+  &:focus { border-color: $accent; outline: none; }
 }
 
 .submitBtn {
   font-family: $font-ui;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   color: $accent;
   padding: 4px 10px;
-  height: 28px;
-  border-radius: $radius-sm;
+  height: 30px;
+  border-radius: $radius-md;
   border: 1px solid $accent-faint;
   background: $accent-faint;
-  transition: background $motion-fast, border-color $motion-fast;
+  transition: background $motion-fast, border-color $motion-fast, box-shadow $motion-fast;
 
-  &:hover:not(:disabled) { background: $accent-glow; border-color: $accent; }
+  &:hover:not(:disabled) {
+    background: $accent-glow;
+    border-color: $accent;
+    box-shadow: $shadow-glow;
+  }
   &:disabled { opacity: 0.4; pointer-events: none; }
 }
 
@@ -176,8 +192,8 @@
   font-size: 11px;
   color: $text-tertiary;
   padding: 4px 8px;
-  height: 28px;
-  border-radius: $radius-sm;
+  height: 30px;
+  border-radius: $radius-md;
   transition: color $motion-fast, background $motion-fast;
 
   &:hover { color: $text-secondary; background: $surface-hover; }
@@ -199,12 +215,13 @@
   resize: vertical;
   width: 100%;
   min-width: 200px;
-  line-height: 1.5;
+  line-height: 1.55;
   transition: border-color $motion-fast, box-shadow $motion-fast;
 
   &:focus {
     border-color: $accent;
     box-shadow: $shadow-glow;
+    outline: none;
   }
 
   &::placeholder { color: $text-disabled; }
@@ -239,20 +256,22 @@
 .detailLink {
   font-family: $font-ui;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   color: $accent-text;
   text-decoration: none;
-  padding: 4px 10px;
-  height: 28px;
+  padding: 4px 12px;
+  height: 30px;
   display: inline-flex;
   align-items: center;
-  border-radius: $radius-sm;
-  border: 1px solid $chrome-mid;
-  transition: background $motion-fast, border-color $motion-fast;
+  border-radius: $radius-md;
+  border: 1px solid $accent-faint;
+  background: $accent-faint;
+  transition: background $motion-fast, border-color $motion-fast, box-shadow $motion-fast;
 
   &:hover {
-    background: $accent-faint;
+    background: $accent-glow;
     border-color: $accent;
+    box-shadow: $shadow-glow;
   }
 }
 
@@ -260,9 +279,9 @@
   font-family: $font-ui;
   font-size: 12px;
   color: $text-tertiary;
-  padding: 4px 10px;
-  height: 28px;
-  border-radius: $radius-sm;
+  padding: 4px 12px;
+  height: 30px;
+  border-radius: $radius-md;
   border: 1px solid transparent;
   transition: color $motion-fast, background $motion-fast, border-color $motion-fast;
 

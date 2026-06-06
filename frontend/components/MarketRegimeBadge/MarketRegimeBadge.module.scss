@@ -5,17 +5,20 @@
   align-items: center;
   gap: 5px;
   font-family: $font-ui;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
-  padding: 3px 8px;
-  border-radius: $radius-xs;
+  padding: 4px 10px;
+  border-radius: $radius-pill;
+  transition: box-shadow $motion-fast;
 
   &.sm {
-    font-size: 10px;
-    padding: 2px 6px;
+    font-size: 9px;
+    padding: 3px 8px;
   }
+
+  &:hover { box-shadow: $shadow-xs; }
 }
 
 .icon {
@@ -23,22 +26,26 @@
   flex-shrink: 0;
 }
 
-.bullish  {
+.bullish {
   color: $pos;
   background: $pos-bg;
+  border: 1px solid rgba(52, 211, 153, 0.20);
 }
 
-.bearish  {
+.bearish {
   color: $neg;
   background: $neg-bg;
+  border: 1px solid rgba(248, 113, 113, 0.20);
 }
 
 .volatile {
   color: $warn;
   background: $warn-bg;
+  border: 1px solid rgba(251, 191, 36, 0.20);
 }
 
-.neutral  {
+.neutral {
   color: $text-secondary;
   background: $surface-raised;
+  border: 1px solid $chrome-dim;
 }

@@ -22,21 +22,30 @@
 }
 
 .spinner {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border: 2px solid $chrome-mid;
   border-top-color: $accent;
   border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+  animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .backLink {
   font-size: 12px;
+  font-weight: 500;
   color: $accent;
   text-decoration: none;
-  &:hover { text-decoration: underline; }
+  padding: 4px 8px;
+  border-radius: $radius-sm;
+  border: 1px solid $accent-faint;
+  background: $accent-faint;
+  transition: background $motion-fast;
+
+  &:hover {
+    background: $accent-glow;
+  }
 }
 
 // ─── Regime / meta row ───────────────────────────────────────────────────────
@@ -44,39 +53,52 @@
 .regimeRow {
   display: flex;
   align-items: center;
-  gap: $space-4;
-  padding: $space-2 $space-6;
+  gap: $space-3;
+  padding: $space-3 $space-6;
   background: $surface-base;
   border-bottom: 1px solid $chrome-dim;
   flex-shrink: 0;
+  flex-wrap: wrap;
+
+  @media (max-width: 640px) {
+    padding: $space-3 $space-4;
+    gap: $space-2;
+  }
 }
 
 .analyzedAt {
   font-family: $font-ui;
-  font-size: 10px;
-  color: $text-tertiary;
+  font-size: 11px;
+  color: $text-disabled;
 }
 
 // ─── 3-column detail grid ────────────────────────────────────────────────────
 
 .detailGrid {
   display: grid;
-  grid-template-columns: 1fr 280px 260px;
+  grid-template-columns: 1fr 288px 268px;
   grid-template-rows: 1fr;
-  gap: $space-4;
-  padding: $space-4 $space-6;
+  gap: $space-5;
+  padding: $space-5 $space-6;
   flex: 1;
   min-height: 0;
   align-items: start;
 
   @media (max-width: 1100px) {
-    grid-template-columns: 1fr 280px;
+    grid-template-columns: 1fr 288px;
     .rightCol { grid-column: 1 / -1; }
   }
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
+    gap: $space-4;
+    padding: $space-4;
     .midCol, .rightCol { grid-column: 1; }
+  }
+
+  @media (max-width: 640px) {
+    padding: $space-3;
+    gap: $space-3;
   }
 }
 
@@ -102,12 +124,12 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
-  padding: 3px 8px;
-  border-radius: $radius-sm;
+  padding: 3px 10px;
+  border-radius: $radius-pill;
 }
 
 .sent_positive { color: $pos; background: $pos-bg; }
-.sent_neutral  { color: $text-secondary; background: $chrome-mid; }
+.sent_neutral  { color: $text-secondary; background: $surface-raised; }
 .sent_negative { color: $neg; background: $neg-bg; }
 
 .sentimentMeta {

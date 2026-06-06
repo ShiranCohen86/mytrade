@@ -10,33 +10,38 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
   font-family: $font-ui;
   font-size: 10px;
   font-style: italic;
   color: $text-tertiary;
-  background: none;
-  border: none;
+  background: $surface-raised;
+  border: 1px solid $chrome-dim;
+  border-radius: 50%;
   padding: 0;
   cursor: help;
-  transition: color $motion-fast;
+  transition: color $motion-fast, border-color $motion-fast, background $motion-fast;
   line-height: 1;
 
-  &:hover { color: $accent; }
+  &:hover {
+    color: $accent;
+    border-color: $accent-faint;
+    background: $accent-dim;
+  }
 }
 
 .tooltip {
   position: absolute;
   z-index: 200;
-  width: 220px;
+  width: 230px;
   background: $surface-elevated;
   border: 1px solid $chrome-mid;
-  border-radius: $radius-md;
+  border-radius: $radius-lg;
   padding: $space-3 $space-4;
   font-family: $font-ui;
   font-size: 12px;
-  line-height: 1.6;
+  line-height: 1.65;
   color: $text-secondary;
   box-shadow: $shadow-popup;
   pointer-events: none;

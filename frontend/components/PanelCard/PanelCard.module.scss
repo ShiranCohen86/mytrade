@@ -3,9 +3,12 @@
 .panel {
   background: $surface-panel;
   border: 1px solid $chrome-dim;
-  border-radius: $radius-lg;
+  border-radius: $radius-xl;
   box-shadow: $shadow-sm;
   overflow: hidden;
+  transition: box-shadow $motion-fast;
+
+  &:hover { box-shadow: $shadow-md; }
 }
 
 .header {
@@ -14,14 +17,18 @@
   justify-content: space-between;
   padding: $space-4 $space-5;
   border-bottom: 1px solid $chrome-dim;
+  background: $surface-raised;
 }
 
 .title {
   font-family: $font-ui;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
-  color: $text-secondary;
-  letter-spacing: 0.01em;
+  color: $text-primary;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: $space-2;
 }
 
 .actions {

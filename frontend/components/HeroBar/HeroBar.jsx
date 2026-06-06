@@ -1,14 +1,10 @@
 import { Link } from 'react-router-dom';
+import { fmtPrice } from '@/lib/format';
 import styles from './HeroBar.module.scss';
 
 export function HeroBar({ ticker, name, sector, price, change, changePercent, onRefresh, isRefreshing }) {
   const pct = changePercent ?? 0;
   const isPos = pct >= 0;
-
-  const fmtPrice = (n) => {
-    if (n == null) return '—';
-    return n.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
-  };
 
   return (
     <div className={styles.hero}>

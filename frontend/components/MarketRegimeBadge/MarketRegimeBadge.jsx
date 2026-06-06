@@ -19,7 +19,7 @@ const LEGEND = 'BULLISH: SPY & QQQ both above their 50-day and 200-day averages.
 
 export function MarketRegimeBadge({ regime, size = 'md' }) {
   return (
-    <span className={`${styles.badge} ${styles[regime.toLowerCase()]} ${styles[size]}`}>
+    <span className={`${styles.badge} ${styles[regime.toLowerCase()]} ${size === 'sm' ? styles.sm : ''}`}>
       <span className={styles.icon}>{ICONS[regime]}</span>
       {LABELS[regime]}
       <InfoTooltip content={LEGEND} position="bottom" />

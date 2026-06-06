@@ -12,7 +12,7 @@
   font-family: $font-ui;
   font-size: 13px;
   color: $text-secondary;
-  padding: $space-4 0;
+  padding: $space-5 0;
   text-align: center;
 }
 
@@ -33,6 +33,7 @@
   gap: $space-3;
   padding: $space-4 0;
   border-bottom: 1px solid $chrome-dim;
+  transition: background $motion-fast;
 
   &:last-child {
     border-bottom: none;
@@ -41,15 +42,15 @@
 }
 
 .sentDot {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
   margin-top: 5px;
 }
 
-.sent_positive { background: $pos; }
-.sent_negative { background: $neg; }
+.sent_positive { background: $pos; box-shadow: 0 0 6px var(--pos); }
+.sent_negative { background: $neg; box-shadow: 0 0 6px var(--neg); }
 .sent_neutral  { background: $text-disabled; }
 
 .itemContent {
@@ -64,7 +65,7 @@
   font-size: 13px;
   font-weight: 500;
   color: $text-primary;
-  line-height: 1.5;
+  line-height: 1.55;
   text-decoration: none;
   transition: color $motion-fast;
   display: block;
@@ -82,13 +83,8 @@
 .time {
   font-family: $font-data;
   font-size: 11px;
-  color: $text-tertiary;
-}
-
-.source {
-  font-family: $font-ui;
-  font-size: 11px;
-  color: $text-tertiary;
+  color: $text-disabled;
+  font-variant-numeric: tabular-nums;
 }
 
 .guidanceBadge {
@@ -97,12 +93,9 @@
   font-weight: 700;
   color: $warn;
   letter-spacing: 0.06em;
-  padding: 2px 6px;
-  border: 1px solid $warn;
-  border-radius: $radius-xs;
+  padding: 2px 7px;
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  border-radius: $radius-pill;
   background: $warn-bg;
 }
 
-.header,
-.title,
-.sentiment { display: none; }

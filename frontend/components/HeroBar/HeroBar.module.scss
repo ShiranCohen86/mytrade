@@ -4,17 +4,35 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 $space-6;
-  height: 60px;
+  padding: $space-5 $space-6;
+  min-height: 72px;
   background: $surface-panel;
   border-bottom: 1px solid $chrome-dim;
   flex-shrink: 0;
-  gap: $space-4;
+  gap: $space-5;
   flex-wrap: wrap;
   box-shadow: $shadow-xs;
+  position: relative;
+
+  // Subtle gradient accent strip at bottom
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      var(--accent) 30%,
+      var(--accent-secondary) 70%,
+      transparent 100%
+    );
+    opacity: 0.20;
+  }
 
   @media (max-width: 640px) {
-    height: auto;
+    min-height: auto;
     padding: $space-4;
   }
 }
@@ -39,20 +57,22 @@
   text-decoration: none;
   white-space: nowrap;
   flex-shrink: 0;
-  padding: 4px 8px;
-  border-radius: $radius-sm;
-  transition: color $motion-fast, background $motion-fast;
+  padding: 6px 10px;
+  border-radius: $radius-md;
+  border: 1px solid $chrome-dim;
+  transition: color $motion-fast, background $motion-fast, border-color $motion-fast;
 
   &:hover {
     color: $text-primary;
     background: $surface-raised;
+    border-color: $chrome-mid;
   }
 }
 
 .identity {
   display: flex;
   align-items: center;
-  gap: $space-2;
+  gap: $space-3;
   min-width: 0;
   flex-wrap: nowrap;
   overflow: hidden;
@@ -61,20 +81,24 @@
 .sep {
   color: $chrome-bright;
   flex-shrink: 0;
+  font-size: 18px;
+  font-weight: 200;
 }
 
 .ticker {
   font-family: $font-data;
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   color: $accent-text;
   flex-shrink: 0;
+  line-height: 1;
 }
 
 .name {
   font-family: $font-ui;
   font-size: 14px;
+  font-weight: 500;
   color: $text-secondary;
   white-space: nowrap;
   overflow: hidden;
@@ -83,10 +107,16 @@
 
 .sector {
   font-family: $font-ui;
-  font-size: 12px;
+  font-size: 11px;
+  font-weight: 600;
   color: $text-tertiary;
   white-space: nowrap;
   flex-shrink: 0;
+  background: $surface-raised;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-pill;
+  padding: 2px 8px;
+  letter-spacing: 0.02em;
 
   @media (max-width: 768px) { display: none; }
 }
@@ -96,17 +126,18 @@
 .right {
   display: flex;
   align-items: center;
-  gap: $space-4;
+  gap: $space-5;
   flex-shrink: 0;
 }
 
 .price {
   font-family: $font-data;
-  font-size: 22px;
+  font-size: 30px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   color: $text-primary;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  line-height: 1;
 }
 
 .change {
@@ -114,14 +145,15 @@
   font-size: 14px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  padding: 3px 8px;
-  border-radius: $radius-xs;
+  padding: 3px 10px;
+  border-radius: $radius-pill;
 }
 
 .changeAbs {
-  font-size: 11px;
-  font-weight: 400;
-  opacity: 0.8;
+  font-family: $font-data;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: $text-tertiary;
 }
 
 .pos { color: $pos; background: $pos-bg; }
@@ -136,8 +168,8 @@
   font-weight: 500;
   color: $text-secondary;
   padding: 0 $space-3;
-  height: 32px;
-  border-radius: $radius-sm;
+  height: 34px;
+  border-radius: $radius-md;
   border: 1px solid $chrome-mid;
   background: $surface-raised;
   transition: background $motion-fast, color $motion-fast, border-color $motion-fast;

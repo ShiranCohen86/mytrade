@@ -36,6 +36,7 @@
   font-family: $font-ui;
   font-size: 13px;
   color: $text-tertiary;
-  border: 2px dashed $chrome-mid;
-  border-radius: $radius-md;
+  border: 1px dashed $chrome-mid;
+  border-radius: $radius-lg;
+  background: $surface-raised;
 }

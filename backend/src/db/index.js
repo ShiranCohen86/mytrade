@@ -6,18 +6,16 @@ const isMongoConfigured =
   (config.MONGO_URI.startsWith('mongodb://') ||
     config.MONGO_URI.startsWith('mongodb+srv://'));
 
-let Stock, User, News, mode;
+let Stock, User, mode;
 
 if (isMongoConfigured) {
   Stock = require('../models/Stock');
   User = require('../models/User');
-  News = require('../models/News');
   mode = 'mongo';
 } else {
   const local = require('./localStore');
   Stock = local.Stock;
   User = local.User;
-  News = null; // News is MongoDB-only; in local mode news stays in-memory
   mode = 'local';
 }
 
@@ -50,4 +48,4 @@ async function connect() {
   }
 }
 
-module.exports = { Stock, User, News, connect, mode };
+module.exports = { Stock, User, connect, mode };

@@ -27,16 +27,22 @@ export function useStocks() {
 
   const load = useCallback(async () => {
     try {
-      const [data, port, alerts, stockNotes] = await Promise.all([getStocks(), getPortfolio(), getAlerts(), getNotes()]);
-      setStocks(data);
-      setPortfolio(port);
-      setPriceAlerts(alerts);
-      setNotes(stockNotes);
-      setIsConnected(true);
-      setError(null);
-    } catch (err) {
-      setIsConnected(false);
-      setError(err instanceof Error ? err.message : 'Failed to load stocks');
+      const [stocksResult, portResult, alertsResult, notesResult] = await Promise.allSettled([
+        getStocks(), getPortfolio(), getAlerts(), getNotes(),
+      ]);
+
+      if (stocksResult.status === 'fulfilled') {
+        setStocks(stocksResult.value);
+        setIsConnected(true);
+        setError(null);
+      } else {
+        setIsConnected(false);
+        setError(stocksResult.reason instanceof Error ? stocksResult.reason.message : 'Failed to load stocks');
+      }
+
+      if (portResult.status === 'fulfilled') setPortfolio(portResult.value);
+      if (alertsResult.status === 'fulfilled') setPriceAlerts(alertsResult.value);
+      if (notesResult.status === 'fulfilled') setNotes(notesResult.value);
     } finally {
       setIsLoading(false);
     }

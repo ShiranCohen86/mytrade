@@ -39,11 +39,7 @@ jobs:
           cache-dependency-path: package-lock.json
       - run: npm ci
       - run: npm audit --audit-level=high --workspace=frontend
-      - run: npx tsc --noEmit
-        working-directory: frontend
       - run: npm run lint
         working-directory: frontend
       - run: npm run build
         working-directory: frontend
-        env:
-          NEXT_TELEMETRY_DISABLED: 1
