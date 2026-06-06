@@ -9,6 +9,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   width: 100%;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 
   &::-webkit-scrollbar       { width: 3px; }
   &::-webkit-scrollbar-track { background: transparent; }
@@ -38,14 +39,15 @@
   .sidebar {
     position: fixed;
     left: 0;
-    top: 60px;
-    height: calc(100vh - 60px);
+    top: calc(60px + env(safe-area-inset-top, 0px));
+    height: calc(100dvh - 60px - env(safe-area-inset-top, 0px));
     width: 232px;
     z-index: 100;
     transform: translateX(-100%);
     transition: transform $motion-base;
     box-shadow: $shadow-lg;
     border-radius: 0 $radius-xl $radius-xl 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   .sidebar.mobileOpen {

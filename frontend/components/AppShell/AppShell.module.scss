@@ -2,12 +2,12 @@
 
 .shell {
   display: grid;
-  grid-template-rows: 60px 1fr;
+  grid-template-rows: calc(60px + env(safe-area-inset-top, 0px)) 1fr;
   grid-template-columns: 232px 1fr;
   grid-template-areas:
     'topbar  topbar'
     'sidebar content';
-  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   background: $surface-base;
 }
@@ -53,7 +53,7 @@
   display: none;
   position: fixed;
   inset: 0;
-  top: 60px;
+  top: calc(60px + env(safe-area-inset-top, 0px));
   background: var(--surface-overlay);
   z-index: 90;
   backdrop-filter: blur(4px);

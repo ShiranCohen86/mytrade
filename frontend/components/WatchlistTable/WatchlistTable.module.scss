@@ -1,32 +1,50 @@
 @use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
 
-// Column widths must mirror StockRow.module.scss $cols grid
+// Column tracks per breakpoint — must mirror StockRow.module.scss
 // drag / ticker / name / price / chg% / pnl / risk / expect / regime / earnings / spark / actions
-$cols: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
+$cols-desktop: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
+$cols-lg:      20px 52px 1fr 100px 72px 64px 46px 72px 88px 32px;   // –spark –earnings
+$cols-md:      20px 52px 1fr 100px 72px 64px 46px 32px;             // –regime –expect
+$cols-sm:      52px 1fr 80px 64px 32px;                             // –drag –pnl
+$cols-xs:      40px 1fr 72px 58px 32px;                             // –risk
 
 .table {
   display: flex;
   flex-direction: column;
   width: 100%;
   min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 // ─── Header ──────────────────────────────────────────────────────────────────
 
 .thead {
   display: grid;
-  grid-template-columns: $cols;
+  grid-template-columns: $cols-desktop;
   align-items: center;
   gap: 0 $space-3;
   padding: 0 $space-4;
   height: 36px;
   position: sticky;
-  top: 40px; // below SummaryStrip (now 40px)
+  top: 40px; // below SummaryStrip (40px)
   z-index: 9;
   background: $surface-panel;
   border-bottom: 2px solid $chrome-dim;
   flex-shrink: 0;
+
+  @include below-lg { grid-template-columns: $cols-lg; padding: 0 $space-3; gap: 0 $space-2; }
+  @include below-md { grid-template-columns: $cols-md; }
+  @include below-sm { grid-template-columns: $cols-sm; }
+  @include below-xs { grid-template-columns: $cols-xs; padding: 0 $space-2; }
 }
+
+// ─── Column visibility ────────────────────────────────────────────────────────
+@include below-lg { .colSpark, .colEarnings { display: none; } }
+@include below-md { .colRegime, .colExpect  { display: none; } }
+@include below-sm { .colDrag, .colPnl       { display: none; } }
+@include below-xs { .colRisk                { display: none; } }
 
 .th {
   font-family: $font-ui;

@@ -1,4 +1,5 @@
 @use '../styles/variables' as *;
+@use '../styles/mixins' as *;
 
 .page {
   display: flex;
@@ -92,6 +93,7 @@
 .table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 560px;
 }
 
 .th {
@@ -212,4 +214,31 @@
   text-align: center;
   max-width: 340px;
   line-height: 1.6;
+}
+
+// ─── Mobile layout ────────────────────────────────────────────────────────────
+@include below-sm {
+  .toolbar {
+    padding: $space-3 $space-4;
+    height: auto;
+    flex-wrap: wrap;
+    gap: $space-2;
+  }
+
+  .summary {
+    padding: $space-3 $space-4;
+    gap: $space-3;
+  }
+
+  .summaryCard {
+    min-width: 100px;
+    padding: $space-3 $space-4;
+    flex: 1;
+  }
+
+  .summaryValue { font-size: 18px; }
+}
+
+@include below-xs {
+  .summaryCard { min-width: 80px; }
 }

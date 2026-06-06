@@ -58,3 +58,10 @@
   letter-spacing: 0.04em;
   white-space: nowrap;
 }
+
+// ─── Responsive breakpoint mixins ─────────────────────────────────────────────
+@mixin below-xl { @media (max-width: $bp-xl) { @content; } }
+@mixin below-lg { @media (max-width: $bp-lg) { @content; } }
+@mixin below-md { @media (max-width: $bp-md) { @content; } }
+@mixin below-sm { @media (max-width: $bp-sm) { @content; } }
+@mixin below-xs { @media (max-width: $bp-xs) { @content; } }

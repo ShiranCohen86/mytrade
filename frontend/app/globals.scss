@@ -171,6 +171,10 @@ input, button, textarea, select { outline: none; }
   .app-main   { padding: $space-4; }
 }
 
+// ─── Touch optimizations ──────────────────────────────────────────────────────
+// Removes the blue flash on tap on iOS/Android
+* { -webkit-tap-highlight-color: transparent; }
+
 // ─── Global Button System ─────────────────────────────────────────────────────
 .btn {
   display: inline-flex;

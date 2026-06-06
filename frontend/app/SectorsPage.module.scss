@@ -1,4 +1,5 @@
 @use '../styles/variables' as *;
+@use '../styles/mixins' as *;
 
 .page {
   display: flex;
@@ -17,6 +18,8 @@
   border-bottom: 1px solid $chrome-dim;
   flex-shrink: 0;
   gap: $space-4;
+
+  @include below-sm { padding: 0 $space-4; }
 }
 
 .pageTitle {
@@ -41,10 +44,16 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
   gap: $space-5;
   padding: $space-6;
   align-content: start;
+
+  @include below-sm {
+    grid-template-columns: 1fr;
+    padding: $space-4;
+    gap: $space-3;
+  }
 }
 
 .card {

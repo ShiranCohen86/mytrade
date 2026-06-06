@@ -1,4 +1,5 @@
 @use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
 
 .overlay {
   position: fixed;
@@ -65,6 +66,18 @@
   justify-content: center;
   border-radius: $radius-md;
   transition: color $motion-fast, background $motion-fast;
+  position: relative;
+
+  @media (hover: none) {
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 50% auto auto 50%;
+      transform: translate(-50%, -50%);
+      min-width: 44px;
+      min-height: 44px;
+    }
+  }
 
   &:hover {
     color: $text-primary;
@@ -158,4 +171,39 @@
   gap: $space-1;
 
   &:hover { color: $text-secondary; }
+}
+
+// ─── Mobile: bottom-sheet presentation ───────────────────────────────────────
+@include below-sm {
+  .overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal {
+    max-width: 100%;
+    max-height: 90dvh;
+    border-radius: $radius-xl $radius-xl 0 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    animation: slideUpSheet 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes slideUpSheet {
+    from { transform: translateY(100%); opacity: 0.8; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+
+  .header { padding: $space-4; }
+  .intro  { padding: $space-4; }
+  .item   { padding: $space-3 $space-4; }
+
+  .footer {
+    padding: $space-4;
+    padding-bottom: max($space-4, env(safe-area-inset-bottom, 0px));
+  }
+
+  .gotItBtn {
+    width: 100%;
+    justify-content: center;
+  }
 }

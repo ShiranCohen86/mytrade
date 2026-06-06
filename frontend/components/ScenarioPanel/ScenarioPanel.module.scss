@@ -1,4 +1,5 @@
 @use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
 
 .container {
   display: flex;
@@ -143,4 +144,21 @@
   font-size: 13px;
   text-align: center;
   padding: $space-5 0;
+}
+
+// ─── Responsive: collapse 5-column grid on smaller screens ───────────────────
+@include below-sm {
+  .headerRow,
+  .row {
+    grid-template-columns: 1fr 52px 44px 1fr;
+    gap: $space-1;
+  }
+}
+
+@include below-xs {
+  .headerRow,
+  .row {
+    grid-template-columns: 1fr 52px 1fr;
+  }
+  .move { display: none; }
 }

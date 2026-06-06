@@ -1,8 +1,14 @@
 @use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
 
 // ─── Column Grid ──────────────────────────────────────────────────────────────
 // drag / ticker / name / price / chg% / pnl / risk / expect / regime / earnings / spark / actions
-$cols: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
+// Must mirror WatchlistTable.module.scss
+$cols-desktop: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
+$cols-lg:      20px 52px 1fr 100px 72px 64px 46px 72px 88px 32px;
+$cols-md:      20px 52px 1fr 100px 72px 64px 46px 32px;
+$cols-sm:      52px 1fr 80px 64px 32px;
+$cols-xs:      40px 1fr 72px 58px 32px;
 
 .rowWrapper {
   border-bottom: 1px solid $chrome-dim;
@@ -36,7 +42,7 @@ $cols: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
 
 .row {
   display: grid;
-  grid-template-columns: $cols;
+  grid-template-columns: $cols-desktop;
   align-items: center;
   gap: 0 $space-3;
   padding: 0 $space-4;
@@ -48,7 +54,18 @@ $cols: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
     outline: none;
     box-shadow: inset 0 0 0 2px $accent;
   }
+
+  @include below-lg { grid-template-columns: $cols-lg; padding: 0 $space-3; gap: 0 $space-2; }
+  @include below-md { grid-template-columns: $cols-md; }
+  @include below-sm { grid-template-columns: $cols-sm; }
+  @include below-xs { grid-template-columns: $cols-xs; padding: 0 $space-2; }
 }
+
+// ─── Column visibility ────────────────────────────────────────────────────────
+@include below-lg { .sparklineCell, .earnings { display: none; } }
+@include below-md { .regime, .expect          { display: none; } }
+@include below-sm { .dragHandle, .pnl         { display: none; } }
+@include below-xs { .risk                     { display: none; } }
 
 // ─── Drag handle ─────────────────────────────────────────────────────────────
 
@@ -260,6 +277,19 @@ $cols: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
   color: $text-tertiary;
   border-radius: $radius-sm;
   transition: transform $motion-fast, color $motion-fast, background $motion-fast;
+  position: relative;
+
+  // Expand tap area to 44×44 on touch devices without changing visual size
+  @media (hover: none) {
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 50% auto auto 50%;
+      transform: translate(-50%, -50%);
+      min-width: 44px;
+      min-height: 44px;
+    }
+  }
 
   &:hover {
     background: $surface-raised;

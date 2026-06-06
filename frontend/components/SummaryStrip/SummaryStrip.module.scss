@@ -13,6 +13,13 @@
   border-bottom: 1px solid $chrome-dim;
   box-shadow: $shadow-xs;
   flex-shrink: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+
+  @media (max-width: $bp-sm) { padding: 0 $space-3; }
+  @media (max-width: $bp-xs) { padding: 0 $space-2; }
 }
 
 .sep {
@@ -21,6 +28,8 @@
   background: $chrome-mid;
   margin: 0 $space-4;
   flex-shrink: 0;
+
+  @media (max-width: $bp-sm) { margin: 0 $space-3; }
 }
 
 .cell {

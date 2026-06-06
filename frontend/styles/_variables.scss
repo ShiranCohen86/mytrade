@@ -122,3 +122,10 @@ $border-radius:    $radius-lg;
 $border-radius-sm: $radius-md;
 $transition-fast:  $motion-fast;
 $transition-base:  $motion-base;
+
+// ─── Responsive breakpoints ───────────────────────────────────────────────────
+$bp-xs: 480px;   // very small phones (iPhone SE, small Android)
+$bp-sm: 640px;   // mobile (AppShell drawer breakpoint)
+$bp-md: 768px;   // tablet portrait
+$bp-lg: 900px;   // tablet landscape / medium desktop
+$bp-xl: 1100px;  // large desktop
