@@ -55,17 +55,25 @@ $cols-xs:      40px 1fr 72px 58px 32px;
     box-shadow: inset 0 0 0 2px $accent;
   }
 
-  @include below-lg { grid-template-columns: $cols-lg; padding: 0 $space-3; gap: 0 $space-2; }
-  @include below-md { grid-template-columns: $cols-md; }
-  @include below-sm { grid-template-columns: $cols-sm; }
-  @include below-xs { grid-template-columns: $cols-xs; padding: 0 $space-2; }
+  // Column grid + visibility nested together: 2-class specificity (.row .xxx)
+  // beats .sparklineCell { display: flex } which has only 1-class specificity
+  @include below-lg {
+    grid-template-columns: $cols-lg; padding: 0 $space-3; gap: 0 $space-2;
+    .sparklineCell, .earnings { display: none; }
+  }
+  @include below-md {
+    grid-template-columns: $cols-md;
+    .regime, .expect { display: none; }
+  }
+  @include below-sm {
+    grid-template-columns: $cols-sm;
+    .dragHandle, .pnl { display: none; }
+  }
+  @include below-xs {
+    grid-template-columns: $cols-xs; padding: 0 $space-2;
+    .risk { display: none; }
+  }
 }
-
-// ─── Column visibility ────────────────────────────────────────────────────────
-@include below-lg { .sparklineCell, .earnings { display: none; } }
-@include below-md { .regime, .expect          { display: none; } }
-@include below-sm { .dragHandle, .pnl         { display: none; } }
-@include below-xs { .risk                     { display: none; } }
 
 // ─── Drag handle ─────────────────────────────────────────────────────────────
 

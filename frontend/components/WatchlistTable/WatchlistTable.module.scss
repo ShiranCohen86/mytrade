@@ -35,17 +35,25 @@ $cols-xs:      40px 1fr 72px 58px 32px;                             // –risk
   border-bottom: 2px solid $chrome-dim;
   flex-shrink: 0;
 
-  @include below-lg { grid-template-columns: $cols-lg; padding: 0 $space-3; gap: 0 $space-2; }
-  @include below-md { grid-template-columns: $cols-md; }
-  @include below-sm { grid-template-columns: $cols-sm; }
-  @include below-xs { grid-template-columns: $cols-xs; padding: 0 $space-2; }
+  // Column grid + visibility nested together: 2-class specificity (.thead .colXxx)
+  // beats .sortable { display: flex } which has only 1-class specificity
+  @include below-lg {
+    grid-template-columns: $cols-lg; padding: 0 $space-3; gap: 0 $space-2;
+    .colSpark, .colEarnings { display: none; }
+  }
+  @include below-md {
+    grid-template-columns: $cols-md;
+    .colRegime, .colExpect { display: none; }
+  }
+  @include below-sm {
+    grid-template-columns: $cols-sm;
+    .colDrag, .colPnl { display: none; }
+  }
+  @include below-xs {
+    grid-template-columns: $cols-xs; padding: 0 $space-2;
+    .colRisk { display: none; }
+  }
 }
-
-// ─── Column visibility ────────────────────────────────────────────────────────
-@include below-lg { .colSpark, .colEarnings { display: none; } }
-@include below-md { .colRegime, .colExpect  { display: none; } }
-@include below-sm { .colDrag, .colPnl       { display: none; } }
-@include below-xs { .colRisk                { display: none; } }
 
 .th {
   font-family: $font-ui;
