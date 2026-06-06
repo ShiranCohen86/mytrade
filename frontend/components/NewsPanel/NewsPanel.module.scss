@@ -10,9 +10,9 @@
 .error,
 .empty {
   font-family: $font-ui;
-  font-size: 12px;
+  font-size: 13px;
   color: $text-secondary;
-  padding: $space-3 0;
+  padding: $space-4 0;
   text-align: center;
 }
 
@@ -31,7 +31,7 @@
   display: flex;
   align-items: flex-start;
   gap: $space-3;
-  padding: $space-3 0;
+  padding: $space-4 0;
   border-bottom: 1px solid $chrome-dim;
 
   &:last-child {
@@ -41,8 +41,8 @@
 }
 
 .sentDot {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   flex-shrink: 0;
   margin-top: 5px;
@@ -50,18 +50,19 @@
 
 .sent_positive { background: $pos; }
 .sent_negative { background: $neg; }
-.sent_neutral  { background: $text-tertiary; }
+.sent_neutral  { background: $text-disabled; }
 
 .itemContent {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
   min-width: 0;
 }
 
 .headline {
   font-family: $font-ui;
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 500;
   color: $text-primary;
   line-height: 1.5;
   text-decoration: none;
@@ -80,28 +81,28 @@
 
 .time {
   font-family: $font-data;
-  font-size: 10px;
+  font-size: 11px;
   color: $text-tertiary;
 }
 
 .source {
   font-family: $font-ui;
-  font-size: 10px;
+  font-size: 11px;
   color: $text-tertiary;
 }
 
 .guidanceBadge {
   font-family: $font-data;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   color: $warn;
   letter-spacing: 0.06em;
-  padding: 1px 4px;
-  border: 1px solid rgba(245, 166, 35, 0.3);
-  border-radius: $radius-sm;
+  padding: 2px 6px;
+  border: 1px solid $warn;
+  border-radius: $radius-xs;
+  background: $warn-bg;
 }
 
-// Legacy - kept for backward compat but no longer used
 .header,
 .title,
 .sentiment { display: none; }

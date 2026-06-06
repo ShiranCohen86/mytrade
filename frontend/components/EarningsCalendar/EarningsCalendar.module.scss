@@ -4,33 +4,36 @@
   display: inline-flex;
   align-items: center;
   gap: $space-2;
-  padding: $space-1 $space-3;
+  padding: 0 $space-3;
+  height: 28px;
   font-family: $font-ui;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   color: $text-secondary;
   border: 1px solid $chrome-mid;
   border-radius: $radius-sm;
   background: $surface-raised;
-  transition: background $motion-fast, color $motion-fast, border-color $motion-fast;
+  transition: background $motion-fast, color $motion-fast, border-color $motion-fast, box-shadow $motion-fast;
 
   &:hover:not(:disabled) {
     background: $surface-hover;
     color: $text-primary;
     border-color: $chrome-bright;
   }
+
+  &:focus-visible { box-shadow: $shadow-glow; }
 }
 
-.icon { font-size: 11px; }
+.icon { font-size: 12px; }
 
 .badge {
   font-family: $font-data;
   font-size: 10px;
   font-variant-numeric: tabular-nums;
   font-weight: 700;
-  padding: 1px 5px;
-  border-radius: $radius-sm;
-  background: $chrome-mid;
+  padding: 1px 6px;
+  border-radius: $radius-xs;
+  background: $chrome-dim;
   color: $text-tertiary;
 }
 
@@ -44,65 +47,80 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.72);
-  backdrop-filter: blur(4px);
+  background: var(--surface-overlay);
+  backdrop-filter: blur(8px);
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: $space-6;
-  animation: fadeIn 130ms ease;
+  animation: fadeIn 150ms ease;
 }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 .modal {
-  background: $surface-raised;
+  background: $surface-panel;
   border: 1px solid $chrome-mid;
-  border-radius: $radius-lg;
+  border-radius: $radius-xl;
   box-shadow: $shadow-popup;
   width: 100%;
-  max-width: 480px;
+  max-width: 500px;
   max-height: 80vh;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  animation: slideUp 160ms ease;
+  animation: slideUp 200ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-thumb { background: $chrome-mid; border-radius: 4px; }
 }
 
-@keyframes slideUp { from { transform: translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes slideUp {
+  from { transform: translateY(24px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
 
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: $space-4 $space-4 $space-3;
+  padding: $space-5 $space-6;
   border-bottom: 1px solid $chrome-dim;
   flex-shrink: 0;
 }
 
 .title {
   font-family: $font-ui;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 700;
   color: $text-primary;
+  letter-spacing: -0.01em;
 }
 
 .closeBtn {
-  font-size: 13px;
+  font-size: 15px;
   color: $text-tertiary;
-  padding: 3px $space-2;
-  border-radius: $radius-sm;
-  transition: color $motion-fast;
-  &:hover { color: $text-primary; }
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-md;
+  transition: color $motion-fast, background $motion-fast;
+
+  &:hover {
+    color: $text-primary;
+    background: $surface-raised;
+  }
 }
 
 .empty {
   font-family: $font-ui;
-  font-size: 12px;
+  font-size: 13px;
   color: $text-secondary;
   text-align: center;
-  padding: $space-8 $space-4;
+  padding: $space-12 $space-6;
 }
 
 .list {
@@ -117,29 +135,29 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: $space-2 $space-4;
+  padding: $space-3 $space-6;
   transition: background $motion-fast;
 
-  &:hover { background: $surface-hover; }
+  &:hover { background: $surface-raised; }
 }
 
 .rowLeft {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
 }
 
 .ticker {
   font-family: $font-data;
   font-size: 12px;
-  font-weight: 600;
-  color: $accent;
+  font-weight: 700;
+  color: $accent-text;
   letter-spacing: 0.04em;
 }
 
 .name {
   font-family: $font-ui;
-  font-size: 10px;
+  font-size: 11px;
   color: $text-tertiary;
 }
 
@@ -151,13 +169,14 @@
 
 .date {
   font-family: $font-data;
-  font-size: 11px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
   color: $text-secondary;
 }
 
 .est {
   font-family: $font-ui;
-  font-size: 9px;
+  font-size: 10px;
   color: $text-tertiary;
   font-style: italic;
 }
@@ -167,11 +186,11 @@
   font-size: 11px;
   font-variant-numeric: tabular-nums;
   font-weight: 700;
-  padding: 2px 7px;
-  border-radius: $radius-sm;
-  background: $chrome-mid;
+  padding: 2px 8px;
+  border-radius: $radius-xs;
+  background: $surface-raised;
   color: $text-secondary;
-  min-width: 36px;
+  min-width: 40px;
   text-align: center;
 }
 
@@ -183,7 +202,7 @@
   font-size: 10px;
   font-weight: 700;
   padding: 2px 6px;
-  border-radius: $radius-sm;
+  border-radius: $radius-xs;
 }
 
 .riskHigh { color: $neg;  background: $neg-bg; }

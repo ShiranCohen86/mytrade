@@ -19,22 +19,22 @@ $cols: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
   align-items: center;
   gap: 0 $space-3;
   padding: 0 $space-4;
-  height: 32px;
+  height: 36px;
   position: sticky;
-  top: 36px; // below SummaryStrip (36px)
+  top: 40px; // below SummaryStrip (now 40px)
   z-index: 9;
   background: $surface-panel;
-  border-bottom: 1px solid $chrome-mid;
+  border-bottom: 2px solid $chrome-dim;
   flex-shrink: 0;
 }
 
 .th {
   font-family: $font-ui;
-  font-size: 10px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: $text-secondary;
+  letter-spacing: 0.06em;
+  color: $text-tertiary;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -45,23 +45,27 @@ $cols: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   transition: color $motion-fast;
 
   &:hover {
     color: $text-secondary;
-    // Show affordance on inactive sortable columns
-    .sortArrow:empty::after { content: '⇅'; opacity: 0.4; }
   }
 }
 
 .sortActive {
-  color: $accent;
+  color: $accent-text;
 }
 
 .sortArrow {
   font-size: 9px;
   opacity: 0.7;
+  color: $chrome-bright;
+
+  .sortActive & {
+    color: $accent;
+    opacity: 1;
+  }
 }
 
 // ─── Column alignment overrides ───────────────────────────────────────────────

@@ -5,16 +5,17 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 $space-6;
-  height: 56px;
+  height: 60px;
   background: $surface-panel;
   border-bottom: 1px solid $chrome-dim;
   flex-shrink: 0;
   gap: $space-4;
   flex-wrap: wrap;
+  box-shadow: $shadow-xs;
 
   @media (max-width: 640px) {
     height: auto;
-    padding: $space-3 $space-4;
+    padding: $space-4;
   }
 }
 
@@ -28,15 +29,24 @@
 }
 
 .backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
   font-family: $font-ui;
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 500;
   color: $text-tertiary;
   text-decoration: none;
   white-space: nowrap;
   flex-shrink: 0;
-  transition: color $motion-fast;
+  padding: 4px 8px;
+  border-radius: $radius-sm;
+  transition: color $motion-fast, background $motion-fast;
 
-  &:hover { color: $accent; }
+  &:hover {
+    color: $text-primary;
+    background: $surface-raised;
+  }
 }
 
 .identity {
@@ -55,16 +65,16 @@
 
 .ticker {
   font-family: $font-data;
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 800;
   letter-spacing: 0.04em;
-  color: $text-primary;
+  color: $accent-text;
   flex-shrink: 0;
 }
 
 .name {
   font-family: $font-ui;
-  font-size: 13px;
+  font-size: 14px;
   color: $text-secondary;
   white-space: nowrap;
   overflow: hidden;
@@ -73,7 +83,7 @@
 
 .sector {
   font-family: $font-ui;
-  font-size: 11px;
+  font-size: 12px;
   color: $text-tertiary;
   white-space: nowrap;
   flex-shrink: 0;
@@ -92,17 +102,20 @@
 
 .price {
   font-family: $font-data;
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 22px;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
   color: $text-primary;
+  letter-spacing: -0.01em;
 }
 
 .change {
   font-family: $font-data;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
+  padding: 3px 8px;
+  border-radius: $radius-xs;
 }
 
 .changeAbs {
@@ -111,30 +124,32 @@
   opacity: 0.8;
 }
 
-.pos { color: $pos; }
-.neg { color: $neg; }
+.pos { color: $pos; background: $pos-bg; }
+.neg { color: $neg; background: $neg-bg; }
 
 .refreshBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
   font-family: $font-ui;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   color: $text-secondary;
-  padding: $space-1 $space-3;
+  padding: 0 $space-3;
+  height: 32px;
   border-radius: $radius-sm;
   border: 1px solid $chrome-mid;
   background: $surface-raised;
   transition: background $motion-fast, color $motion-fast, border-color $motion-fast;
   white-space: nowrap;
-  display: flex;
-  align-items: center;
-  gap: 5px;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: $surface-hover;
     color: $text-primary;
     border-color: $chrome-bright;
   }
 
+  &:focus-visible { box-shadow: $shadow-glow; }
   &:disabled { opacity: 0.4; pointer-events: none; }
 }
 

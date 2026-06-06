@@ -11,27 +11,50 @@
 // Section / column header label
 @mixin section-label {
   font-family: $font-ui;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.10em;
+  letter-spacing: 0.08em;
   color: $text-tertiary;
 }
 
-// Panel border — all panels share this
+// Panel border with elevation
 @mixin panel-border {
   border: 1px solid $chrome-dim;
   border-radius: $radius-lg;
 }
 
-// Focus ring
+// Card with real elevation
+@mixin card-elevated {
+  background: $surface-panel;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+}
+
+// Focus ring using glow shadow
 @mixin focus-ring {
   outline: none;
-  box-shadow: 0 0 0 2px $accent-glow;
+  box-shadow: $shadow-glow;
 }
 
 // Semantic value color — use with $pos/$neg/$warn
 @mixin value-color($color, $bg) {
   color: $color;
   background: $bg;
+}
+
+// Pill badge — small status badge
+@mixin badge($color, $bg) {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: $radius-xs;
+  color: $color;
+  background: $bg;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
 }

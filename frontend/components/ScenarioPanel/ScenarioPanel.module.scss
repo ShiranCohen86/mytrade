@@ -6,18 +6,41 @@
   gap: $space-2;
 }
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $space-2;
+}
+
+.title {
+  font-family: $font-ui;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: $text-tertiary;
+}
+
+.current {
+  font-family: $font-data;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: $text-secondary;
+}
+
 .headerRow {
   display: grid;
   grid-template-columns: 56px 1fr 52px 52px 1fr;
   gap: $space-2;
-  padding: 0 0 $space-1;
+  padding: 0 0 $space-2;
   border-bottom: 1px solid $chrome-mid;
 }
 
 .colLabel {
   font-family: $font-ui;
-  font-size: 9px;
-  font-weight: 700;
+  font-size: 10px;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: $text-tertiary;
@@ -30,7 +53,7 @@
   grid-template-columns: 56px 1fr 52px 52px 1fr;
   align-items: center;
   gap: $space-2;
-  padding: $space-1 0;
+  padding: $space-2 0;
   border-bottom: 1px solid $chrome-dim;
 
   &:last-child { border-bottom: none; }
@@ -43,12 +66,12 @@
 }
 
 .icon {
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .scenarioLabel {
   font-family: $font-ui;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -91,22 +114,22 @@
   font-size: 10px;
   font-variant-numeric: tabular-nums;
   color: $text-secondary;
-  min-width: 28px;
+  min-width: 30px;
   text-align: right;
   flex-shrink: 0;
 }
 
 .probBar {
   flex: 1;
-  height: 2px;
-  background: $chrome-mid;
-  border-radius: 1px;
+  height: 5px;
+  background: $chrome-dim;
+  border-radius: $radius-pill;
   overflow: hidden;
 }
 
 .probFill {
   height: 100%;
-  border-radius: 1px;
+  border-radius: $radius-pill;
   transition: width $motion-base;
 
   &.bullish { background: $pos; }
@@ -117,30 +140,7 @@
 .empty {
   font-family: $font-ui;
   color: $text-tertiary;
-  font-size: 12px;
+  font-size: 13px;
   text-align: center;
-  padding: $space-4 0;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: $space-2;
-}
-
-.title {
-  font-family: $font-ui;
-  font-size: 9px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.10em;
-  color: $text-tertiary;
-}
-
-.current {
-  font-family: $font-data;
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
-  color: $text-secondary;
+  padding: $space-5 0;
 }

@@ -15,10 +15,11 @@
 .scaleRight {
   position: absolute;
   bottom: 0;
-  font-size: 9px;
+  font-size: 10px;
   color: $text-tertiary;
   font-family: $font-data;
   letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
 }
 
 .scaleLeft  { left: 4px; }
@@ -32,24 +33,25 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
   pointer-events: none;
 }
 
 .score {
   font-family: $font-data;
-  font-size: 32px;
-  font-weight: 700;
+  font-size: 34px;
+  font-weight: 800;
   line-height: 1;
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
 }
 
 .label {
   font-family: $font-ui;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.10em;
 }
 
 .low    { color: $pos; }
@@ -61,19 +63,19 @@
 .breakdown {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: $space-2;
 }
 
 .row {
   display: grid;
-  grid-template-columns: 72px 1fr 40px;
+  grid-template-columns: 76px 1fr 40px;
   align-items: center;
   gap: $space-2;
 }
 
 .rowLabel {
   font-family: $font-ui;
-  font-size: 10px;
+  font-size: 11px;
   color: $text-tertiary;
   display: flex;
   align-items: center;
@@ -81,23 +83,24 @@
 }
 
 .bar {
-  height: 2px;
-  background: $chrome-mid;
-  border-radius: 1px;
+  height: 5px;
+  background: $chrome-dim;
+  border-radius: $radius-pill;
   overflow: hidden;
 }
 
 .barFill {
   height: 100%;
   background: $neg;
-  border-radius: 1px;
+  border-radius: $radius-pill;
   transition: width $motion-base;
 }
 
 .rowValue {
   font-family: $font-data;
-  font-size: 10px;
+  font-size: 11px;
   font-variant-numeric: tabular-nums;
+  font-weight: 500;
   color: $text-secondary;
   text-align: right;
 }

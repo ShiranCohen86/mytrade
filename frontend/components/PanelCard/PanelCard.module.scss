@@ -1,9 +1,10 @@
 @use '../../styles/variables' as *;
 
 .panel {
-  background: $surface-raised;
+  background: $surface-panel;
   border: 1px solid $chrome-dim;
   border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
   overflow: hidden;
 }
 
@@ -11,17 +12,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: $space-3 $space-4;
+  padding: $space-4 $space-5;
   border-bottom: 1px solid $chrome-dim;
 }
 
 .title {
   font-family: $font-ui;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.10em;
-  color: $text-tertiary;
+  font-size: 12px;
+  font-weight: 600;
+  color: $text-secondary;
+  letter-spacing: 0.01em;
 }
 
 .actions {
@@ -31,5 +31,5 @@
 }
 
 .body {
-  padding: $space-4;
+  padding: $space-5;
 }

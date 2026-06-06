@@ -8,15 +8,16 @@
   align-items: center;
   gap: 0;
   padding: 0 $space-6;
-  height: 36px;
+  height: 40px;
   background: $surface-panel;
   border-bottom: 1px solid $chrome-dim;
+  box-shadow: $shadow-xs;
   flex-shrink: 0;
 }
 
 .sep {
   width: 1px;
-  height: 16px;
+  height: 14px;
   background: $chrome-mid;
   margin: 0 $space-4;
   flex-shrink: 0;
@@ -41,12 +42,15 @@
 
 .cellValue {
   font-family: $font-data;
-  font-size: 12px;
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
-  font-weight: 500;
-  color: $text-secondary;
+  font-weight: 600;
+  color: $text-primary;
   white-space: nowrap;
 }
+
+.pos { color: $pos; }
+.neg { color: $neg; }
 
 .alert {
   color: $warn;

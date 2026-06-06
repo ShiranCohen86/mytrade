@@ -4,24 +4,25 @@
 
 .card {
   position: relative;
-  background: $bg-card;
-  border: 1px solid $border;
-  border-left: 3px solid $border-bright;
-  border-radius: $radius;
-  padding: 18px 20px;
+  background: $surface-panel;
+  border: 1px solid $chrome-dim;
+  border-left: 3px solid $chrome-mid;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  padding: $space-5;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  transition: border-color $base, box-shadow $base, transform $base;
+  gap: $space-4;
+  transition: border-color $motion-base, box-shadow $motion-base, transform $motion-base;
 
   &:hover {
-    box-shadow: $shadow-hover;
+    box-shadow: $shadow-md;
     transform: translateY(-2px);
   }
 }
 
-.cardUp   { border-left-color: $positive; }
-.cardDown { border-left-color: $negative; }
+.cardUp   { border-left-color: $pos; }
+.cardDown { border-left-color: $neg; }
 
 .removing {
   opacity: 0.4;
@@ -44,18 +45,18 @@
 }
 
 .ticker {
-  font-family: $font-mono;
+  font-family: $font-data;
   font-size: 17px;
   font-weight: 700;
-  color: $accent;
-  letter-spacing: 0.06em;
+  color: $accent-text;
+  letter-spacing: 0.04em;
 
   &:hover { text-decoration: underline; }
 }
 
 .name {
-  font-size: 11px;
-  color: $text-muted;
+  font-size: 12px;
+  color: $text-secondary;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -64,27 +65,27 @@
 
 .actions {
   display: flex;
-  gap: 6px;
+  gap: $space-2;
   flex-shrink: 0;
 }
 
 .removeBtn {
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  border-radius: $radius-sm;
   font-size: 13px;
-  color: $text-dim;
+  color: $text-tertiary;
   background: transparent;
-  border: 1px solid $border;
+  border: 1px solid $chrome-mid;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color $fast, border-color $fast, background $fast;
+  transition: color $motion-fast, border-color $motion-fast, background $motion-fast;
 
   &:hover:not(:disabled) {
-    color: $negative;
-    border-color: rgba(246, 70, 93, 0.4);
-    background: rgba(246, 70, 93, 0.08);
+    color: $neg;
+    border-color: $neg;
+    background: $neg-bg;
   }
 
   &:disabled {
@@ -98,7 +99,7 @@
   width: 8px;
   height: 8px;
   border: 2px solid rgba(255,255,255,0.1);
-  border-top-color: $negative;
+  border-top-color: $neg;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
@@ -110,29 +111,30 @@
 .priceRow {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: $space-3;
 }
 
 .price {
-  font-family: $font-mono;
+  font-family: $font-data;
   font-size: 24px;
   font-weight: 700;
-  color: $text;
+  color: $text-primary;
+  font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
   transition: color 0.15s ease;
 }
 
-.flashUp   { animation: flashGreen 0.3s ease-out forwards; }
-.flashDown { animation: flashRed   0.3s ease-out forwards; }
+.flashUp   { animation: flashGreen 0.4s ease-out forwards; }
+.flashDown { animation: flashRed   0.4s ease-out forwards; }
 
 @keyframes flashGreen {
-  0%   { color: $positive; }
-  100% { color: $text; }
+  0%   { color: $pos; }
+  100% { color: $text-primary; }
 }
 
 @keyframes flashRed {
-  0%   { color: $negative; }
-  100% { color: $text; }
+  0%   { color: $neg; }
+  100% { color: $text-primary; }
 }
 
 .connDot {
@@ -143,44 +145,45 @@
 }
 
 .connOnline {
-  background: $positive;
-  box-shadow: 0 0 6px rgba(14, 203, 129, 0.7);
+  background: $pos;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
   animation: connPulse 2s ease-in-out infinite;
 }
 
 .connOffline {
-  background: $negative;
+  background: $neg;
   box-shadow: none;
 }
 
 @keyframes connPulse {
-  0%, 100% { opacity: 1;   box-shadow: 0 0 6px  rgba(14, 203, 129, 0.7); }
-  50%       { opacity: 0.4; box-shadow: 0 0 12px rgba(14, 203, 129, 0.25); }
+  0%, 100% { opacity: 1;   box-shadow: 0 0 6px  rgba(16, 185, 129, 0.5); }
+  50%       { opacity: 0.4; box-shadow: 0 0 12px rgba(16, 185, 129, 0.2); }
 }
 
 .change {
-  font-family: $font-mono;
+  font-family: $font-data;
   font-size: 13px;
-  font-weight: 600;
-  padding: 2px 7px;
-  border-radius: $radius-pill;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  padding: 3px 8px;
+  border-radius: $radius-xs;
 }
 
 .positive {
-  color: $positive;
-  background: $positive-glow;
+  color: $pos;
+  background: $pos-bg;
 }
 
 .negative {
-  color: $negative;
-  background: $negative-glow;
+  color: $neg;
+  background: $neg-bg;
 }
 
 // ─── Stats Strip ──────────────────────────────────────────────────────────────
 
 .statsRow {
   display: flex;
-  gap: 20px;
+  gap: $space-5;
 }
 
 .stat {
@@ -191,91 +194,94 @@
 
 .statLabel {
   font-size: 10px;
-  color: $text-dim;
+  color: $text-tertiary;
   text-transform: uppercase;
   letter-spacing: 0.07em;
+  font-weight: 600;
 }
 
 .statValue {
-  font-family: $font-mono;
+  font-family: $font-data;
   font-size: 13px;
-  color: $text-muted;
+  color: $text-secondary;
+  font-variant-numeric: tabular-nums;
 }
 
-.earningsClose { color: $warning; font-weight: 700; }
-.relPerfPos    { color: $positive; font-weight: 700; }
-.relPerfNeg    { color: $negative; font-weight: 700; }
+.earningsClose { color: $warn; font-weight: 700; }
+.relPerfPos    { color: $pos; font-weight: 700; }
+.relPerfNeg    { color: $neg; font-weight: 700; }
 
 // ─── Badge Row ───────────────────────────────────────────────────────────────
 
 .badgeRow {
   display: flex;
-  gap: 8px;
+  gap: $space-2;
   flex-wrap: wrap;
 }
 
 .badge {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid $border;
-  border-radius: $radius-sm;
-  padding: 7px 11px;
+  background: $surface-raised;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-md;
+  padding: $space-2 $space-3;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
   min-width: 64px;
-  transition: border-color $fast;
+  transition: border-color $motion-fast, box-shadow $motion-fast;
 
-  &:hover { border-color: $border-bright; }
+  &:hover {
+    border-color: $chrome-mid;
+    box-shadow: $shadow-xs;
+  }
 }
 
 .badgeLabel {
-  font-size: 9px;
+  font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: $text-dim;
+  letter-spacing: 0.08em;
+  color: $text-tertiary;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 3px;
 }
 
 .badgeValue {
-  font-family: $font-mono;
+  font-family: $font-data;
   font-size: 12px;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
-// Risk score colors
-.risk_low    { color: $positive; }
-.risk_medium { color: $warning; }
-.risk_high   { color: $negative; }
+.risk_low    { color: $pos; }
+.risk_medium { color: $warn; }
+.risk_high   { color: $neg; }
 
-// Expectation colors
-.exp_low     { color: $positive; }
-.exp_medium  { color: $warning; }
-.exp_high    { color: $negative; }
+.exp_low     { color: $pos; }
+.exp_medium  { color: $warn; }
+.exp_high    { color: $neg; }
 
-// Regime colors
-.regime_bullish  { color: $positive; }
-.regime_bearish  { color: $negative; }
-.regime_volatile { color: $warning; }
-.regime_neutral  { color: $text-muted; }
+.regime_bullish  { color: $pos; }
+.regime_bearish  { color: $neg; }
+.regime_volatile { color: $warn; }
+.regime_neutral  { color: $text-secondary; }
 
 // ─── STN Warning ─────────────────────────────────────────────────────────────
 
 .stnWarning {
   font-size: 12px;
   font-weight: 600;
-  color: $warning;
-  background: rgba(240, 185, 11, 0.12);
-  border: 1px solid rgba(240, 185, 11, 0.4);
-  border-left: 3px solid $warning;
+  color: $warn;
+  background: $warn-bg;
+  border: 1px solid $warn;
   border-radius: $radius-sm;
-  padding: 8px 12px;
+  padding: $space-2 $space-3;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: $space-2;
   line-height: 1.4;
-  order: -1; // Move above badge row via flex ordering
+  order: -1;
 }
 
 // ─── Analyzing overlay ────────────────────────────────────────────────────────
@@ -291,17 +297,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.10);
   border-radius: inherit;
 }
 
 // ─── Card Error ───────────────────────────────────────────────────────────────
 
 .cardError {
-  font-size: 11px;
-  color: $negative;
-  background: $negative-glow;
-  border: 1px solid rgba(246, 70, 93, 0.2);
+  font-size: 12px;
+  color: $neg;
+  background: $neg-bg;
+  border: 1px solid $neg;
   border-radius: $radius-sm;
   padding: 5px 10px;
 }
@@ -314,19 +320,18 @@
   justify-content: center;
   font-size: 12px;
   font-weight: 500;
-  color: $text-dim;
-  border: 1px solid $border-bright;
+  color: $accent-text;
+  border: 1px solid $chrome-mid;
   border-radius: $radius-sm;
   padding: 6px 12px;
   text-align: center;
-  letter-spacing: 0.01em;
-  transition: color $fast, border-color $fast, background $fast;
+  transition: color $motion-fast, border-color $motion-fast, background $motion-fast;
   margin-top: auto;
 
   &:hover {
     color: $accent;
-    border-color: rgba(79, 126, 247, 0.4);
-    background: rgba(79, 126, 247, 0.06);
+    border-color: $accent;
+    background: $accent-faint;
   }
 }
 
@@ -339,67 +344,72 @@
 }
 
 .alertRing {
-  border-color: $warning !important;
-  box-shadow: 0 0 0 1px rgba(240, 185, 11, 0.25);
+  border-color: $warn;
+  box-shadow: 0 0 0 2px $warn-bg;
 }
 
 // ─── Action buttons (bell, $) ─────────────────────────────────────────────────
 
 .actionBtn {
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  border-radius: $radius-sm;
   font-size: 12px;
-  color: $text-dim;
+  color: $text-tertiary;
   background: transparent;
-  border: 1px solid $border;
+  border: 1px solid $chrome-mid;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color $fast, border-color $fast, background $fast;
+  transition: color $motion-fast, border-color $motion-fast, background $motion-fast;
 
-  &:hover { color: $text-muted; border-color: $border-bright; }
+  &:hover {
+    color: $text-secondary;
+    border-color: $chrome-bright;
+    background: $surface-raised;
+  }
 }
 
 .actionBtnActive {
   color: $accent;
-  border-color: rgba(79, 126, 247, 0.4);
+  border-color: $accent-faint;
   background: $accent-dim;
 }
 
 .actionBtnTriggered {
-  color: $warning;
-  border-color: rgba(240, 185, 11, 0.4);
-  background: $warning-glow;
+  color: $warn;
+  border-color: $warn;
+  background: $warn-bg;
   animation: alertPulse 1.5s ease-in-out infinite;
 }
 
 @keyframes alertPulse {
   0%, 100% { box-shadow: none; }
-  50% { box-shadow: 0 0 8px rgba(240, 185, 11, 0.4); }
+  50% { box-shadow: 0 0 8px $warn-bg; }
 }
 
 // ─── P&L badge ───────────────────────────────────────────────────────────────
 
 .pnlBadge {
-  font-family: $font-mono;
+  font-family: $font-data;
   font-size: 11px;
   font-weight: 700;
-  padding: 2px 7px;
-  border-radius: $radius-pill;
+  font-variant-numeric: tabular-nums;
+  padding: 3px 8px;
+  border-radius: $radius-xs;
   margin-left: auto;
 }
 
 // ─── Alert banner ─────────────────────────────────────────────────────────────
 
 .alertBanner {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
-  color: $warning;
-  background: $warning-glow;
-  border: 1px solid rgba(240, 185, 11, 0.25);
+  color: $warn;
+  background: $warn-bg;
+  border: 1px solid $warn;
   border-radius: $radius-sm;
-  padding: 7px 11px;
+  padding: $space-2 $space-3;
 }
 
 // ─── Inline form (entry price / alert) ───────────────────────────────────────
@@ -407,45 +417,50 @@
 .inlineForm {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 10px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid $border;
+  gap: $space-2;
+  padding: $space-2 $space-3;
+  background: $surface-raised;
+  border: 1px solid $chrome-mid;
   border-radius: $radius-sm;
 }
 
 .inlineLabel {
   font-size: 12px;
-  color: $text-dim;
+  color: $text-tertiary;
   white-space: nowrap;
 }
 
 .inlineSelect {
-  font-size: 11px;
-  color: $text-muted;
-  background: $bg-elevated;
-  border: 1px solid $border-bright;
-  border-radius: $radius-xs;
-  padding: 3px 6px;
+  font-size: 12px;
+  color: $text-secondary;
+  background: $surface-elevated;
+  border: 1px solid $chrome-mid;
+  border-radius: $radius-sm;
+  padding: 3px $space-2;
   cursor: pointer;
-  option { background: $bg-secondary; }
+  option { background: $surface-panel; }
 }
 
 .inlineInput {
   width: 90px;
-  background: $bg-elevated;
-  border: 1px solid $border-bright;
-  border-radius: $radius-xs;
-  color: $text;
+  background: $surface-elevated;
+  border: 1px solid $chrome-mid;
+  border-radius: $radius-sm;
+  color: $text-primary;
   font-size: 13px;
-  font-family: $font-mono;
-  padding: 4px 8px;
-  transition: border-color $fast;
+  font-family: $font-data;
+  font-variant-numeric: tabular-nums;
+  padding: 4px $space-2;
+  transition: border-color $motion-fast, box-shadow $motion-fast;
 
-  &:focus { border-color: $accent; }
+  &:focus {
+    border-color: $accent;
+    box-shadow: $shadow-glow;
+    outline: none;
+  }
+
   &:disabled { opacity: 0.45; }
 
-  // remove number input spinners
   &::-webkit-outer-spin-button,
   &::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
   &[type=number] { -moz-appearance: textfield; }
@@ -453,26 +468,27 @@
 
 .inlineBtn {
   padding: 4px 10px;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
   color: #fff;
   background: $accent;
-  border-radius: $radius-xs;
-  transition: opacity $fast;
+  border-radius: $radius-sm;
+  transition: background $motion-fast;
   white-space: nowrap;
 
+  &:hover:not(:disabled) { background: $accent-hover; }
   &:disabled { opacity: 0.35; cursor: not-allowed; }
 }
 
 .inlineClearBtn {
   padding: 4px 8px;
-  font-size: 11px;
-  color: $negative;
-  border: 1px solid rgba(246, 70, 93, 0.3);
-  border-radius: $radius-xs;
-  transition: background $fast;
+  font-size: 12px;
+  color: $neg;
+  border: 1px solid $neg;
+  border-radius: $radius-sm;
+  transition: background $motion-fast;
 
-  &:hover:not(:disabled) { background: $negative-glow; }
+  &:hover:not(:disabled) { background: $neg-bg; }
   &:disabled { opacity: 0.35; cursor: not-allowed; }
 }
 
@@ -481,39 +497,44 @@
 .notesPanel {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 10px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid $border;
-  border-radius: $radius-xs;
+  gap: $space-2;
+  padding: $space-3;
+  background: $surface-raised;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-sm;
 }
 
 .notesTextarea {
   width: 100%;
   resize: vertical;
-  background: transparent;
-  border: 1px solid $border;
-  border-radius: $radius-xs;
-  color: $text;
-  font-size: 12px;
+  background: $surface-panel;
+  border: 1px solid $chrome-mid;
+  border-radius: $radius-sm;
+  color: $text-primary;
+  font-size: 13px;
   line-height: 1.5;
-  padding: 6px 8px;
-  font-family: inherit;
-  transition: border-color $fast;
+  padding: $space-2 $space-3;
+  font-family: $font-ui;
+  transition: border-color $motion-fast, box-shadow $motion-fast;
 
-  &:focus { outline: none; border-color: $accent; }
-  &::placeholder { color: $text-dim; }
+  &:focus {
+    outline: none;
+    border-color: $accent;
+    box-shadow: $shadow-glow;
+  }
+
+  &::placeholder { color: $text-disabled; }
 }
 
 .notesActions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: $space-2;
 }
 
 .notesCount {
   font-size: 10px;
-  color: $text-dim;
+  color: $text-tertiary;
   margin-right: auto;
 }
 
@@ -522,19 +543,20 @@
 .sparklineRow {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: $space-2;
 }
 
 .sparklineLabel {
   font-size: 10px;
-  color: $text-dim;
+  color: $text-tertiary;
   white-space: nowrap;
   min-width: 58px;
 }
 
 .sparklineLast {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
   min-width: 24px;
   text-align: right;
 }

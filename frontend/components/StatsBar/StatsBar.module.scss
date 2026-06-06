@@ -4,14 +4,13 @@
   display: flex;
   align-items: center;
   padding: 0 $space-6;
-  height: 40px;
-  background: $surface-raised;
+  height: 44px;
+  background: $surface-panel;
   border-bottom: 1px solid $chrome-dim;
   overflow-x: auto;
   flex-shrink: 0;
   gap: 0;
 
-  // Hide scrollbar but keep scroll
   scrollbar-width: none;
   &::-webkit-scrollbar { display: none; }
 }
@@ -30,15 +29,15 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: $text-tertiary;
+  color: $text-disabled;
 }
 
 .value {
   font-family: $font-data;
   font-size: 12px;
   font-variant-numeric: tabular-nums;
-  font-weight: 500;
-  color: $text-secondary;
+  font-weight: 600;
+  color: $text-primary;
 }
 
 .pos  { color: $pos; }

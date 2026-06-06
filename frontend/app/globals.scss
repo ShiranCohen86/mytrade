@@ -2,72 +2,92 @@
 
 // ─── Theme tokens — light (default) ──────────────────────────────────────────
 :root, [data-theme="light"] {
-  --surface-base:     #F8FAFC;
+  --surface-base:     #F7F7FB;
   --surface-panel:    #FFFFFF;
-  --surface-raised:   #F1F5F9;
-  --surface-hover:    #E2EDFF;
+  --surface-raised:   #F0F1F8;
+  --surface-hover:    rgba(99, 102, 241, 0.07);
   --surface-elevated: #FFFFFF;
+  --surface-overlay:  rgba(10, 10, 22, 0.60);
 
-  --chrome-dim:       #E2E8F0;
-  --chrome-mid:       #CBD5E1;
-  --chrome-bright:    #94A3B8;
+  --chrome-dim:    #E5E6EF;
+  --chrome-mid:    #CED0DE;
+  --chrome-bright: #9799B0;
 
-  --text-primary:     #0F172A;
-  --text-secondary:   #334155;
-  --text-tertiary:    #64748B;
-  --text-disabled:    #94A3B8;
+  --text-primary:   #0B0D1A;
+  --text-secondary: #3A3F5C;
+  --text-tertiary:  #6B7191;
+  --text-disabled:  #9799B0;
 
-  --accent:           #2563EB;
-  --accent-faint:     rgba(37, 99, 235, 0.08);
-  --accent-glow:      rgba(37, 99, 235, 0.18);
-  --accent-dim:       rgba(37, 99, 235, 0.06);
-  --accent-hover:     #1D4ED8;
+  --accent:       #6366F1;
+  --accent-hover: #4F46E5;
+  --accent-faint: rgba(99, 102, 241, 0.09);
+  --accent-glow:  rgba(99, 102, 241, 0.24);
+  --accent-dim:   rgba(99, 102, 241, 0.05);
+  --accent-text:  #4338CA;
 
-  --pos:              #16A34A;
-  --pos-bg:           rgba(22, 163, 74, 0.10);
-  --neg:              #DC2626;
-  --neg-bg:           rgba(220, 38, 38, 0.10);
-  --warn:             #D97706;
-  --warn-bg:          rgba(217, 119, 6, 0.10);
+  --pos:    #059669;
+  --pos-bg: rgba(5, 150, 105, 0.09);
+  --neg:    #DC2626;
+  --neg-bg: rgba(220, 38, 38, 0.09);
+  --warn:   #D97706;
+  --warn-bg: rgba(217, 119, 6, 0.09);
 
-  --shadow-panel:     0 2px 12px rgba(0, 0, 0, 0.08);
-  --shadow-popup:     0 8px 32px rgba(0, 0, 0, 0.14);
+  --shadow-xs:    0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm:    0 2px 8px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-md:    0 4px 16px rgba(0, 0, 0, 0.09), 0 2px 6px rgba(0, 0, 0, 0.05);
+  --shadow-lg:    0 8px 28px rgba(0, 0, 0, 0.11), 0 4px 10px rgba(0, 0, 0, 0.06);
+  --shadow-popup: 0 20px 56px rgba(0, 0, 0, 0.16), 0 8px 20px rgba(0, 0, 0, 0.08);
+  --shadow-glow:  0 0 0 3px rgba(99, 102, 241, 0.24);
+
+  // Legacy compat
+  --shadow-panel: var(--shadow-sm);
+  --shadow-popup-legacy: var(--shadow-popup);
 }
 
 // ─── Theme tokens — dark ──────────────────────────────────────────────────────
 [data-theme="dark"] {
-  --surface-base:     #0D0D0F;
-  --surface-panel:    #131316;
-  --surface-raised:   #1A1A1F;
-  --surface-hover:    #222228;
-  --surface-elevated: #2A2A32;
+  --surface-base:     #08080F;
+  --surface-panel:    #0F0F18;
+  --surface-raised:   #161622;
+  --surface-hover:    #1C1C2C;
+  --surface-elevated: #22222F;
+  --surface-overlay:  rgba(0, 0, 10, 0.78);
 
-  --chrome-dim:       #222228;
-  --chrome-mid:       #2E2E38;
-  --chrome-bright:    #3E3E50;
+  --chrome-dim:    #1C1C2C;
+  --chrome-mid:    #282838;
+  --chrome-bright: #404058;
 
-  --text-primary:     #F4F4F5;
-  --text-secondary:   #A1A1AA;
-  --text-tertiary:    #71717A;
-  --text-disabled:    #52525B;
+  --text-primary:   #EDEDFF;
+  --text-secondary: #C0C0D8;
+  --text-tertiary:  #7A7A98;
+  --text-disabled:  #4A4A60;
 
-  --accent:           #3B82F6;
-  --accent-faint:     rgba(59, 130, 246, 0.08);
-  --accent-glow:      rgba(59, 130, 246, 0.18);
-  --accent-dim:       rgba(59, 130, 246, 0.06);
-  --accent-hover:     #60A5FA;
+  --accent:       #818CF8;
+  --accent-hover: #A5B4FC;
+  --accent-faint: rgba(129, 140, 248, 0.11);
+  --accent-glow:  rgba(129, 140, 248, 0.28);
+  --accent-dim:   rgba(129, 140, 248, 0.06);
+  --accent-text:  #A5B4FC;
 
-  --pos:              #00C076;
-  --pos-bg:           rgba(0, 192, 118, 0.10);
-  --neg:              #F23645;
-  --neg-bg:           rgba(242, 54, 69, 0.10);
-  --warn:             #F5A623;
-  --warn-bg:          rgba(245, 166, 35, 0.10);
+  --pos:    #10B981;
+  --pos-bg: rgba(16, 185, 129, 0.12);
+  --neg:    #EF4444;
+  --neg-bg: rgba(239, 68, 68, 0.12);
+  --warn:   #F59E0B;
+  --warn-bg: rgba(245, 158, 11, 0.12);
 
-  --shadow-panel:     0 2px 16px rgba(0, 0, 0, 0.60);
-  --shadow-popup:     0 8px 32px rgba(0, 0, 0, 0.80);
+  --shadow-xs:    0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-sm:    0 2px 8px rgba(0, 0, 0, 0.50);
+  --shadow-md:    0 4px 16px rgba(0, 0, 0, 0.60);
+  --shadow-lg:    0 8px 28px rgba(0, 0, 0, 0.70);
+  --shadow-popup: 0 20px 60px rgba(0, 0, 0, 0.85), 0 8px 24px rgba(0, 0, 0, 0.60);
+  --shadow-glow:  0 0 0 3px rgba(129, 140, 248, 0.28);
+
+  --shadow-panel: var(--shadow-sm);
+  --shadow-popup-legacy: var(--shadow-popup);
 }
 
+// ─── Global reset ─────────────────────────────────────────────────────────────
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { font-size: 16px; }
@@ -76,8 +96,10 @@ body {
   background: $surface-base;
   color: $text-primary;
   font-family: $font-ui;
+  font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
 }
 
@@ -85,20 +107,18 @@ a   { color: inherit; text-decoration: none; }
 button { cursor: pointer; border: none; background: none; font: inherit; }
 input, button, textarea, select { outline: none; }
 
-::-webkit-scrollbar       { width: 5px; height: 5px; }
+// ─── Scrollbar ────────────────────────────────────────────────────────────────
+::-webkit-scrollbar       { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: $chrome-mid; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: $text-secondary; }
+::-webkit-scrollbar-thumb { background: $chrome-mid; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: $text-tertiary; }
 
-// ─── App Shell (Phase 2+ — grid layout) ──────────────────────────────────────
-// The .app-header / .app-main classes below are used only during Phase 1.
-// Once AppShell replaces layout.tsx these are superseded.
-
+// ─── App Shell (legacy Phase 1 header) ───────────────────────────────────────
 .app-header {
   position: sticky;
   top: 0;
   z-index: 200;
-  height: 56px;
+  height: 60px;
   background: $surface-panel;
   border-bottom: 1px solid $chrome-dim;
   display: flex;
@@ -120,9 +140,9 @@ input, button, textarea, select { outline: none; }
 }
 
 .brand-logo {
-  width: 28px;
-  height: 28px;
-  background: $accent;
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(135deg, $accent 0%, #A78BFA 100%);
   border-radius: $radius-md;
   display: flex;
   align-items: center;
@@ -138,12 +158,12 @@ input, button, textarea, select { outline: none; }
   font-size: 15px;
   font-weight: 700;
   color: $text-primary;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 .app-main {
   padding: $space-6 $space-8;
-  min-height: calc(100vh - 56px);
+  min-height: calc(100vh - 60px);
 }
 
 @media (max-width: 640px) {
@@ -151,9 +171,144 @@ input, button, textarea, select { outline: none; }
   .app-main   { padding: $space-4; }
 }
 
-// ─── Recharts global overrides ────────────────────────────────────────────────
+// ─── Global Button System ─────────────────────────────────────────────────────
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 14px;
+  font-family: $font-ui;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: $radius-md;
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  text-decoration: none;
+  transition:
+    background $motion-fast,
+    border-color $motion-fast,
+    box-shadow $motion-fast,
+    transform $motion-fast,
+    color $motion-fast,
+    opacity $motion-fast;
 
-.recharts-cartesian-grid line { stroke: $chrome-dim !important; opacity: 0.5; }
+  &:focus-visible {
+    box-shadow: $shadow-glow;
+    outline: none;
+  }
+
+  &:disabled,
+  &[disabled] {
+    opacity: 0.40;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+.btn-sm {
+  height: 28px;
+  padding: 0 10px;
+  font-size: 12px;
+  border-radius: $radius-sm;
+}
+
+.btn-lg {
+  height: 40px;
+  padding: 0 18px;
+  font-size: 14px;
+}
+
+.btn-xl {
+  height: 46px;
+  padding: 0 24px;
+  font-size: 15px;
+  border-radius: $radius-lg;
+}
+
+.btn-primary {
+  background: $accent;
+  color: #fff;
+  border-color: $accent;
+
+  &:hover:not(:disabled) {
+    background: $accent-hover;
+    border-color: $accent-hover;
+    transform: translateY(-1px);
+    box-shadow: $shadow-md;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+}
+
+.btn-secondary {
+  background: $surface-raised;
+  color: $text-primary;
+  border-color: $chrome-mid;
+
+  &:hover:not(:disabled) {
+    background: $surface-hover;
+    border-color: $chrome-bright;
+  }
+
+  &:active:not(:disabled) {
+    background: $surface-raised;
+  }
+}
+
+.btn-ghost {
+  background: transparent;
+  color: $text-secondary;
+  border-color: transparent;
+
+  &:hover:not(:disabled) {
+    background: $surface-hover;
+    color: $text-primary;
+  }
+
+  &:active:not(:disabled) {
+    background: $surface-raised;
+  }
+}
+
+.btn-accent-ghost {
+  background: $accent-faint;
+  color: $accent;
+  border-color: transparent;
+
+  &:hover:not(:disabled) {
+    background: $accent-glow;
+  }
+}
+
+.btn-danger {
+  background: transparent;
+  color: $neg;
+  border-color: $chrome-mid;
+
+  &:hover:not(:disabled) {
+    background: $neg-bg;
+    border-color: $neg;
+  }
+}
+
+.btn-icon {
+  padding: 0;
+  width: 34px;
+
+  &.btn-sm {
+    width: 28px;
+  }
+}
+
+// ─── Recharts global overrides ────────────────────────────────────────────────
+.recharts-cartesian-grid line { stroke: $chrome-dim !important; opacity: 0.4; }
 .recharts-text { fill: $text-secondary !important; font-size: 11px !important; font-family: $font-data !important; }
 .recharts-tooltip-wrapper .recharts-default-tooltip {
   background: $surface-elevated !important;
@@ -161,4 +316,5 @@ input, button, textarea, select { outline: none; }
   border-radius: $radius-md !important;
   color: $text-primary !important;
   box-shadow: $shadow-popup !important;
+  font-size: 12px !important;
 }

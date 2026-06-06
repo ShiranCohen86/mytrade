@@ -11,6 +11,11 @@ $cols: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
   &:last-child { border-bottom: none; }
   &:hover { background: $surface-hover; }
 
+  &:nth-child(even) {
+    background: rgba(0, 0, 0, 0.015);
+    &:hover { background: $surface-hover; }
+  }
+
   &.dragging {
     opacity: 0.4;
     background: $surface-hover;
@@ -21,7 +26,7 @@ $cols: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
   }
 
   &.analyzing {
-    background: rgba(61, 126, 255, 0.04);
+    background: $accent-dim;
   }
 
   &.alertRing {
@@ -35,13 +40,13 @@ $cols: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
   align-items: center;
   gap: 0 $space-3;
   padding: 0 $space-4;
-  height: 40px;
+  height: 44px;
   cursor: pointer;
   user-select: none;
 
   &:focus-visible {
     outline: none;
-    box-shadow: inset 0 0 0 1px $accent;
+    box-shadow: inset 0 0 0 2px $accent;
   }
 }
 
@@ -49,13 +54,16 @@ $cols: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
 
 .dragHandle {
   font-size: 12px;
-  color: $text-tertiary;
+  color: $text-disabled;
   cursor: grab;
   opacity: 0;
-  transition: opacity $motion-fast;
+  transition: opacity $motion-fast, color $motion-fast;
   text-align: center;
 
-  .rowWrapper:hover & { opacity: 1; }
+  .rowWrapper:hover & {
+    opacity: 1;
+    color: $text-tertiary;
+  }
 
   &:active { cursor: grabbing; }
 }
@@ -65,22 +73,25 @@ $cols: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
 .ticker {
   font-family: $font-data;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.02em;
-  color: $accent;
+  color: $accent-text;
   text-decoration: none;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 
-  &:hover { color: #6B9EFF; text-decoration: underline; }
+  &:hover {
+    color: $accent;
+    text-decoration: underline;
+  }
 }
 
 // ─── Name ────────────────────────────────────────────────────────────────────
 
 .name {
   font-family: $font-ui;
-  font-size: 12px;
+  font-size: 13px;
   color: $text-secondary;
   white-space: nowrap;
   overflow: hidden;
@@ -99,7 +110,7 @@ $cols: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
 
 .price {
   font-family: $font-data;
-  font-size: 12px;
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
   font-weight: 500;
   color: $text-primary;
@@ -108,21 +119,21 @@ $cols: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
 }
 
 @keyframes flashUp {
-  0%   { color: $pos; background: $pos-bg; }
+  0%   { color: $pos; background: $pos-bg; border-radius: $radius-xs; }
   100% { color: $text-primary; background: transparent; }
 }
 
 @keyframes flashDown {
-  0%   { color: $neg; background: $neg-bg; }
+  0%   { color: $neg; background: $neg-bg; border-radius: $radius-xs; }
   100% { color: $text-primary; background: transparent; }
 }
 
-.flashUp   { animation: flashUp 0.6s ease forwards; }
-.flashDown { animation: flashDown 0.6s ease forwards; }
+.flashUp   { animation: flashUp 0.7s ease forwards; }
+.flashDown { animation: flashDown 0.7s ease forwards; }
 
 .connDot {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -136,9 +147,9 @@ $cols: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
   font-family: $font-data;
   font-size: 11px;
   font-variant-numeric: tabular-nums;
-  font-weight: 600;
-  padding: 2px 5px;
-  border-radius: $radius-sm;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: $radius-xs;
   white-space: nowrap;
   text-align: right;
 }
@@ -147,7 +158,7 @@ $cols: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
 
 .pnl {
   font-family: $font-data;
-  font-size: 10px;
+  font-size: 11px;
   font-variant-numeric: tabular-nums;
   font-weight: 500;
   white-space: nowrap;
@@ -178,7 +189,7 @@ $cols: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
 .expect {
   font-family: $font-ui;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   white-space: nowrap;
@@ -194,7 +205,7 @@ $cols: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
 .regime {
   font-family: $font-ui;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   white-space: nowrap;
@@ -218,7 +229,7 @@ $cols: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
   text-align: right;
 }
 
-.earningsUrgent { color: $warn; font-weight: 600; }
+.earningsUrgent { color: $warn; font-weight: 700; }
 .stnDot { color: $neg; }
 
 // ─── Sparkline ───────────────────────────────────────────────────────────────
@@ -240,18 +251,18 @@ $cols: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
 }
 
 .expandBtn {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 14px;
-  color: $text-secondary;
+  color: $text-tertiary;
   border-radius: $radius-sm;
   transition: transform $motion-fast, color $motion-fast, background $motion-fast;
 
   &:hover {
-    background: $chrome-mid;
+    background: $surface-raised;
     color: $text-primary;
   }
 }
@@ -269,8 +280,8 @@ $cols: 20px 52px 1fr 100px 72px 64px 46px 72px 88px 52px 56px 32px;
 }
 
 .rowSpinner {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -3,15 +3,18 @@
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   font-family: $font-ui;
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: $radius-xs;
 
   &.sm {
     font-size: 10px;
+    padding: 2px 6px;
   }
 }
 
@@ -20,7 +23,22 @@
   flex-shrink: 0;
 }
 
-.bullish  { color: $pos; }
-.bearish  { color: $neg; }
-.volatile { color: $warn; }
-.neutral  { color: $text-secondary; }
+.bullish  {
+  color: $pos;
+  background: $pos-bg;
+}
+
+.bearish  {
+  color: $neg;
+  background: $neg-bg;
+}
+
+.volatile {
+  color: $warn;
+  background: $warn-bg;
+}
+
+.neutral  {
+  color: $text-secondary;
+  background: $surface-raised;
+}

@@ -10,8 +10,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 14px;
-  height: 14px;
+  width: 15px;
+  height: 15px;
   font-family: $font-ui;
   font-size: 10px;
   font-style: italic;
@@ -23,20 +23,20 @@
   transition: color $motion-fast;
   line-height: 1;
 
-  &:hover { color: $text-secondary; }
+  &:hover { color: $accent; }
 }
 
 .tooltip {
   position: absolute;
   z-index: 200;
-  width: 200px;
+  width: 220px;
   background: $surface-elevated;
   border: 1px solid $chrome-mid;
   border-radius: $radius-md;
-  padding: $space-3;
+  padding: $space-3 $space-4;
   font-family: $font-ui;
-  font-size: 11px;
-  line-height: 1.55;
+  font-size: 12px;
+  line-height: 1.6;
   color: $text-secondary;
   box-shadow: $shadow-popup;
   pointer-events: none;
@@ -60,7 +60,7 @@
 
 // Position variants
 .top {
-  bottom: calc(100% + 6px);
+  bottom: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
 
@@ -73,7 +73,7 @@
 }
 
 .bottom {
-  top: calc(100% + 6px);
+  top: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
 
@@ -86,7 +86,7 @@
 }
 
 .left {
-  right: calc(100% + 6px);
+  right: calc(100% + 8px);
   top: 50%;
   transform: translateY(-50%);
 
@@ -99,7 +99,7 @@
 }
 
 .right {
-  left: calc(100% + 6px);
+  left: calc(100% + 8px);
   top: 50%;
   transform: translateY(-50%);
 

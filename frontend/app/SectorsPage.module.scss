@@ -12,7 +12,7 @@
   display: flex;
   align-items: center;
   padding: 0 $space-6;
-  height: 48px;
+  height: 52px;
   background: $surface-panel;
   border-bottom: 1px solid $chrome-dim;
   flex-shrink: 0;
@@ -21,59 +21,66 @@
 
 .pageTitle {
   font-family: $font-ui;
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.10em;
-  color: $text-secondary;
+  letter-spacing: -0.02em;
+  color: $text-primary;
 }
 
 .count {
   font-family: $font-data;
-  font-size: 10px;
+  font-size: 11px;
   color: $text-tertiary;
-  background: $chrome-mid;
-  border-radius: $radius-sm;
-  padding: 1px 6px;
+  background: $surface-raised;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-pill;
+  padding: 1px 8px;
 }
 
 // ─── Grid of sector cards ─────────────────────────────────────────────────────
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: $space-4;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: $space-5;
   padding: $space-6;
   align-content: start;
 }
 
 .card {
-  background: $surface-raised;
+  background: $surface-panel;
   border: 1px solid $chrome-dim;
-  border-radius: $radius-md;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
   overflow: hidden;
+  transition: box-shadow $motion-fast, transform $motion-fast;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-1px);
+  }
 }
 
 .cardHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: $space-3 $space-4;
+  padding: $space-4 $space-5;
   border-bottom: 1px solid $chrome-dim;
   gap: $space-3;
 }
 
 .sectorName {
   font-family: $font-ui;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   color: $text-primary;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
 }
 
 .headerStats {
   display: flex;
-  gap: $space-3;
+  gap: $space-4;
   flex-shrink: 0;
 }
 
@@ -81,21 +88,21 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0;
+  gap: 1px;
 }
 
 .statLabel {
   font-family: $font-ui;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: $text-disabled;
+  letter-spacing: 0.07em;
+  color: $text-tertiary;
 }
 
 .statValue {
   font-family: $font-data;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   color: $text-secondary;
@@ -104,7 +111,7 @@
 // ─── Progress bar ─────────────────────────────────────────────────────────────
 
 .barTrack {
-  height: 2px;
+  height: 3px;
   background: $chrome-dim;
   overflow: hidden;
 }
@@ -126,7 +133,7 @@
   display: flex;
   align-items: center;
   gap: $space-3;
-  padding: $space-2 $space-4;
+  padding: $space-3 $space-5;
   border-bottom: 1px solid $chrome-dim;
   transition: background $motion-fast;
 
@@ -135,20 +142,21 @@
 }
 
 .stockTicker {
-  font-family: $font-ui;
+  font-family: $font-data;
   font-size: 12px;
   font-weight: 700;
-  color: $accent;
+  color: $accent-text;
   min-width: 48px;
+  letter-spacing: 0.02em;
   transition: color $motion-fast;
 
-  &:hover { color: var(--accent-hover); }
+  &:hover { color: $accent; }
 }
 
 .stockName {
   flex: 1;
   font-family: $font-ui;
-  font-size: 11px;
+  font-size: 12px;
   color: $text-tertiary;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -165,23 +173,24 @@
 
 .price {
   font-family: $font-data;
-  font-size: 11px;
+  font-size: 12px;
   color: $text-secondary;
   font-variant-numeric: tabular-nums;
 }
 
 .change {
   font-family: $font-data;
-  font-size: 10px;
+  font-size: 11px;
   font-variant-numeric: tabular-nums;
+  font-weight: 600;
 
   &.pos { color: $pos; }
   &.neg { color: $neg; }
 }
 
 .riskPip {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   flex-shrink: 0;
 
@@ -198,23 +207,24 @@
   align-items: center;
   justify-content: center;
   flex: 1;
-  gap: $space-3;
-  min-height: 340px;
+  gap: $space-4;
+  min-height: 360px;
   padding: $space-8;
 }
 
 .emptyTitle {
   font-family: $font-ui;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
   color: $text-secondary;
+  letter-spacing: -0.01em;
 }
 
 .emptySubtitle {
   font-family: $font-ui;
-  font-size: 12px;
+  font-size: 14px;
   color: $text-tertiary;
   text-align: center;
-  max-width: 320px;
+  max-width: 340px;
   line-height: 1.6;
 }

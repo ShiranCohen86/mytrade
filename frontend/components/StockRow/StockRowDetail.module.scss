@@ -3,8 +3,8 @@
 .detail {
   display: flex;
   gap: $space-6;
-  padding: $space-4 $space-4 $space-4 36px;
-  background: $surface-panel;
+  padding: $space-5 $space-6 $space-5 36px;
+  background: $surface-raised;
   border-top: 1px solid $chrome-dim;
 
   @media (max-width: 900px) {
@@ -16,53 +16,53 @@
 .sectionLabel {
   display: block;
   font-family: $font-ui;
-  font-size: 9px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.10em;
+  letter-spacing: 0.08em;
   color: $text-tertiary;
-  margin-bottom: $space-2;
+  margin-bottom: $space-3;
 }
 
 // ─── Risk Breakdown ───────────────────────────────────────────────────────────
 
 .breakdown {
-  min-width: 180px;
+  min-width: 200px;
   flex-shrink: 0;
 }
 
 .breakdownRow {
   display: grid;
-  grid-template-columns: 64px 1fr 40px;
+  grid-template-columns: 68px 1fr 40px;
   align-items: center;
   gap: $space-2;
-  margin-bottom: $space-1;
+  margin-bottom: $space-2;
 }
 
 .bLabel {
   font-family: $font-ui;
-  font-size: 10px;
+  font-size: 11px;
   color: $text-tertiary;
   white-space: nowrap;
 }
 
 .bBar {
-  height: 2px;
-  background: $chrome-mid;
-  border-radius: 1px;
+  height: 4px;
+  background: $chrome-dim;
+  border-radius: $radius-pill;
   overflow: hidden;
 }
 
 .bFill {
   height: 100%;
   background: $neg;
-  border-radius: 1px;
+  border-radius: $radius-pill;
   transition: width $motion-base;
 }
 
 .bVal {
   font-family: $font-data;
-  font-size: 10px;
+  font-size: 11px;
   font-variant-numeric: tabular-nums;
   color: $text-secondary;
   text-align: right;
@@ -71,7 +71,7 @@
 
 .stnTag {
   font-family: $font-ui;
-  font-size: 10px;
+  font-size: 11px;
   color: $warn;
   margin-top: $space-2;
 }
@@ -98,13 +98,13 @@
 
 .formInfoVal {
   font-family: $font-data;
-  font-size: 11px;
+  font-size: 12px;
   color: $text-secondary;
 }
 
 .pnlVal {
   font-family: $font-data;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -119,19 +119,23 @@
 
 .input {
   font-family: $font-data;
-  font-size: 11px;
-  background: $surface-elevated;
+  font-size: 12px;
+  background: $surface-panel;
   border: 1px solid $chrome-mid;
   border-radius: $radius-sm;
   color: $text-primary;
-  padding: 3px $space-2;
+  padding: 4px $space-2;
+  height: 32px;
   width: 110px;
-  transition: border-color $motion-fast;
+  transition: border-color $motion-fast, box-shadow $motion-fast;
 
-  &:focus { border-color: $accent; }
+  &:focus {
+    border-color: $accent;
+    box-shadow: $shadow-glow;
+  }
+
   &::placeholder { color: $text-disabled; }
 
-  // Hide number spinners
   &::-webkit-outer-spin-button,
   &::-webkit-inner-spin-button { -webkit-appearance: none; }
   -moz-appearance: textfield;
@@ -139,37 +143,44 @@
 
 .select {
   font-family: $font-data;
-  font-size: 11px;
-  background: $surface-elevated;
+  font-size: 12px;
+  background: $surface-panel;
   border: 1px solid $chrome-mid;
   border-radius: $radius-sm;
   color: $text-primary;
-  padding: 3px $space-2;
+  padding: 4px $space-2;
+  height: 32px;
+  transition: border-color $motion-fast;
+
+  &:focus { border-color: $accent; }
 }
 
 .submitBtn {
-  font-family: $font-data;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-family: $font-ui;
+  font-size: 11px;
+  font-weight: 600;
   color: $accent;
-  padding: 3px 6px;
+  padding: 4px 10px;
+  height: 28px;
   border-radius: $radius-sm;
-  transition: background $motion-fast;
+  border: 1px solid $accent-faint;
+  background: $accent-faint;
+  transition: background $motion-fast, border-color $motion-fast;
 
-  &:hover { background: $accent-faint; }
+  &:hover:not(:disabled) { background: $accent-glow; border-color: $accent; }
   &:disabled { opacity: 0.4; pointer-events: none; }
 }
 
 .clearBtn {
   font-family: $font-ui;
-  font-size: 10px;
+  font-size: 11px;
   color: $text-tertiary;
-  padding: 2px 5px;
+  padding: 4px 8px;
+  height: 28px;
   border-radius: $radius-sm;
-  transition: color $motion-fast;
+  transition: color $motion-fast, background $motion-fast;
 
-  &:hover { color: $neg; }
+  &:hover { color: $text-secondary; background: $surface-hover; }
   &:disabled { opacity: 0.4; }
 }
 
@@ -179,18 +190,23 @@
 
 .textarea {
   font-family: $font-ui;
-  font-size: 11px;
-  background: $surface-elevated;
+  font-size: 12px;
+  background: $surface-panel;
   border: 1px solid $chrome-mid;
-  border-radius: $radius-sm;
+  border-radius: $radius-md;
   color: $text-primary;
-  padding: $space-2;
+  padding: $space-2 $space-3;
   resize: vertical;
   width: 100%;
   min-width: 200px;
-  transition: border-color $motion-fast;
+  line-height: 1.5;
+  transition: border-color $motion-fast, box-shadow $motion-fast;
 
-  &:focus { border-color: $accent; }
+  &:focus {
+    border-color: $accent;
+    box-shadow: $shadow-glow;
+  }
+
   &::placeholder { color: $text-disabled; }
 }
 
@@ -202,7 +218,7 @@
 
 .noteCount {
   font-family: $font-data;
-  font-size: 9px;
+  font-size: 10px;
   color: $text-disabled;
   flex: 1;
 }
@@ -214,39 +230,50 @@
   display: flex;
   align-items: center;
   gap: $space-4;
-  padding-top: $space-3;
+  padding-top: $space-4;
   border-top: 1px solid $chrome-dim;
   flex-wrap: wrap;
   grid-column: 1 / -1;
 }
 
-.detail {
-  flex-wrap: wrap;
-
-  .footer { width: 100%; }
-}
-
 .detailLink {
   font-family: $font-ui;
-  font-size: 11px;
-  color: $accent;
+  font-size: 12px;
+  font-weight: 500;
+  color: $accent-text;
   text-decoration: none;
+  padding: 4px 10px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: $radius-sm;
+  border: 1px solid $chrome-mid;
+  transition: background $motion-fast, border-color $motion-fast;
 
-  &:hover { text-decoration: underline; }
+  &:hover {
+    background: $accent-faint;
+    border-color: $accent;
+  }
 }
 
 .removeBtn {
   font-family: $font-ui;
-  font-size: 11px;
+  font-size: 12px;
   color: $text-tertiary;
-  padding: 2px 6px;
+  padding: 4px 10px;
+  height: 28px;
   border-radius: $radius-sm;
-  transition: color $motion-fast, background $motion-fast;
+  border: 1px solid transparent;
+  transition: color $motion-fast, background $motion-fast, border-color $motion-fast;
 
-  &:hover { color: $neg; background: $neg-bg; }
+  &:hover {
+    color: $neg;
+    background: $neg-bg;
+    border-color: $neg;
+  }
 }
 
 .error {
-  font-size: 10px;
+  font-size: 11px;
   color: $neg;
 }

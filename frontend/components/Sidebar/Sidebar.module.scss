@@ -12,15 +12,24 @@
 
   &::-webkit-scrollbar       { width: 3px; }
   &::-webkit-scrollbar-track { background: transparent; }
-  &::-webkit-scrollbar-thumb { background: $chrome-mid; }
+  &::-webkit-scrollbar-thumb { background: $chrome-mid; border-radius: 3px; }
 }
 
-// ─── Collapsed (≤900px auto or user toggle) ───────────────────────────────────
+// ─── Collapsed ────────────────────────────────────────────────────────────────
 
 .collapsed {
   .sectionLabel,
   .navLabel,
   .soonBadge { display: none; }
+
+  .navItem {
+    justify-content: center;
+    padding: 0;
+    border-left: none;
+    margin: 0 $space-2;
+    border-radius: $radius-md;
+    width: auto;
+  }
 }
 
 // ─── Mobile drawer (≤640px) ───────────────────────────────────────────────────
@@ -29,20 +38,20 @@
   .sidebar {
     position: fixed;
     left: 0;
-    top: 56px;
-    height: calc(100vh - 56px);
-    width: 220px;
+    top: 60px;
+    height: calc(100vh - 60px);
+    width: 232px;
     z-index: 100;
     transform: translateX(-100%);
     transition: transform $motion-base;
-    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.60);
+    box-shadow: $shadow-lg;
+    border-radius: 0 $radius-xl $radius-xl 0;
   }
 
   .sidebar.mobileOpen {
     transform: translateX(0);
   }
 
-  // When open on mobile, always show labels regardless of collapsed state
   .sidebar.mobileOpen .sectionLabel,
   .sidebar.mobileOpen .navLabel,
   .sidebar.mobileOpen .soonBadge {
@@ -54,22 +63,22 @@
 
 .nav {
   flex: 1;
-  padding: $space-4 0 $space-2;
+  padding: $space-4 $space-2 $space-2;
 }
 
 .section {
-  margin-bottom: $space-4;
+  margin-bottom: $space-5;
 }
 
 .sectionLabel {
   display: block;
-  padding: 0 $space-4;
+  padding: 0 $space-3;
   margin-bottom: $space-2;
   font-family: $font-ui;
-  font-size: 9px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   color: $text-disabled;
   white-space: nowrap;
 }
@@ -78,38 +87,46 @@
   display: flex;
   align-items: center;
   gap: $space-3;
-  padding: $space-2 $space-4;
-  height: 36px;
-  border-radius: 0;
+  padding: 0 $space-3;
+  height: 38px;
+  border-radius: $radius-md;
   color: $text-secondary;
   font-family: $font-ui;
   font-size: 13px;
   font-weight: 500;
-  transition: background $motion-fast, color $motion-fast;
+  transition: background $motion-fast, color $motion-fast, border-color $motion-fast;
   white-space: nowrap;
   position: relative;
   border-left: 2px solid transparent;
+  margin: 1px 0;
 
   &:hover:not(.navSoon) {
     background: $surface-hover;
     color: $text-primary;
+
+    .navIcon { color: $text-secondary; }
   }
 }
 
 .navActive {
-  color: $text-primary;
+  color: $accent-text;
   border-left-color: $accent;
   background: $accent-faint;
+  font-weight: 600;
 
   &:hover { background: $accent-faint; }
 
   .navIcon { color: $accent; }
 }
 
+.navSoon {
+  opacity: 0.50;
+  cursor: default;
+}
 
 .navIcon {
-  font-size: 13px;
-  width: 16px;
+  font-size: 15px;
+  width: 18px;
   text-align: center;
   flex-shrink: 0;
   color: $text-tertiary;
@@ -122,6 +139,18 @@
   text-overflow: ellipsis;
 }
 
+.soonBadge {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 5px;
+  border-radius: $radius-xs;
+  background: $surface-raised;
+  color: $text-disabled;
+  border: 1px solid $chrome-dim;
+  flex-shrink: 0;
+}
 
 // ─── Bottom ───────────────────────────────────────────────────────────────────
 
@@ -133,11 +162,14 @@
     width: 100%;
     padding: $space-2 $space-3;
     border-radius: $radius-md;
-    font-size: 11px;
+    font-size: 12px;
     font-family: $font-ui;
     color: $text-tertiary;
     text-align: left;
     transition: background $motion-fast, color $motion-fast;
+    display: flex;
+    align-items: center;
+    gap: $space-2;
 
     &:hover {
       background: $surface-hover;

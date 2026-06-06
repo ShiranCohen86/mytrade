@@ -11,42 +11,45 @@
   align-items: center;
   gap: $space-3;
   flex-wrap: wrap;
+  padding: $space-3 $space-4;
+  background: $surface-raised;
+  border-radius: $radius-md;
 }
 
 .label {
   font-family: $font-ui;
-  font-size: 9px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.10em;
+  letter-spacing: 0.08em;
   color: $text-tertiary;
   flex-shrink: 0;
 }
 
 .arrow {
-  font-size: 13px;
+  font-size: 18px;
   line-height: 1;
   flex-shrink: 0;
 }
 
 .drift {
   font-family: $font-ui;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .percent {
   font-family: $font-data;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
 .period {
   font-family: $font-ui;
-  font-size: 10px;
+  font-size: 11px;
   color: $text-tertiary;
 }
 
@@ -57,13 +60,13 @@
 .warning {
   display: flex;
   align-items: flex-start;
-  gap: 6px;
+  gap: $space-2;
   font-family: $font-ui;
-  font-size: 11px;
+  font-size: 12px;
   color: $warn;
-  padding: $space-2 $space-3;
+  padding: $space-3 $space-4;
   background: $warn-bg;
   border-radius: $radius-sm;
-  border-left: 2px solid $warn;
-  line-height: 1.4;
+  border: 1px solid $warn;
+  line-height: 1.5;
 }
