@@ -4,6 +4,7 @@ import styles from './AppShell.module.scss';
 import { TopBar } from '@/components/TopBar/TopBar';
 import { Sidebar } from '@/components/Sidebar/Sidebar';
 import { BottomNav } from '@/components/BottomNav/BottomNav';
+import { CommandPalette } from '@/components/CommandPalette/CommandPalette';
 
 const AppShellContext = createContext({
   isSidebarCollapsed: false,
@@ -35,6 +36,7 @@ export function AppShell({ children }) {
         )}
         <main className={styles.content}>{children}</main>
         <BottomNav />
+        <CommandPalette />
       </div>
     </AppShellContext.Provider>
   );

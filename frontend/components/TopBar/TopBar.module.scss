@@ -139,6 +139,55 @@
   @media (max-width: $bp-sm) { display: none; }
 }
 
+// ─── Command palette trigger ──────────────────────────────────────────────────
+
+.paletteBtn {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  height: 32px;
+  padding: 0 $space-3;
+  border-radius: $radius-md;
+  border: 1px solid $chrome-dim;
+  background: $surface-raised;
+  color: $text-tertiary;
+  font-family: $font-ui;
+  font-size: $text-xs;
+  transition: border-color $motion-fast, color $motion-fast, box-shadow $motion-fast;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &:hover {
+    border-color: $chrome-mid;
+    color: $text-secondary;
+    box-shadow: $shadow-xs;
+  }
+
+  @media (max-width: $bp-md) {
+    padding: 0 $space-2;
+    border: none;
+    background: none;
+    gap: 0;
+  }
+}
+
+.paletteBtnLabel {
+  @media (max-width: $bp-md) { display: none; }
+}
+
+.paletteBtnKbd {
+  font-family: $font-data;
+  font-size: $text-2xs;
+  color: $text-disabled;
+  background: $surface-elevated;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-xs;
+  padding: 1px 5px;
+  margin-left: $space-1;
+
+  @media (max-width: $bp-md) { display: none; }
+}
+
 // ─── Theme toggle ─────────────────────────────────────────────────────────────
 
 .themeToggle {

@@ -7,6 +7,8 @@ import { WatchlistSummary } from '@/components/WatchlistSummary/WatchlistSummary
 import { AddTickerForm } from '@/components/AddTickerForm/AddTickerForm';
 import { EarningsCalendar } from '@/components/EarningsCalendar/EarningsCalendar';
 import { MarketOverview } from '@/components/MarketOverview/MarketOverview';
+import { WelcomeCard } from '@/components/Onboarding/WelcomeCard';
+import { useToast } from '@/components/Toast/ToastProvider';
 import styles from './page.module.scss';
 
 function sortStocks(stocks, key) {
@@ -27,6 +29,9 @@ export default function DashboardPage() {
     isConnected, error, portfolio, priceAlerts, notes,
     add, remove, analyzeAll, reload, updateEntryPrice, updateAlert, updateNote, reorder,
   } = useStocks();
+
+  const toast = useToast();
+  const prevAnalyzingRef = useRef(false);
 
   const [sortKey, setSortKey] = useState(() => {
     try { return localStorage.getItem('watchlist-sort') || 'default'; } catch { return 'default'; }
@@ -49,14 +54,30 @@ export default function DashboardPage() {
 
   const sortedStocks = useMemo(() => sortStocks(stocks, sortKey), [stocks, sortKey]);
 
+  // Toast when analysis finishes
+  useEffect(() => {
+    if (prevAnalyzingRef.current && !isAnalyzing && stocks.length > 0) {
+      const n = stocks.length;
+      const failed = analysisErrors.size;
+      if (failed === 0) {
+        toast.success(`Analysis complete — ${n} stock${n !== 1 ? 's' : ''} updated.`);
+      } else {
+        toast.warning(`Analysis complete — ${n - failed} updated, ${failed} failed.`);
+      }
+    }
+    prevAnalyzingRef.current = isAnalyzing;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAnalyzing]);
+
   const showError = error && error !== dismissedError;
 
   const handleAdd = useCallback(async (ticker) => {
     await add(ticker);
+    toast.success(`${ticker.toUpperCase()} added to watchlist.`);
     setTimeout(() => {
       document.querySelector(`[data-ticker="${ticker.toUpperCase()}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 150);
-  }, [add]);
+  }, [add, toast]);
 
   const exportCSV = useCallback(() => {
     const headers = ['Ticker', 'Name', 'Sector', 'Price', 'Change%', 'Risk Score', 'Risk Label', 'Expectation Score', 'Expectation Label', 'Market Regime', 'Earnings Date', 'Analyzed At'];
@@ -199,6 +220,8 @@ export default function DashboardPage() {
         </div>
       ) : stocks.length === 0 ? (
         /* Empty state */
+        <>
+        <WelcomeCard />
         <div className={styles.empty}>
           <svg className={styles.emptyIcon} viewBox="0 0 64 48" width="64" height="48" fill="none" aria-hidden="true">
             <polyline points="4,40 18,24 28,32 40,14 52,20 60,10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.25"/>
@@ -210,6 +233,7 @@ export default function DashboardPage() {
           </p>
           <p className={styles.emptyHint}>Try: AAPL · MSFT · NVDA · TSLA</p>
         </div>
+        </>
       ) : (
         <>
           <SummaryStrip stocks={stocks} />

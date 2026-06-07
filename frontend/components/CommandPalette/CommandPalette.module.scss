@@ -1,0 +1,206 @@
+@use '../../styles/variables' as *;
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 12vh $space-4 $space-4;
+  animation: fadeIn 120ms ease both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.panel {
+  width: 100%;
+  max-width: 560px;
+  background: $surface-elevated;
+  border: 1px solid $chrome-mid;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-popup, 0 24px 64px rgba(0, 0, 0, 0.30);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp $motion-spring both;
+
+  @media (max-width: $bp-sm) {
+    max-width: 100%;
+    border-radius: $radius-lg;
+  }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(-12px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+// ─── Search row ───────────────────────────────────────────────────────────────
+
+.searchRow {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-4 $space-5;
+  border-bottom: 1px solid $chrome-dim;
+}
+
+.searchIcon {
+  color: $text-tertiary;
+  flex-shrink: 0;
+  display: flex;
+}
+
+.input {
+  flex: 1;
+  font-family: $font-ui;
+  font-size: $text-lg;
+  color: $text-primary;
+  background: none;
+  border: none;
+  outline: none;
+
+  &::placeholder { color: $text-disabled; }
+}
+
+.escKbd {
+  font-family: $font-ui;
+  font-size: $text-xs;
+  color: $text-tertiary;
+  background: $surface-raised;
+  border: 1px solid $chrome-mid;
+  border-radius: $radius-xs;
+  padding: 2px 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color $motion-fast, background $motion-fast;
+
+  &:hover { color: $text-secondary; background: $surface-hover; }
+}
+
+// ─── Results body ─────────────────────────────────────────────────────────────
+
+.body {
+  overflow-y: auto;
+  max-height: 360px;
+  padding: $space-2 0;
+  scrollbar-width: thin;
+  scrollbar-color: $chrome-mid transparent;
+}
+
+.group {
+  padding: 0 $space-2;
+
+  & + & { border-top: 1px solid $chrome-dim; padding-top: $space-2; margin-top: $space-2; }
+}
+
+.groupLabel {
+  display: block;
+  font-family: $font-ui;
+  font-size: $text-2xs;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: $text-disabled;
+  padding: $space-2 $space-3 $space-1;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  width: 100%;
+  padding: $space-2 $space-3;
+  border-radius: $radius-md;
+  text-align: left;
+  transition: background $motion-fast;
+
+  &:hover { background: $surface-hover; }
+}
+
+.itemActive {
+  background: $accent-faint;
+  .itemLabel { color: $text-primary; }
+  .itemIcon svg, .itemIcon { color: $accent; }
+}
+
+.itemIcon {
+  color: $text-secondary;
+  flex-shrink: 0;
+  display: flex;
+  width: 20px;
+  justify-content: center;
+}
+
+.itemTicker {
+  font-family: $font-data;
+  font-size: $text-sm;
+  font-weight: 700;
+  color: $accent-text;
+  flex-shrink: 0;
+  min-width: 52px;
+}
+
+.itemLabel {
+  font-family: $font-ui;
+  font-size: $text-md;
+  color: $text-secondary;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itemMeta {
+  font-family: $font-data;
+  font-size: $text-xs;
+  color: $text-disabled;
+  flex-shrink: 0;
+}
+
+.empty {
+  font-family: $font-ui;
+  font-size: $text-sm;
+  color: $text-tertiary;
+  text-align: center;
+  padding: $space-8 $space-5;
+
+  strong { color: $text-secondary; }
+}
+
+// ─── Footer hint bar ──────────────────────────────────────────────────────────
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: $space-5;
+  padding: $space-3 $space-5;
+  border-top: 1px solid $chrome-dim;
+  background: $surface-panel;
+}
+
+.hint {
+  font-family: $font-ui;
+  font-size: $text-2xs;
+  color: $text-disabled;
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+
+  kbd {
+    font-family: $font-data;
+    font-size: $text-2xs;
+    background: $surface-raised;
+    border: 1px solid $chrome-mid;
+    border-radius: $radius-xs;
+    padding: 1px 5px;
+    color: $text-tertiary;
+  }
+}
