@@ -1,5 +1,5 @@
 export const NAV_ITEMS = [
-  { label: 'Watchlist', href: '/',          icon: '▤' },
-  { label: 'Portfolio', href: '/portfolio', icon: '◈' },
-  { label: 'Sectors',   href: '/sectors',   icon: '◧' },
+  { label: 'Watchlist', href: '/dashboard', icon: '▤' },
+  { label: 'Portfolio', href: '/portfolio',  icon: '◈' },
+  { label: 'Sectors',   href: '/sectors',    icon: '◧' },
 ];

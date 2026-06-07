@@ -1,0 +1,282 @@
+@use '../../styles/variables' as *;
+
+.page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  background: $surface-base;
+  padding: $space-6;
+
+  &::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 20% 30%, var(--accent-glow) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 40% at 80% 70%, color-mix(in srgb, var(--accent-secondary) 8%, transparent) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+}
+
+.card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  background: $surface-panel;
+  border: 1px solid $chrome-mid;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-popup;
+  padding: $space-8 $space-8;
+
+  @media (max-width: 480px) {
+    padding: $space-6 $space-5;
+    border-radius: $radius-lg;
+  }
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  margin-bottom: $space-6;
+
+  img { width: 28px; height: 28px; }
+}
+
+.logoName {
+  font-family: $font-ui;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: $text-primary;
+}
+
+.heading {
+  font-family: $font-ui;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: $text-primary;
+  margin-bottom: $space-1;
+}
+
+.subheading {
+  font-family: $font-ui;
+  font-size: 14px;
+  color: $text-tertiary;
+  margin-bottom: $space-6;
+  line-height: 1.5;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.label {
+  font-family: $font-ui;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: $text-secondary;
+  text-transform: uppercase;
+}
+
+.input {
+  height: 42px;
+  padding: 0 $space-3;
+  background: $surface-raised;
+  border: 1.5px solid $chrome-mid;
+  border-radius: $radius-md;
+  font-family: $font-ui;
+  font-size: 14px;
+  color: $text-primary;
+  outline: none;
+  transition: border-color $motion-fast, box-shadow $motion-fast;
+  width: 100%;
+  box-sizing: border-box;
+
+  &::placeholder { color: $text-disabled; }
+
+  &:focus {
+    border-color: $accent;
+    box-shadow: $shadow-glow;
+  }
+
+  &.inputError {
+    border-color: $neg;
+  }
+}
+
+.fieldError {
+  font-family: $font-ui;
+  font-size: 12px;
+  color: $neg;
+}
+
+.submitBtn {
+  height: 44px;
+  width: 100%;
+  border-radius: $radius-md;
+  background: linear-gradient(135deg, $accent 0%, $accent-secondary 100%);
+  color: #fff;
+  font-family: $font-ui;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  border: none;
+  cursor: pointer;
+  transition: opacity $motion-fast, box-shadow $motion-fast;
+  margin-top: $space-2;
+
+  &:hover:not(:disabled) {
+    opacity: 0.92;
+    box-shadow: $shadow-glow;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  margin: $space-2 0;
+
+  &::before, &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: $chrome-dim;
+  }
+
+  span {
+    font-family: $font-ui;
+    font-size: 11px;
+    font-weight: 600;
+    color: $text-disabled;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+}
+
+.googleBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-3;
+  height: 44px;
+  width: 100%;
+  border-radius: $radius-md;
+  background: $surface-raised;
+  border: 1.5px solid $chrome-mid;
+  font-family: $font-ui;
+  font-size: 14px;
+  font-weight: 600;
+  color: $text-primary;
+  cursor: pointer;
+  transition: background $motion-fast, border-color $motion-fast;
+
+  &:hover:not(:disabled) {
+    background: $surface-hover;
+    border-color: $chrome-bright;
+  }
+}
+
+.googleIcon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.errorBanner {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-3 $space-4;
+  background: $neg-bg;
+  border: 1px solid $neg;
+  border-radius: $radius-md;
+  font-family: $font-ui;
+  font-size: 13px;
+  color: $neg;
+}
+
+.successBanner {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-3 $space-4;
+  background: $pos-bg;
+  border: 1px solid $pos;
+  border-radius: $radius-md;
+  font-family: $font-ui;
+  font-size: 13px;
+  color: $pos;
+}
+
+.footer {
+  margin-top: $space-5;
+  text-align: center;
+  font-family: $font-ui;
+  font-size: 13px;
+  color: $text-tertiary;
+
+  a {
+    color: $accent;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover { text-decoration: underline; }
+  }
+}
+
+.forgotLink {
+  align-self: flex-end;
+  font-family: $font-ui;
+  font-size: 12px;
+  color: $accent;
+  text-decoration: none;
+  font-weight: 500;
+
+  &:hover { text-decoration: underline; }
+}
+
+.strengthBar {
+  height: 3px;
+  border-radius: $radius-pill;
+  background: $chrome-dim;
+  overflow: hidden;
+  margin-top: 4px;
+
+  .strengthFill {
+    height: 100%;
+    border-radius: $radius-pill;
+    transition: width $motion-base, background $motion-base;
+  }
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  font-family: $font-ui;
+  font-size: 13px;
+  color: $text-tertiary;
+  text-decoration: none;
+  margin-bottom: $space-4;
+
+  &:hover { color: $text-secondary; }
+}

@@ -119,17 +119,11 @@ function StockRowInner({
         {/* Name */}
         <span className={styles.name}>{name || ticker}</span>
 
-        {/* Price + connection dot */}
+        {/* Price */}
         <span className={styles.priceCell}>
           <span className={`${styles.price} ${flash === 'up' ? styles.flashUp : flash === 'down' ? styles.flashDown : ''}`}>
             {fmtPrice(cachedData?.price)}
           </span>
-          {isConnected !== null && (
-            <span
-              className={`${styles.connDot} ${isConnected ? styles.connOnline : styles.connOffline}`}
-              title={isConnected ? 'Live' : 'Offline'}
-            />
-          )}
         </span>
 
         {/* Change % */}

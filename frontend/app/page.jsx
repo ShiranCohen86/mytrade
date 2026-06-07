@@ -1,11 +1,10 @@
 
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useStocks } from '@/hooks/useStocks';
 import { WatchlistTable } from '@/components/WatchlistTable/WatchlistTable';
 import { SummaryStrip } from '@/components/SummaryStrip/SummaryStrip';
 import { WatchlistSummary } from '@/components/WatchlistSummary/WatchlistSummary';
 import { AddTickerForm } from '@/components/AddTickerForm/AddTickerForm';
-import { MarketRegimeBadge } from '@/components/MarketRegimeBadge/MarketRegimeBadge';
 import { EarningsCalendar } from '@/components/EarningsCalendar/EarningsCalendar';
 import styles from './page.module.scss';
 
@@ -32,21 +31,20 @@ export default function DashboardPage() {
     try { return localStorage.getItem('watchlist-sort') || 'default'; } catch { return 'default'; }
   });
   const [dismissedError, setDismissedError] = useState(null);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreRef = useRef(null);
+
+  useEffect(() => {
+    if (!moreOpen) return;
+    const onOutside = (e) => { if (moreRef.current && !moreRef.current.contains(e.target)) setMoreOpen(false); };
+    document.addEventListener('mousedown', onOutside);
+    document.addEventListener('touchstart', onOutside);
+    return () => { document.removeEventListener('mousedown', onOutside); document.removeEventListener('touchstart', onOutside); };
+  }, [moreOpen]);
 
   useEffect(() => {
     try { localStorage.setItem('watchlist-sort', sortKey); } catch { /* storage unavailable */ }
   }, [sortKey]);
-
-  const globalRegime = useMemo(() => {
-    const counts = {};
-    for (const s of stocks) {
-      const r = s.analysis?.marketRegime;
-      if (r) counts[r] = (counts[r] ?? 0) + 1;
-    }
-    const entries = Object.entries(counts);
-    if (!entries.length) return null;
-    return entries.reduce((a, b) => (b[1] > a[1] ? b : a))[0];
-  }, [stocks]);
 
   const sortedStocks = useMemo(() => sortStocks(stocks, sortKey), [stocks, sortKey]);
 
@@ -89,28 +87,33 @@ export default function DashboardPage() {
     <div className={styles.page}>
       {/* Workspace toolbar */}
       <div className={styles.toolbar}>
-        <div className={styles.toolbarLeft}>
-          <span className={styles.pageTitle}>Watchlist</span>
-          {stocks.length > 0 && (
-            <span className={styles.stockCount}>{stocks.length}</span>
-          )}
-          {globalRegime && <MarketRegimeBadge regime={globalRegime} size="sm" />}
-        </div>
-        <div className={styles.toolbarRight}>
-          {stocks.length > 0 && (
-            <>
-              <EarningsCalendar stocks={stocks} />
-              <button className={styles.toolBtn} onClick={exportCSV} title="Export to CSV">
-                ↓ CSV
-              </button>
-              <button
-                className={styles.toolBtn}
-                onClick={reload}
-                disabled={isLoading || isAnalyzing}
-                title="Reload from server"
-              >
-                ↺ Reload
-              </button>
+        {/* Row 1: title + desktop actions */}
+        <div className={styles.toolbarRow}>
+          <div className={styles.toolbarLeft}>
+            <span className={styles.pageTitle}>Watchlist</span>
+            {stocks.length > 0 && (
+              <span className={styles.stockCount}>{stocks.length}</span>
+            )}
+          </div>
+          <div className={styles.toolbarRight}>
+            {/* Desktop-only secondary actions */}
+            {stocks.length > 0 && (
+              <div className={styles.desktopActions}>
+                <EarningsCalendar stocks={stocks} />
+                <button className={styles.toolBtn} onClick={exportCSV} title="Export to CSV">
+                  ↓ CSV
+                </button>
+                <button
+                  className={styles.toolBtn}
+                  onClick={reload}
+                  disabled={isLoading || isAnalyzing}
+                  title="Reload from server"
+                >
+                  ↺ Reload
+                </button>
+              </div>
+            )}
+            {stocks.length > 0 && (
               <button
                 className={`${styles.toolBtn} ${styles.analyzeBtn} ${isAnalyzing ? styles.analyzeBtnActive : ''}`}
                 onClick={analyzeAll}
@@ -123,10 +126,46 @@ export default function DashboardPage() {
                   '⟳ Analyze All'
                 )}
               </button>
-            </>
-          )}
-          <AddTickerForm onAdd={handleAdd} />
+            )}
+            <AddTickerForm onAdd={handleAdd} />
+          </div>
         </div>
+
+        {/* Mobile-only row 2: overflow more menu */}
+        {stocks.length > 0 && (
+          <div className={styles.mobileActionsRow}>
+            <div ref={moreRef} className={styles.moreWrap}>
+              <button
+                className={styles.toolBtn}
+                onClick={() => setMoreOpen((v) => !v)}
+                aria-label="More actions"
+                aria-expanded={moreOpen}
+              >
+                ⋯ More
+              </button>
+              {moreOpen && (
+                <div className={styles.moreDropdown} role="menu">
+                  <EarningsCalendar stocks={stocks} onClose={() => setMoreOpen(false)} />
+                  <button
+                    className={styles.moreItem}
+                    onClick={() => { exportCSV(); setMoreOpen(false); }}
+                    role="menuitem"
+                  >
+                    ↓ Export CSV
+                  </button>
+                  <button
+                    className={styles.moreItem}
+                    onClick={() => { reload(); setMoreOpen(false); }}
+                    disabled={isLoading || isAnalyzing}
+                    role="menuitem"
+                  >
+                    ↺ Reload
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {showError && (

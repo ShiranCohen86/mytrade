@@ -91,7 +91,7 @@ export function AddTickerForm({ onAdd }) {
           autoComplete="off"
           aria-label="Add stock ticker or comma-separated list"
         />
-        <button type="submit" className={styles.button} disabled={loading || !value.trim()}>
+        <button type="submit" className={styles.button} disabled={loading}>
           {loading ? (
             progress ? <span className={styles.progressText}>{progress.split('(')[0].trim()}</span> : <span className={styles.spinner} />
           ) : (

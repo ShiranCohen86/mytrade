@@ -1,0 +1,516 @@
+@use '../styles/variables' as *;
+
+// ─── Page wrapper ─────────────────────────────────────────────────────────────
+
+.page {
+  min-height: 100dvh;
+  background: $surface-base;
+  color: $text-primary;
+  font-family: $font-ui;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+// ─── Nav ─────────────────────────────────────────────────────────────────────
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 $space-8;
+  height: 64px;
+  border-bottom: 1px solid $chrome-dim;
+  background: $surface-glass;
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  @media (max-width: 640px) {
+    padding: 0 $space-5;
+  }
+}
+
+.navBrand {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: $text-primary;
+
+  img { border-radius: $radius-sm; }
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+}
+
+.navLink {
+  font-size: 14px;
+  font-weight: 500;
+  color: $text-secondary;
+  text-decoration: none;
+  padding: $space-2 $space-3;
+  border-radius: $radius-md;
+  transition: color $motion-fast, background $motion-fast;
+
+  &:hover { color: $text-primary; background: $surface-raised; }
+}
+
+.navCta {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, $accent 0%, $accent-secondary 100%);
+  text-decoration: none;
+  padding: $space-2 $space-4;
+  border-radius: $radius-md;
+  transition: opacity $motion-fast, box-shadow $motion-fast;
+
+  &:hover { opacity: 0.9; box-shadow: $shadow-glow; }
+}
+
+// ─── Hero ─────────────────────────────────────────────────────────────────────
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 96px $space-8 80px;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 0%, color-mix(in srgb, var(--accent) 10%, transparent) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  @media (max-width: 640px) {
+    padding: 64px $space-5 60px;
+  }
+}
+
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-1 $space-4;
+  background: $accent-faint;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  border-radius: $radius-pill;
+  font-size: 12px;
+  font-weight: 600;
+  color: $accent;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin-bottom: $space-5;
+  position: relative;
+}
+
+.heroHeading {
+  font-size: clamp(32px, 6vw, 58px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+  color: $text-primary;
+  max-width: 720px;
+  margin-bottom: $space-5;
+  position: relative;
+}
+
+.heroSubheading {
+  font-size: clamp(15px, 2vw, 18px);
+  color: $text-tertiary;
+  max-width: 520px;
+  line-height: 1.65;
+  margin-bottom: $space-7;
+  position: relative;
+}
+
+.heroCtas {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  margin-bottom: $space-8;
+  flex-wrap: wrap;
+  justify-content: center;
+  position: relative;
+}
+
+// ─── Market strip ─────────────────────────────────────────────────────────────
+
+.marketStrip {
+  display: flex;
+  gap: $space-3;
+  overflow-x: auto;
+  padding: $space-1;
+  position: relative;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+
+  @media (max-width: 640px) {
+    gap: $space-2;
+  }
+}
+
+.tickerCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: $space-3 $space-5;
+  background: $surface-panel;
+  border: 1px solid $chrome-mid;
+  border-radius: $radius-lg;
+  min-width: 100px;
+  flex-shrink: 0;
+}
+
+.tickerSymbol {
+  font-family: $font-data;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: $text-tertiary;
+  text-transform: uppercase;
+}
+
+.tickerPrice {
+  font-family: $font-data;
+  font-size: 14px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: $text-primary;
+}
+
+.tickerChange {
+  font-family: $font-data;
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+// ─── CTAs ─────────────────────────────────────────────────────────────────────
+
+.ctaPrimary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-3 $space-7;
+  background: linear-gradient(135deg, $accent 0%, $accent-secondary 100%);
+  color: #fff;
+  font-family: $font-ui;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  border-radius: $radius-md;
+  transition: opacity $motion-fast, box-shadow $motion-fast, transform $motion-fast;
+  white-space: nowrap;
+
+  &:hover {
+    opacity: 0.92;
+    box-shadow: $shadow-glow;
+    transform: translateY(-1px);
+  }
+}
+
+.ctaGhost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-3 $space-6;
+  background: $surface-raised;
+  border: 1.5px solid $chrome-mid;
+  color: $text-secondary;
+  font-family: $font-ui;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: $radius-md;
+  transition: background $motion-fast, border-color $motion-fast, color $motion-fast;
+
+  &:hover {
+    background: $surface-hover;
+    border-color: $chrome-bright;
+    color: $text-primary;
+  }
+}
+
+// ─── Stats bar ────────────────────────────────────────────────────────────────
+
+.statsBar {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  border-top: 1px solid $chrome-dim;
+  border-bottom: 1px solid $chrome-dim;
+  background: $surface-panel;
+  overflow-x: auto;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $space-6 $space-10;
+  gap: $space-1;
+  border-right: 1px solid $chrome-dim;
+
+  &:last-child { border-right: none; }
+
+  @media (max-width: 640px) {
+    padding: $space-5 $space-6;
+  }
+}
+
+.statNum {
+  font-family: $font-data;
+  font-size: 26px;
+  font-weight: 800;
+  color: $accent;
+  letter-spacing: -0.04em;
+}
+
+.statLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: $text-tertiary;
+  text-align: center;
+  white-space: nowrap;
+}
+
+// ─── Features ─────────────────────────────────────────────────────────────────
+
+.features {
+  padding: 96px $space-8;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    padding: 64px $space-5;
+  }
+}
+
+.sectionHeading {
+  font-size: clamp(22px, 4vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  color: $text-primary;
+  text-align: center;
+  margin-bottom: $space-10;
+}
+
+.featureGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-5;
+
+  @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 560px) { grid-template-columns: 1fr; }
+}
+
+.featureCard {
+  background: $surface-panel;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-xl;
+  padding: $space-6;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  transition: border-color $motion-base, box-shadow $motion-base, transform $motion-base;
+
+  &:hover {
+    border-color: $chrome-mid;
+    box-shadow: $shadow-sm;
+    transform: translateY(-2px);
+  }
+}
+
+.featureIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: $radius-md;
+  background: $accent-faint;
+  color: $accent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.featureTitle {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: $text-primary;
+}
+
+.featureDesc {
+  font-size: 13px;
+  color: $text-tertiary;
+  line-height: 1.6;
+}
+
+// ─── How it works ─────────────────────────────────────────────────────────────
+
+.howItWorks {
+  padding: 0 $space-8 96px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    padding: 0 $space-5 64px;
+  }
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-6;
+  margin-top: $space-10;
+
+  @media (max-width: 640px) { grid-template-columns: 1fr; gap: $space-4; }
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  padding: $space-6;
+  background: $surface-panel;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-xl;
+}
+
+.stepNum {
+  font-family: $font-data;
+  font-size: 28px;
+  font-weight: 800;
+  color: $accent;
+  opacity: 0.35;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.stepTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.stepDesc {
+  font-size: 13px;
+  color: $text-tertiary;
+  line-height: 1.6;
+}
+
+// ─── CTA banner ───────────────────────────────────────────────────────────────
+
+.ctaBanner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 96px $space-8;
+  background: $surface-panel;
+  border-top: 1px solid $chrome-dim;
+  border-bottom: 1px solid $chrome-dim;
+  gap: $space-4;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 70% at 50% 50%, color-mix(in srgb, var(--accent) 6%, transparent) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  @media (max-width: 640px) {
+    padding: 64px $space-5;
+  }
+}
+
+.ctaBannerHeading {
+  font-size: clamp(26px, 4vw, 40px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: $text-primary;
+  position: relative;
+}
+
+.ctaBannerSub {
+  font-size: 15px;
+  color: $text-tertiary;
+  position: relative;
+}
+
+// ─── Footer ───────────────────────────────────────────────────────────────────
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $space-5 $space-8;
+  border-top: 1px solid $chrome-dim;
+  gap: $space-4;
+  flex-wrap: wrap;
+
+  @media (max-width: 640px) {
+    padding: $space-5;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $space-3;
+  }
+}
+
+.footerBrand {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: $text-secondary;
+
+  img { border-radius: $radius-sm; }
+}
+
+.footerTagline {
+  font-size: 12px;
+  color: $text-disabled;
+}
+
+.footerLinks {
+  display: flex;
+  gap: $space-4;
+
+  a {
+    font-size: 13px;
+    color: $text-tertiary;
+    text-decoration: none;
+    transition: color $motion-fast;
+
+    &:hover { color: $text-primary; }
+  }
+}
+
+// ─── Color helpers ────────────────────────────────────────────────────────────
+
+.pos { color: $pos; }
+.neg { color: $neg; }

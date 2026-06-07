@@ -4,9 +4,13 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const compression = require('compression');
+const cookieParser = require('cookie-parser');
 const config = require('./config');
 const db = require('./db');
 const logger = require('./utils/logger');
+
+// Initialize passport strategies
+require('./config/passport');
 
 const app = express();
 
@@ -18,10 +22,10 @@ app.use((_req, res, next) => {
   res.setHeader('Content-Security-Policy', [
     "default-src 'self'",
     "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-    "style-src 'self' 'unsafe-inline'",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "img-src 'self' data: https:",
     "connect-src 'self' https:",
-    "font-src 'self'",
+    "font-src 'self' https://fonts.gstatic.com",
   ].join('; '));
   next();
 });
@@ -46,6 +50,7 @@ app.use(cors({
 
 // Body parser with size limit (prevents DoS via large payloads)
 app.use(express.json({ limit: '10kb' }));
+app.use(cookieParser());
 
 // Rate limiter — 100 requests per minute per IP
 const limiter = rateLimit({
@@ -71,6 +76,43 @@ app.use('/api/stocks', (req, res, next) => {
   next();
 });
 
+// Auth rate limiter — 20 auth attempts per 15 min per IP
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many auth attempts. Please try again later.' },
+});
+app.use('/auth/login', authLimiter);
+app.use('/auth/register', authLimiter);
+app.use('/auth/forgot-password', authLimiter);
+
+// Public market overview endpoint — must be registered BEFORE the stocks router
+// (stocks router has router.use(auth) which would block unauthenticated requests)
+app.get('/api/market/overview', async (_req, res) => {
+  try {
+    const provider = require('./providers/ProviderFactory');
+    const tickers = ['SPY', 'QQQ', 'DIA', 'VIX'];
+    const quotes = await Promise.all(
+      tickers.map(async (ticker) => {
+        try {
+          const q = await provider.getCurrentQuote(ticker);
+          return { ticker, price: q.price, change: q.change, changePercent: q.changePercent };
+        } catch {
+          return { ticker, price: null, change: null, changePercent: null };
+        }
+      })
+    );
+    res.json(quotes);
+  } catch (err) {
+    logger.error('GET /api/market/overview', { err: err.message });
+    res.status(500).json({ error: 'Failed to fetch market overview.' });
+  }
+});
+
+// Routes
+app.use('/auth', require('./routes/auth'));
 app.use('/api', require('./routes/stocks'));
 
 app.get('/health', async (_req, res) => {
@@ -115,13 +157,6 @@ async function start() {
   try {
     await db.connect();
 
-    const { User } = db;
-    const userCount = await User.countDocuments();
-    if (userCount === 0) {
-      await User.create({ watchlist: [] });
-      logger.info('Default user seeded');
-    }
-
     try {
       require('./jobs/cacheRefresh');
     } catch (cronErr) {
@@ -151,7 +186,6 @@ function shutdown(signal) {
       }
       process.exit(0);
     });
-    // Force exit if server takes > 10s to close
     setTimeout(() => process.exit(1), 10_000).unref();
   } else {
     process.exit(0);

@@ -13,8 +13,32 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+
+      # ── Database ──────────────────────────────────────────────────────────
       - key: MONGO_URI
         sync: false           # Set in Render dashboard → Environment
+
+      # ── Authentication (JWT) ─────────────────────────────────────────────
+      # Generate: node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+      - key: JWT_SECRET
+        sync: false           # Set in Render dashboard → Environment
+      - key: JWT_REFRESH_SECRET
+        sync: false           # Set in Render dashboard → Environment
+
+      # ── Frontend URL (used for password reset links + Google OAuth redirect)
+      # Set this to your Render service URL: https://mytrade.onrender.com
+      - key: CLIENT_URL
+        sync: false           # Set in Render dashboard → Environment
+
+      # ── Google OAuth (optional) ────────────────────────────────────────────
+      # - key: GOOGLE_CLIENT_ID
+      #   sync: false
+      # - key: GOOGLE_CLIENT_SECRET
+      #   sync: false
+      # - key: GOOGLE_CALLBACK_URL
+      #   value: https://mytrade.onrender.com/auth/google/callback
+
+      # ── News & Cache ──────────────────────────────────────────────────────
       - key: CACHE_TTL_MINUTES
         value: 60
       - key: CRON_SCHEDULE

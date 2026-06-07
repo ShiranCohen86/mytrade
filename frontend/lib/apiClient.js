@@ -1,8 +1,57 @@
-async function request(path, options) {
+const EXPRESS = import.meta.env.VITE_EXPRESS_URL || '';
+const TOKEN_KEY = 'mytrade-token';
+
+function getToken() {
+  try { return localStorage.getItem(TOKEN_KEY); } catch { return null; }
+}
+
+function authHeaders() {
+  const token = getToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+async function request(path, options = {}) {
   const res = await fetch(path, {
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...authHeaders(),
+      ...options.headers,
+    },
+    credentials: 'include',
     ...options,
   });
+
+  if (res.status === 401) {
+    // Try to refresh the access token first
+    try {
+      const refreshRes = await fetch(`${EXPRESS}/auth/refresh`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      if (refreshRes.ok) {
+        const { accessToken } = await refreshRes.json();
+        localStorage.setItem(TOKEN_KEY, accessToken);
+        // Retry original request with new token
+        const retry = await fetch(path, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+            ...options.headers,
+          },
+          credentials: 'include',
+          ...options,
+        });
+        if (retry.ok) {
+          if (retry.status === 204) return undefined;
+          return retry.json();
+        }
+      }
+    } catch { /* fall through to redirect */ }
+
+    localStorage.removeItem(TOKEN_KEY);
+    window.location.href = '/login';
+    throw new Error('Session expired. Please sign in again.');
+  }
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({ error: res.statusText }));
@@ -26,15 +75,12 @@ async function requestWithRetry(path, options) {
     if (err.name === 'AbortError') throw err;
     if (err.message.startsWith('Request failed:')) throw err;
     if (err.message.startsWith('Unexpected response type')) throw err;
+    if (err.message.includes('Session expired')) throw err;
     if (options?.method && options.method !== 'GET') throw err;
     await new Promise((r) => setTimeout(r, 500));
     return request(path, options);
   }
 }
-
-// In dev: '' means Vite proxy routes /api/* → http://localhost:5000
-// In prod: set VITE_EXPRESS_URL to the deployed Express URL
-const EXPRESS = import.meta.env.VITE_EXPRESS_URL || '';
 
 export const checkHealth = () =>
   request(`${EXPRESS}/health`);
@@ -89,3 +135,43 @@ export const saveNote = (ticker, text) =>
   request(`${EXPRESS}/api/notes/${ticker}`, { method: 'PUT', body: JSON.stringify({ text }) });
 export const deleteNote = (ticker) =>
   request(`${EXPRESS}/api/notes/${ticker}`, { method: 'DELETE' });
+
+export const getMarketOverview = () =>
+  request(`${EXPRESS}/api/market/overview`);
+
+// Auth endpoints
+export const authRegister = (email, password, displayName) =>
+  request(`${EXPRESS}/auth/register`, {
+    method: 'POST',
+    body: JSON.stringify({ email, password, displayName }),
+  });
+
+export const authLogin = (email, password) =>
+  request(`${EXPRESS}/auth/login`, {
+    method: 'POST',
+    body: JSON.stringify({ email, password }),
+  });
+
+export const authForgotPassword = (email) =>
+  request(`${EXPRESS}/auth/forgot-password`, {
+    method: 'POST',
+    body: JSON.stringify({ email }),
+  });
+
+export const authResetPassword = (token, password) =>
+  request(`${EXPRESS}/auth/reset-password`, {
+    method: 'POST',
+    body: JSON.stringify({ token, password }),
+  });
+
+export const updateProfile = (data) =>
+  request(`${EXPRESS}/auth/profile`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+
+export const changePassword = (currentPassword, newPassword) =>
+  request(`${EXPRESS}/auth/password`, {
+    method: 'PUT',
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });

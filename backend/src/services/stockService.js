@@ -147,8 +147,8 @@ async function analyzeStock(ticker) {
   return stockDoc;
 }
 
-async function getWatchlist() {
-  const user = await User.findOne();
+async function getWatchlist(userId) {
+  const user = await User.findById(userId);
   if (!user || !user.watchlist.length) return [];
 
   const stocks = await Stock.find({ ticker: { $in: user.watchlist } }).select('-__v').lean();

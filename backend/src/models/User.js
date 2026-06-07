@@ -26,6 +26,14 @@ const stockNoteSchema = new mongoose.Schema(
 
 const userSchema = new mongoose.Schema(
   {
+    email: { type: String, unique: true, sparse: true, lowercase: true, trim: true },
+    passwordHash: { type: String, select: false },
+    googleId: { type: String, sparse: true },
+    displayName: { type: String, default: '' },
+    avatar: { type: String, default: '' },
+    onboardingDone: { type: Boolean, default: false },
+    resetToken: { type: String, select: false },
+    resetTokenExpiry: { type: Date, select: false },
     watchlist: {
       type: [{ type: String, uppercase: true, trim: true }],
       validate: {
@@ -39,7 +47,15 @@ const userSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-    toJSON: { transform: (_doc, ret) => { delete ret.__v; return ret; } },
+    toJSON: {
+      transform: (_doc, ret) => {
+        delete ret.__v;
+        delete ret.passwordHash;
+        delete ret.resetToken;
+        delete ret.resetTokenExpiry;
+        return ret;
+      },
+    },
   }
 );
 

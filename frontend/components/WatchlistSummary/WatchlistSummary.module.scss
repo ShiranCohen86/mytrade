@@ -135,7 +135,34 @@
 }
 
 @media (max-width: 640px) {
-  .grid { flex-direction: column; }
-  .card { min-width: unset; }
+  .wrapper {
+    padding: $space-4 $space-4;
+    gap: $space-4;
+  }
+
+  .grid {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: $space-2;
+    &::-webkit-scrollbar { display: none; }
+  }
+
+  .card {
+    min-width: 120px;
+    flex: 0 0 auto;
+    padding: $space-3 $space-4;
+    border-radius: $radius-lg;
+  }
+
+  .value {
+    font-size: 22px;
+  }
+
+  .sectors { display: none; }
+
   .sectRow { grid-template-columns: 120px 1fr 28px; }
 }

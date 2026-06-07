@@ -172,6 +172,105 @@
   }
 }
 
+// ─── User avatar + dropdown ──────────────────────────────────────────────────
+
+.userWrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.userBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  padding: 2px;
+  border: 1.5px solid $chrome-mid;
+  transition: border-color $motion-fast, box-shadow $motion-fast;
+
+  &:hover { border-color: $accent; box-shadow: $shadow-glow; }
+}
+
+.userDropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 300;
+  min-width: 220px;
+  background: $surface-elevated;
+  border: 1px solid $chrome-mid;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-popup;
+  padding: $space-2;
+  animation: dropIn 140ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  @keyframes dropIn {
+    from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+}
+
+.userDropdownHeader {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-2 $space-3;
+}
+
+.userDropdownInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.userDropdownName {
+  font-family: $font-ui;
+  font-size: 13px;
+  font-weight: 600;
+  color: $text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userDropdownEmail {
+  font-family: $font-ui;
+  font-size: 11px;
+  color: $text-tertiary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userDropdownDivider {
+  height: 1px;
+  background: $chrome-dim;
+  margin: $space-2 0;
+}
+
+.userDropdownItem {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  width: 100%;
+  padding: $space-2 $space-3;
+  border-radius: $radius-sm;
+  font-family: $font-ui;
+  font-size: 13px;
+  font-weight: 500;
+  color: $text-secondary;
+  text-align: left;
+  transition: background $motion-fast, color $motion-fast;
+
+  &:hover {
+    background: $surface-raised;
+    color: $text-primary;
+  }
+}
+
 // ─── Clock ────────────────────────────────────────────────────────────────────
 
 .clock {

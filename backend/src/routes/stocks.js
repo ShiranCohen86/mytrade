@@ -3,14 +3,16 @@ const router = express.Router();
 const stockService = require('../services/stockService');
 const newsService = require('../services/newsService');
 const { Stock, User } = require('../db');
-// D14: require provider once at module load, not inside handlers
 const provider = require('../providers/ProviderFactory');
+const auth = require('../middleware/auth');
 const logger = require('../utils/logger');
 
 const MAX_WATCHLIST = 25;
 
+// All stock routes require authentication
+router.use(auth);
+
 function safeError(err) {
-  // Never expose raw internal errors (stack traces, file paths, Yahoo errors) to clients
   if (!err || !err.message) return 'An unexpected error occurred.';
   const msg = err.message;
   if (msg.toLowerCase().includes('not found') || msg.toLowerCase().includes('no market data')) {
@@ -22,13 +24,12 @@ function safeError(err) {
   return 'An unexpected error occurred. Please try again.';
 }
 
-async function getUser() {
-  const user = await User.findOne();
-  if (!user) throw new Error('User not initialized. Please restart the server.');
+async function getUser(userId) {
+  const user = await User.findById(userId);
+  if (!user) throw new Error('User not found.');
   return user;
 }
 
-// D19: Strip any non-ticker characters after uppercasing
 function sanitizeTicker(raw) {
   return raw.toUpperCase().replace(/[^A-Z0-9.]/g, '');
 }
@@ -36,7 +37,7 @@ function sanitizeTicker(raw) {
 // GET /api/stocks — list watchlist with latest analysis
 router.get('/stocks', async (req, res) => {
   try {
-    const stocks = await stockService.getWatchlist();
+    const stocks = await stockService.getWatchlist(req.user.id);
     res.json(stocks);
   } catch (err) {
     logger.error('GET /stocks', { err: err.message });
@@ -53,7 +54,7 @@ router.post('/stocks', async (req, res) => {
     }
 
     const t = ticker.trim().toUpperCase();
-    const user = await getUser();
+    const user = await getUser(req.user.id);
 
     if (user.watchlist.includes(t)) {
       return res.status(409).json({ error: `${t} is already in your watchlist.` });
@@ -63,7 +64,6 @@ router.post('/stocks', async (req, res) => {
       return res.status(400).json({ error: `Watchlist limit reached (max ${MAX_WATCHLIST} stocks).` });
     }
 
-    // Quick existence check before running full analysis — rejects fake tickers early
     try {
       const q = await provider.getCurrentQuote(t);
       if (!q || q.price == null) {
@@ -78,12 +78,10 @@ router.post('/stocks', async (req, res) => {
       return res.status(isNotFound ? 404 : 500).json({ error: safeError(checkErr) });
     }
 
-    // Run analysis first — if it fails (ticker not found), nothing gets persisted
     const stock = await stockService.analyzeStock(t);
 
-    // Only add to watchlist after successful analysis; compensate if watchlist update fails
     try {
-      await User.updateOne({}, { $addToSet: { watchlist: t } });
+      await User.updateOne({ _id: req.user.id }, { $addToSet: { watchlist: t } });
     } catch (watchlistErr) {
       await Stock.deleteOne({ ticker: t }).catch(() => {});
       throw watchlistErr;
@@ -105,12 +103,12 @@ router.post('/stocks', async (req, res) => {
 router.delete('/stocks/:ticker', async (req, res) => {
   try {
     const t = sanitizeTicker(req.params.ticker);
-    const user = await getUser();
+    const user = await getUser(req.user.id);
     if (!user.watchlist.includes(t)) {
       return res.status(404).json({ error: `${t} is not in your watchlist.` });
     }
     await Promise.all([
-      User.updateOne({}, { $pull: { watchlist: t } }),
+      User.updateOne({ _id: req.user.id }, { $pull: { watchlist: t } }),
       Stock.deleteOne({ ticker: t }),
     ]);
     res.status(204).send();
@@ -124,7 +122,7 @@ router.delete('/stocks/:ticker', async (req, res) => {
 router.get('/stocks/:ticker/analysis', async (req, res) => {
   try {
     const t = sanitizeTicker(req.params.ticker);
-    const user = await getUser();
+    const user = await getUser(req.user.id);
     if (!user.watchlist.includes(t)) {
       return res.status(403).json({ error: `${t} is not in your watchlist.` });
     }
@@ -143,13 +141,10 @@ router.get('/stocks/:ticker/analysis', async (req, res) => {
 router.post('/refresh/:ticker', async (req, res) => {
   try {
     const t = sanitizeTicker(req.params.ticker);
-
-    // Verify ticker is in the watchlist before doing expensive analysis
-    const user = await getUser();
+    const user = await getUser(req.user.id);
     if (!user.watchlist.includes(t)) {
       return res.status(404).json({ error: `${t} is not in your watchlist.` });
     }
-
     const stock = await stockService.analyzeStock(t);
     res.json(stock);
   } catch (err) {
@@ -162,7 +157,7 @@ router.post('/refresh/:ticker', async (req, res) => {
 router.get('/stocks/:ticker/quote', async (req, res) => {
   try {
     const t = sanitizeTicker(req.params.ticker);
-    const user = await getUser();
+    const user = await getUser(req.user.id);
     if (!user.watchlist.includes(t)) {
       return res.status(403).json({ error: `${t} is not in your watchlist.` });
     }
@@ -177,7 +172,7 @@ router.get('/stocks/:ticker/quote', async (req, res) => {
 // GET /api/quotes — live price + change for all watchlist tickers (fast, no analysis)
 router.get('/quotes', async (req, res) => {
   try {
-    const user = await getUser();
+    const user = await getUser(req.user.id);
     if (!user.watchlist.length) return res.json([]);
 
     const quotes = await Promise.all(
@@ -199,10 +194,9 @@ router.get('/quotes', async (req, res) => {
 
 // ─── Portfolio (P&L) endpoints ────────────────────────────────────────────────
 
-// GET /api/portfolio — return all entry prices
 router.get('/portfolio', async (req, res) => {
   try {
-    const user = await getUser();
+    const user = await getUser(req.user.id);
     res.json(user.portfolio || []);
   } catch (err) {
     logger.error('GET /portfolio', { err: err.message });
@@ -210,7 +204,6 @@ router.get('/portfolio', async (req, res) => {
   }
 });
 
-// PUT /api/portfolio/:ticker — set entry price (upsert)
 router.put('/portfolio/:ticker', async (req, res) => {
   try {
     const t = sanitizeTicker(req.params.ticker);
@@ -218,7 +211,7 @@ router.put('/portfolio/:ticker', async (req, res) => {
     if (!isFinite(entryPrice) || entryPrice < 0) {
       return res.status(400).json({ error: 'entryPrice must be a non-negative number.' });
     }
-    const user = await getUser();
+    const user = await getUser(req.user.id);
     if (!user.watchlist.includes(t)) {
       return res.status(403).json({ error: `${t} is not in your watchlist.` });
     }
@@ -236,11 +229,10 @@ router.put('/portfolio/:ticker', async (req, res) => {
   }
 });
 
-// DELETE /api/portfolio/:ticker — remove entry price
 router.delete('/portfolio/:ticker', async (req, res) => {
   try {
     const t = sanitizeTicker(req.params.ticker);
-    const user = await getUser();
+    const user = await getUser(req.user.id);
     user.portfolio = user.portfolio.filter((p) => p.ticker !== t);
     await user.save();
     res.status(204).send();
@@ -252,10 +244,9 @@ router.delete('/portfolio/:ticker', async (req, res) => {
 
 // ─── Price Alerts endpoints ────────────────────────────────────────────────────
 
-// GET /api/alerts — return all price alerts
 router.get('/alerts', async (req, res) => {
   try {
-    const user = await getUser();
+    const user = await getUser(req.user.id);
     res.json(user.priceAlerts || []);
   } catch (err) {
     logger.error('GET /alerts', { err: err.message });
@@ -263,7 +254,6 @@ router.get('/alerts', async (req, res) => {
   }
 });
 
-// PUT /api/alerts/:ticker — set/update price alert
 router.put('/alerts/:ticker', async (req, res) => {
   try {
     const t = sanitizeTicker(req.params.ticker);
@@ -272,7 +262,7 @@ router.put('/alerts/:ticker', async (req, res) => {
     if (!isFinite(targetPrice) || targetPrice < 0) {
       return res.status(400).json({ error: 'targetPrice must be a non-negative number.' });
     }
-    const user = await getUser();
+    const user = await getUser(req.user.id);
     if (!user.watchlist.includes(t)) {
       return res.status(403).json({ error: `${t} is not in your watchlist.` });
     }
@@ -291,11 +281,10 @@ router.put('/alerts/:ticker', async (req, res) => {
   }
 });
 
-// DELETE /api/alerts/:ticker — remove price alert
 router.delete('/alerts/:ticker', async (req, res) => {
   try {
     const t = sanitizeTicker(req.params.ticker);
-    const user = await getUser();
+    const user = await getUser(req.user.id);
     user.priceAlerts = user.priceAlerts.filter((a) => a.ticker !== t);
     await user.save();
     res.status(204).send();
@@ -307,18 +296,15 @@ router.delete('/alerts/:ticker', async (req, res) => {
 
 // ─── Watchlist reorder ────────────────────────────────────────────────────────
 
-// PUT /api/watchlist/order — reorder watchlist
 router.put('/watchlist/order', async (req, res) => {
   try {
     const { order } = req.body;
     if (!Array.isArray(order) || order.some((t) => typeof t !== 'string')) {
       return res.status(400).json({ error: 'order must be an array of ticker strings.' });
     }
-    const user = await getUser();
+    const user = await getUser(req.user.id);
     const sanitized = order.map(sanitizeTicker);
-    // Only keep tickers that are actually in the watchlist
     const valid = sanitized.filter((t) => user.watchlist.includes(t));
-    // Append any missing (shouldn't happen, but guard)
     const missing = user.watchlist.filter((t) => !valid.includes(t));
     user.watchlist = [...valid, ...missing];
     await user.save();
@@ -331,10 +317,9 @@ router.put('/watchlist/order', async (req, res) => {
 
 // ─── Stock Notes endpoints ────────────────────────────────────────────────────
 
-// GET /api/notes — return all notes
 router.get('/notes', async (req, res) => {
   try {
-    const user = await getUser();
+    const user = await getUser(req.user.id);
     res.json(user.notes || []);
   } catch (err) {
     logger.error('GET /notes', { err: err.message });
@@ -342,12 +327,11 @@ router.get('/notes', async (req, res) => {
   }
 });
 
-// PUT /api/notes/:ticker — upsert note text (max 1000 chars)
 router.put('/notes/:ticker', async (req, res) => {
   try {
     const t = sanitizeTicker(req.params.ticker);
     const text = String(req.body.text || '').slice(0, 1000);
-    const user = await getUser();
+    const user = await getUser(req.user.id);
     if (!user.watchlist.includes(t)) {
       return res.status(403).json({ error: `${t} is not in your watchlist.` });
     }
@@ -365,11 +349,10 @@ router.put('/notes/:ticker', async (req, res) => {
   }
 });
 
-// DELETE /api/notes/:ticker — remove note
 router.delete('/notes/:ticker', async (req, res) => {
   try {
     const t = sanitizeTicker(req.params.ticker);
-    const user = await getUser();
+    const user = await getUser(req.user.id);
     user.notes = user.notes.filter((n) => n.ticker !== t);
     await user.save();
     res.status(204).send();

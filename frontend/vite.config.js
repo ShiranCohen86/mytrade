@@ -19,6 +19,10 @@ export default defineConfig({
         target: 'http://localhost:5000',
         changeOrigin: true,
       },
+      '/auth': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+      },
       '/health': {
         target: 'http://localhost:5000',
         changeOrigin: true,

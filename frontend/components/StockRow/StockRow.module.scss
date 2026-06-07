@@ -123,6 +123,10 @@ $cols-xs:      44px 1fr 76px 60px 34px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  @media (max-width: 480px) {
+    display: none;
+  }
 }
 
 // ─── Price ───────────────────────────────────────────────────────────────────

@@ -27,19 +27,21 @@ export function SummaryStrip({ stocks }) {
 
   return (
     <div className={styles.strip} role="status" aria-label="Watchlist summary">
-      <StatCell label="Avg Risk" value={stats.avgRisk ?? '—'} alert={stats.avgRisk !== null && stats.avgRisk >= 70} tooltip="Average risk score (0–100). ≥70 = High Risk." />
-      <div className={styles.sep} />
-      <StatCell label="Avg Expect" value={stats.avgExp ?? '—'} tooltip="Average expectation score (0–100): how much upside is already priced in across your watchlist." />
-      <div className={styles.sep} />
-      <StatCell label="High Risk" value={stats.highRisk} alert={stats.highRisk > 0} />
-      <div className={styles.sep} />
-      <StatCell label="Earnings ≤7d" value={stats.earningsSoon} alert={stats.earningsSoon > 0} />
-      {stats.stnRisk > 0 && (
-        <>
-          <div className={styles.sep} />
-          <StatCell label="STN Risk" value={stats.stnRisk} alert tooltip="Sell-the-News Risk: stocks up >10% heading into earnings — price may drop after the report even on good numbers." />
-        </>
-      )}
+      <div className={styles.inner}>
+        <StatCell label="Risk" value={stats.avgRisk ?? '—'} alert={stats.avgRisk !== null && stats.avgRisk >= 70} tooltip="Avg risk score (0–100). ≥70 = High." />
+        <div className={styles.sep} />
+        <StatCell label="Expect" value={stats.avgExp ?? '—'} tooltip="Avg expectation score: how much upside is priced in. Higher = more cautious." />
+        <div className={styles.sep} />
+        <StatCell label="High" value={stats.highRisk} alert={stats.highRisk > 0} tooltip="Stocks with risk ≥ 70" />
+        <div className={styles.sep} />
+        <StatCell label="Earn ≤7d" value={stats.earningsSoon} alert={stats.earningsSoon > 0} tooltip="Stocks with earnings in the next 7 days" />
+        {stats.stnRisk > 0 && (
+          <>
+            <div className={styles.sep} />
+            <StatCell label="STN" value={stats.stnRisk} alert tooltip="Sell-the-News Risk: stocks up >10% heading into earnings." />
+          </>
+        )}
+      </div>
     </div>
   );
 }

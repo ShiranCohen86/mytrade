@@ -16,17 +16,26 @@
 .input {
   flex: 1;
   max-width: 220px;
-  background: transparent;
-  border: none;
+  min-width: 120px;
+  background: $surface-panel;
+  border: 1.5px solid $chrome-mid;
+  border-radius: $radius-md;
   color: $text-primary;
   font-family: $font-data;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 0 $space-4;
-  height: 42px;
+  padding: 0 $space-3;
+  height: 38px;
   min-width: 0;
+  transition: border-color $motion-fast, box-shadow $motion-fast;
+
+  &:focus {
+    outline: none;
+    border-color: $accent;
+    box-shadow: $shadow-glow;
+  }
 
   &::placeholder {
     color: $text-disabled;
@@ -34,6 +43,7 @@
     letter-spacing: 0.02em;
     font-family: $font-ui;
     text-transform: none;
+    font-size: 12px;
   }
 
   &:disabled { opacity: 0.45; }
@@ -43,9 +53,9 @@
   background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
   color: #fff;
   border: none;
-  border-radius: $radius-lg;
+  border-radius: $radius-md;
   padding: 0 $space-5;
-  height: 42px;
+  height: 38px;
   font-family: $font-ui;
   font-size: 13px;
   font-weight: 600;
@@ -113,18 +123,6 @@
 
 // ─── Mobile ───────────────────────────────────────────────────────────────────
 @include below-sm {
-  .input  { height: 46px; }
-  .button { height: 46px; }
-}
-
-@include below-xs {
-  .inputRow {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .button {
-    width: 100%;
-    justify-content: center;
-  }
+  .input  { height: 40px; min-width: 100px; }
+  .button { height: 40px; padding: 0 $space-4; }
 }

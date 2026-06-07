@@ -64,12 +64,23 @@
 .itemActive {
   color: $accent;
 
+  .icon {
+    background: $accent-faint;
+    border-radius: $radius-md;
+    color: $accent;
+  }
+
+  .label {
+    color: $accent;
+    font-weight: 700;
+  }
+
   &::after {
     content: '';
     position: absolute;
     top: 0;
-    left: 25%;
-    right: 25%;
+    left: 20%;
+    right: 20%;
     height: 2px;
     background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
     border-radius: 0 0 $radius-pill $radius-pill;
@@ -77,13 +88,16 @@
 }
 
 .icon {
-  font-size: 18px;
-  line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 36px;
+  height: 28px;
+  border-radius: $radius-sm;
+  transition: background $motion-fast, color $motion-fast;
+  color: inherit;
+
+  svg { display: block; }
 }
 
 .label {
