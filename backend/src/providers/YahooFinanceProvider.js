@@ -163,6 +163,26 @@ class YahooFinanceProvider extends BaseProvider {
     return company;
   }
 
+  async search(query) {
+    try {
+      const yf = await getYF();
+      const result = await withTimeout(
+        (sig) => yf.search(query, { newsCount: 0 }, { fetchOptions: { signal: sig } }),
+        YF_TIMEOUT_MS
+      );
+      return (result.quotes || [])
+        .filter((r) => r.quoteType === 'EQUITY' && r.symbol)
+        .slice(0, 8)
+        .map((r) => ({
+          ticker: r.symbol,
+          name: r.longname || r.shortname || r.symbol,
+          exchange: r.exchange || '',
+        }));
+    } catch {
+      return [];
+    }
+  }
+
   _wrap(err, ticker, method) {
     const e = new Error(`[Yahoo] ${method}(${ticker}) failed: ${err.message}`);
     e.code = 'PROVIDER_ERROR';

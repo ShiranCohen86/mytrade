@@ -6,6 +6,7 @@ import { SummaryStrip } from '@/components/SummaryStrip/SummaryStrip';
 import { WatchlistSummary } from '@/components/WatchlistSummary/WatchlistSummary';
 import { AddTickerForm } from '@/components/AddTickerForm/AddTickerForm';
 import { EarningsCalendar } from '@/components/EarningsCalendar/EarningsCalendar';
+import { MarketOverview } from '@/components/MarketOverview/MarketOverview';
 import styles from './page.module.scss';
 
 function sortStocks(stocks, key) {
@@ -85,6 +86,8 @@ export default function DashboardPage() {
 
   return (
     <div className={styles.page}>
+      <MarketOverview />
+
       {/* Workspace toolbar */}
       <div className={styles.toolbar}>
         {/* Row 1: title + desktop actions */}

@@ -1,0 +1,92 @@
+@use '../../styles/variables' as *;
+
+.strip {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid $chrome-dim;
+  background: $surface-panel;
+  overflow-x: auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: $space-2 $space-5;
+  border-right: 1px solid $chrome-dim;
+  min-width: 130px;
+  flex-shrink: 0;
+  transition: background $motion-fast;
+
+  &:last-child { border-right: none; }
+  &:hover { background: $surface-hover; }
+}
+
+.name {
+  font-family: $font-ui;
+  font-size: $text-2xs;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: $text-tertiary;
+  white-space: nowrap;
+}
+
+.ticker {
+  display: none;
+}
+
+.price {
+  font-family: $font-data;
+  font-size: $text-md;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: $text-primary;
+  line-height: 1.2;
+}
+
+.change {
+  font-family: $font-data;
+  font-size: $text-xs;
+  font-variant-numeric: tabular-nums;
+  color: $text-secondary;
+  white-space: nowrap;
+}
+
+.pct {
+  opacity: 0.85;
+}
+
+// Color modifiers — applied to .item
+.pos {
+  .price { color: $pos; }
+  .change { color: $pos; }
+}
+
+.neg {
+  .price { color: $neg; }
+  .change { color: $neg; }
+}
+
+.neutral {
+  .price { color: $text-primary; }
+  .change { color: $text-secondary; }
+}
+
+// ─── Mobile ───────────────────────────────────────────────────────────────────
+
+@media (max-width: $bp-sm) {
+  .item {
+    padding: $space-2 $space-3;
+    min-width: 100px;
+  }
+
+  .name { display: none; }
+  .ticker { display: block; font-family: $font-ui; font-size: $text-2xs; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: $text-tertiary; }
+
+  .price { font-size: $text-sm; }
+  .change { font-size: $text-2xs; }
+}

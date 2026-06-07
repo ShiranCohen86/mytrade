@@ -1,12 +1,14 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { AuthProvider } from '@/context/AuthContext';
+import { ToastProvider } from '@/components/Toast/ToastProvider';
 import { PrivateRoute } from '@/components/PrivateRoute/PrivateRoute';
 import { AppShell } from '@/components/AppShell/AppShell';
 import Dashboard from '@/app/page';
 import StockDetailClient from '@/app/stocks/[ticker]/StockDetailClient';
 import PortfolioPage from '@/app/PortfolioPage';
 import SectorsPage from '@/app/SectorsPage';
+import SettingsPage from '@/app/settings/SettingsPage';
 import LoginPage from '@/app/auth/LoginPage';
 import SignupPage from '@/app/auth/SignupPage';
 import ForgotPasswordPage from '@/app/auth/ForgotPasswordPage';
@@ -30,6 +32,7 @@ function AppLayout() {
 export default function App() {
   return (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <ToastProvider>
       <AuthProvider>
         <Routes>
           {/* Public routes — no AppShell */}
@@ -47,6 +50,7 @@ export default function App() {
               <Route path="/stocks/:ticker" element={<StockDetailRoute />} />
               <Route path="/portfolio" element={<PortfolioPage />} />
               <Route path="/sectors" element={<SectorsPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
             </Route>
           </Route>
 
@@ -54,6 +58,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>
+      </ToastProvider>
     </BrowserRouter>
   );
 }

@@ -48,6 +48,10 @@ class ProviderFactory {
     return this._withFallback('getCompanyAndEarningsInfo', ticker);
   }
 
+  search(query) {
+    return this.primary.search(query);
+  }
+
   // Returns a lightweight status object for the /health endpoint
   getStatus() {
     const last = this.primary.lastSuccessAt;

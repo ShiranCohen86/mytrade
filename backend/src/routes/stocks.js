@@ -34,6 +34,18 @@ function sanitizeTicker(raw) {
   return raw.toUpperCase().replace(/[^A-Z0-9.]/g, '');
 }
 
+// GET /api/search?q=AAPL — typeahead search (max 8 equity results)
+router.get('/search', async (req, res) => {
+  const q = String(req.query.q || '').trim().slice(0, 10);
+  if (!q) return res.json([]);
+  try {
+    const results = await provider.search(q);
+    res.json(results);
+  } catch {
+    res.json([]);
+  }
+});
+
 // GET /api/stocks — list watchlist with latest analysis
 router.get('/stocks', async (req, res) => {
   try {

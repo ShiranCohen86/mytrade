@@ -22,6 +22,7 @@ export function StockRowDetail({
   // Notes state
   const [noteText, setNoteText] = useState(note?.text ?? '');
   const [noteSaving, setNoteSaving] = useState(false);
+  const [confirmRemove, setConfirmRemove] = useState(false);
 
   const handleEntrySubmit = async (e) => {
     e.preventDefault();
@@ -45,7 +46,12 @@ export function StockRowDetail({
   };
 
   const handleRemove = () => {
-    if (window.confirm(`Remove ${ticker} from watchlist?`)) onRemove(ticker);
+    if (confirmRemove) {
+      onRemove(ticker);
+    } else {
+      setConfirmRemove(true);
+      setTimeout(() => setConfirmRemove(false), 4000);
+    }
   };
 
   return (
@@ -176,7 +182,21 @@ export function StockRowDetail({
       {/* Footer */}
       <div className={styles.footer}>
         <Link to={`/stocks/${ticker}`} className={styles.detailLink}>View Full Analysis →</Link>
-        <button className={styles.removeBtn} onClick={handleRemove}>Remove</button>
+        <button
+          className={`${styles.removeBtn} ${confirmRemove ? styles.removeBtnConfirm : ''}`}
+          onClick={handleRemove}
+          onBlur={() => setTimeout(() => setConfirmRemove(false), 150)}
+        >
+          {confirmRemove ? 'Confirm?' : 'Remove'}
+        </button>
+        {confirmRemove && (
+          <button
+            className={styles.cancelBtn}
+            onClick={() => setConfirmRemove(false)}
+          >
+            Cancel
+          </button>
+        )}
         {analysisError && <span className={styles.error}>{analysisError}</span>}
       </div>
     </div>

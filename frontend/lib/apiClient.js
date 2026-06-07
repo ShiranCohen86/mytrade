@@ -175,3 +175,9 @@ export const changePassword = (currentPassword, newPassword) =>
     method: 'PUT',
     body: JSON.stringify({ currentPassword, newPassword }),
   });
+
+export const deleteAccount = () =>
+  request(`${EXPRESS}/auth/account`, { method: 'DELETE' });
+
+export const searchStocks = (q) =>
+  request(`${EXPRESS}/api/search?q=${encodeURIComponent(q)}`);
