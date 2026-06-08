@@ -99,17 +99,22 @@ export default function PortfolioPage() {
     return { totalCost, totalValue, totalPnlAbs, totalPnlPct, count: withPrice.length, useShares };
   }, [rows]);
 
+  const sectorValueWeighted = rows.some((r) => r.shares != null && r.currentPrice != null);
+
   const sectorData = useMemo(() => {
     if (!rows.length) return [];
     const map = new Map();
     for (const r of rows) {
       const key = r.sector || 'Unknown';
-      map.set(key, (map.get(key) || 0) + 1);
+      const weight = sectorValueWeighted && r.shares != null && r.currentPrice != null
+        ? r.shares * r.currentPrice
+        : 1;
+      map.set(key, (map.get(key) || 0) + weight);
     }
     return Array.from(map.entries())
       .map(([name, value]) => ({ name, value }))
       .sort((a, b) => b.value - a.value);
-  }, [rows]);
+  }, [rows, sectorValueWeighted]);
 
   const avgRisk = useMemo(() => {
     const analyzed = rows.filter((r) => r.riskScore != null);
@@ -292,7 +297,7 @@ export default function PortfolioPage() {
         <div className={styles.insights}>
           {/* Sector allocation donut */}
           <div className={styles.insightCard}>
-            <span className={styles.insightTitle}>Sector Allocation</span>
+            <span className={styles.insightTitle}>Sector Allocation{sectorValueWeighted ? ' (by value)' : ''}</span>
             <div className={styles.donutRow}>
               <div className={styles.donutChart}>
                 <ResponsiveContainer width="100%" height="100%">
