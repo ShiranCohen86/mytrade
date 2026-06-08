@@ -159,6 +159,50 @@
 .pos { color: $pos; background: $pos-bg; }
 .neg { color: $neg; background: $neg-bg; }
 
+.priceBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.extRow {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  margin-top: 1px;
+}
+
+.extBadge {
+  font-family: $font-ui;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: $text-tertiary;
+  background: $surface-raised;
+  border: 1px solid $chrome-mid;
+  border-radius: $radius-pill;
+  padding: 1px 5px;
+  line-height: 1.4;
+}
+
+.extPrice {
+  font-family: $font-data;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: $text-secondary;
+}
+
+.extChange {
+  font-family: $font-data;
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  padding: 1px 6px;
+  border-radius: $radius-pill;
+}
+
 .refreshBtn {
   display: inline-flex;
   align-items: center;

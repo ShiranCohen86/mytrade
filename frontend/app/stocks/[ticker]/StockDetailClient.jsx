@@ -14,6 +14,7 @@ import { HeroBar } from '@/components/HeroBar/HeroBar';
 import { StatsBar } from '@/components/StatsBar/StatsBar';
 import { PanelCard } from '@/components/PanelCard/PanelCard';
 import { fmtPrice, fmtBig } from '@/lib/format';
+import { ExtPriceBadge } from '@/components/ExtPriceBadge/ExtPriceBadge';
 import styles from './page.module.scss';
 
 function RangeBar({ label, low, high, current }) {
@@ -293,7 +294,7 @@ export default function StockDetailClient({ ticker }) {
         {/* Right column: Scenarios + Peers */}
         <div className={styles.rightCol}>
           <PanelCard title="Earnings Scenarios">
-            <ScenarioPanel scenarios={analysis.scenarios} currentPrice={cachedData.price} />
+            <ScenarioPanel scenarios={analysis.scenarios} currentPrice={cachedData.price} cachedData={cachedData} />
           </PanelCard>
           {sectorPeers.length > 0 && (
             <PanelCard title={`Sector Peers · ${sector}`}>
@@ -308,7 +309,10 @@ export default function StockDetailClient({ ticker }) {
                       <span className={styles.peerName}>{peer.name || ''}</span>
                       <span className={styles.peerMeta}>
                         {peer.cachedData?.price != null && (
-                          <span className={styles.peerPrice}>{fmtPrice(peer.cachedData.price)}</span>
+                          <span className={styles.peerPrice}>
+                            {fmtPrice(peer.cachedData.price)}
+                            <ExtPriceBadge cachedData={peer.cachedData} />
+                          </span>
                         )}
                         {pct != null && (
                           <span className={`${styles.peerChange} ${isPos ? styles.pos : styles.neg}`}>

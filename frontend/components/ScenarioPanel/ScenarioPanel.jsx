@@ -1,7 +1,8 @@
 import { fmtPrice } from '@/lib/format';
+import { ExtPriceBadge } from '@/components/ExtPriceBadge/ExtPriceBadge';
 import styles from './ScenarioPanel.module.scss';
 
-export function ScenarioPanel({ scenarios, currentPrice }) {
+export function ScenarioPanel({ scenarios, currentPrice, cachedData }) {
   if (!scenarios?.bullish) {
     return <div className={styles.empty}>Scenario data unavailable</div>;
   }
@@ -16,7 +17,10 @@ export function ScenarioPanel({ scenarios, currentPrice }) {
     <div className={styles.container}>
       <div className={styles.header}>
         <span className={styles.title}>Earnings Scenarios</span>
-        <span className={styles.current}>Now: {fmtPrice(currentPrice)}</span>
+        <span className={styles.current}>
+          Now: {fmtPrice(currentPrice)}
+          <ExtPriceBadge cachedData={cachedData} />
+        </span>
       </div>
 
       <div className={styles.headerRow}>

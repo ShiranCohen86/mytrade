@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, LineChart, Line, XAxis, YAxis, ReferenceLine, Area, AreaChart } from 'recharts';
 import { useStocks } from '@/hooks/useStocks';
 import { fmtPrice } from '@/lib/format';
+import { ExtPriceBadge } from '@/components/ExtPriceBadge/ExtPriceBadge';
 import styles from './PortfolioPage.module.scss';
 
 const SECTOR_COLORS = [
@@ -64,6 +65,7 @@ export default function PortfolioPage() {
           sector: stock.sector,
           entryPrice: entry.entryPrice,
           currentPrice: price,
+          cachedData: stock.cachedData,
           pnlAbs,
           pnlPct,
           riskScore: stock.analysis?.riskScore ?? null,
@@ -383,7 +385,10 @@ export default function PortfolioPage() {
                     {r.sector && <span className={styles.sector}>{r.sector}</span>}
                   </td>
                   <td className={styles.td}>{fmtPrice(r.entryPrice)}</td>
-                  <td className={styles.td}>{fmtPrice(r.currentPrice)}</td>
+                  <td className={styles.td}>
+                    {fmtPrice(r.currentPrice)}
+                    <ExtPriceBadge cachedData={r.cachedData} />
+                  </td>
                   <td className={`${styles.td} ${r.pnlAbs != null ? (r.pnlAbs >= 0 ? styles.pos : styles.neg) : ''}`}>
                     {fmtPrice(r.pnlAbs)}
                   </td>

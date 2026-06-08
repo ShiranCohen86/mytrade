@@ -1,0 +1,39 @@
+@use '../../styles/variables' as *;
+
+.wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 6px;
+}
+
+.badge {
+  font-family: $font-ui;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: $text-tertiary;
+  background: $surface-raised;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-pill;
+  padding: 1px 4px;
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+
+.price {
+  font-family: $font-data;
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.pct {
+  font-size: 10px;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+.pos { color: $pos; }
+.neg { color: $neg; }

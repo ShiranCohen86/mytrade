@@ -41,7 +41,20 @@ export function useStockAnalysis(ticker) {
         const q = await getQuote(ticker);
         setStock((prev) =>
           prev
-            ? { ...prev, cachedData: { ...prev.cachedData, price: q.price, change: q.change, changePercent: q.changePercent } }
+            ? {
+                ...prev,
+                cachedData: {
+                  ...prev.cachedData,
+                  price: q.price, change: q.change, changePercent: q.changePercent,
+                  marketState: q.marketState ?? prev.cachedData?.marketState,
+                  preMarketPrice: q.preMarketPrice ?? null,
+                  preMarketChange: q.preMarketChange ?? null,
+                  preMarketChangePercent: q.preMarketChangePercent ?? null,
+                  postMarketPrice: q.postMarketPrice ?? null,
+                  postMarketChange: q.postMarketChange ?? null,
+                  postMarketChangePercent: q.postMarketChangePercent ?? null,
+                },
+              }
             : prev
         );
       } catch { /* silent — polling failures don't need to surface */ }

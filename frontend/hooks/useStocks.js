@@ -70,7 +70,17 @@ export function useStocks() {
           if (!q || q.price == null) return s;
           return {
             ...s,
-            cachedData: { ...s.cachedData, price: q.price, change: q.change, changePercent: q.changePercent },
+            cachedData: {
+              ...s.cachedData,
+              price: q.price, change: q.change, changePercent: q.changePercent,
+              marketState: q.marketState ?? s.cachedData?.marketState,
+              preMarketPrice: q.preMarketPrice ?? null,
+              preMarketChange: q.preMarketChange ?? null,
+              preMarketChangePercent: q.preMarketChangePercent ?? null,
+              postMarketPrice: q.postMarketPrice ?? null,
+              postMarketChange: q.postMarketChange ?? null,
+              postMarketChangePercent: q.postMarketChangePercent ?? null,
+            },
           };
         });
       });

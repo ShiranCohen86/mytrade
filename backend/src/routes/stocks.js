@@ -175,7 +175,13 @@ router.get('/stocks/:ticker/quote', async (req, res) => {
       return res.status(403).json({ error: `${t} is not in your watchlist.` });
     }
     const q = await provider.getCurrentQuote(t);
-    res.json({ ticker: t, price: q.price, change: q.change, changePercent: q.changePercent });
+    res.json({
+      ticker: t,
+      price: q.price, change: q.change, changePercent: q.changePercent,
+      marketState: q.marketState,
+      preMarketPrice: q.preMarketPrice, preMarketChange: q.preMarketChange, preMarketChangePercent: q.preMarketChangePercent,
+      postMarketPrice: q.postMarketPrice, postMarketChange: q.postMarketChange, postMarketChangePercent: q.postMarketChangePercent,
+    });
   } catch (err) {
     logger.error('GET /stocks/:ticker/quote', { err: err.message });
     res.status(500).json({ error: safeError(err) });
@@ -192,7 +198,12 @@ router.get('/quotes', async (req, res) => {
       user.watchlist.map(async (ticker) => {
         try {
           const q = await provider.getCurrentQuote(ticker);
-          return { ticker, price: q.price, change: q.change, changePercent: q.changePercent };
+          return {
+            ticker, price: q.price, change: q.change, changePercent: q.changePercent,
+            marketState: q.marketState,
+            preMarketPrice: q.preMarketPrice, preMarketChange: q.preMarketChange, preMarketChangePercent: q.preMarketChangePercent,
+            postMarketPrice: q.postMarketPrice, postMarketChange: q.postMarketChange, postMarketChangePercent: q.postMarketChangePercent,
+          };
         } catch {
           return { ticker, price: null, change: null, changePercent: null };
         }

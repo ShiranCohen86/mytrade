@@ -5,6 +5,7 @@ import styles from './StockRow.module.scss';
 import { StockRowDetail } from './StockRowDetail';
 import { BottomSheet } from '@/components/BottomSheet/BottomSheet';
 import { fmtPrice, fmtVolume, scoreClass } from '@/lib/format';
+import { getMarketStatus } from '@/lib/marketHours';
 
 // Inline sparkline for risk trend
 function MiniSparkline({ history }) {
@@ -112,6 +113,19 @@ function StockRowInner({
 
   const currentPrice = cachedData?.price ?? null;
   const entryPrice = portfolioEntry?.entryPrice ?? null;
+
+  const marketStatus = getMarketStatus();
+  const extPrice = marketStatus === 'pre' && cachedData?.preMarketPrice != null
+    ? cachedData.preMarketPrice
+    : marketStatus === 'after' && cachedData?.postMarketPrice != null
+    ? cachedData.postMarketPrice
+    : null;
+  const extPct = marketStatus === 'pre'
+    ? cachedData?.preMarketChangePercent ?? null
+    : marketStatus === 'after'
+    ? cachedData?.postMarketChangePercent ?? null
+    : null;
+  const extLabel = marketStatus === 'pre' ? 'PRE' : 'AH';
   const pnlPct = entryPrice && currentPrice ? ((currentPrice - entryPrice) / entryPrice) * 100 : null;
 
   const alertTriggered = priceAlert && currentPrice !== null && (
@@ -161,6 +175,14 @@ function StockRowInner({
           <span className={`${styles.price} ${flash === 'up' ? styles.flashUp : flash === 'down' ? styles.flashDown : ''}`}>
             {fmtPrice(cachedData?.price)}
           </span>
+          {extPrice != null && (
+            <span className={styles.extPriceLine}>
+              <span className={styles.extBadge}>{extLabel}</span>
+              <span className={`${styles.extPrice} ${(extPct ?? 0) >= 0 ? styles.pos : styles.neg}`}>
+                {fmtPrice(extPrice)}
+              </span>
+            </span>
+          )}
         </span>
 
         {/* Change % */}

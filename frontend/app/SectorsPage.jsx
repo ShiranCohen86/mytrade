@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useStocks } from '@/hooks/useStocks';
 import { fmtPrice } from '@/lib/format';
+import { ExtPriceBadge } from '@/components/ExtPriceBadge/ExtPriceBadge';
 import styles from './SectorsPage.module.scss';
 
 function riskPipClass(score) {
@@ -120,7 +121,10 @@ export default function SectorsPage() {
                       </Link>
                       <span className={styles.stockName}>{s.name || ''}</span>
                       <div className={styles.stockMeta}>
-                        <span className={styles.price}>{fmtPrice(s.cachedData?.price)}</span>
+                        <span className={styles.price}>
+                          {fmtPrice(s.cachedData?.price)}
+                          <ExtPriceBadge cachedData={s.cachedData} />
+                        </span>
                         {pct != null && (
                           <span className={`${styles.change} ${isPos ? styles.pos : styles.neg}`}>
                             {isPos ? '+' : ''}{pct.toFixed(2)}%

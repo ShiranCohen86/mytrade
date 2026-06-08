@@ -10,6 +10,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  ReferenceLine,
 } from 'recharts';
 import styles from './PriceChart.module.scss';
 
@@ -30,6 +31,36 @@ function computeSma(data, period) {
   });
 }
 
+// Wilder's RSI (14-period)
+function computeRsi(data, period = 14) {
+  if (data.length < period + 1) return data.map(() => null);
+  const result = new Array(period).fill(null);
+
+  let avgGain = 0;
+  let avgLoss = 0;
+  for (let i = 1; i <= period; i++) {
+    const diff = data[i].close - data[i - 1].close;
+    if (diff > 0) avgGain += diff;
+    else avgLoss += Math.abs(diff);
+  }
+  avgGain /= period;
+  avgLoss /= period;
+
+  const rs0 = avgLoss === 0 ? 100 : avgGain / avgLoss;
+  result.push(parseFloat((100 - 100 / (1 + rs0)).toFixed(1)));
+
+  for (let i = period + 1; i < data.length; i++) {
+    const diff = data[i].close - data[i - 1].close;
+    const gain = diff > 0 ? diff : 0;
+    const loss = diff < 0 ? Math.abs(diff) : 0;
+    avgGain = (avgGain * (period - 1) + gain) / period;
+    avgLoss = (avgLoss * (period - 1) + loss) / period;
+    const rs = avgLoss === 0 ? 100 : avgGain / avgLoss;
+    result.push(parseFloat((100 - 100 / (1 + rs)).toFixed(1)));
+  }
+  return result;
+}
+
 function formatDate(dateStr, rangeLen) {
   const d = new Date(dateStr);
   if (rangeLen <= 30) return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -39,7 +70,7 @@ function formatDate(dateStr, rangeLen) {
 
 function PriceTooltip({ active, payload }) {
   if (!active || !payload?.length) return null;
-  const { fullDate, price, open, high, low, sma20 } = payload[0].payload;
+  const { fullDate, price, open, high, low, sma20, sma50 } = payload[0].payload;
   return (
     <div style={{
       background: 'var(--surface-elevated)',
@@ -55,8 +86,29 @@ function PriceTooltip({ active, payload }) {
         <span style={{ color: 'var(--text-disabled)' }}>Open</span><span style={{ color: 'var(--text-primary)' }}>${open?.toFixed(2)}</span>
         <span style={{ color: 'var(--text-disabled)' }}>High</span><span style={{ color: 'var(--pos)' }}>${high?.toFixed(2)}</span>
         <span style={{ color: 'var(--text-disabled)' }}>Low</span><span style={{ color: 'var(--neg)' }}>${low?.toFixed(2)}</span>
-        {sma20 != null && <><span style={{ color: 'var(--text-disabled)' }}>SMA 20</span><span style={{ color: 'var(--warn)' }}>${sma20?.toFixed(2)}</span></>}
+        {sma20 != null && <><span style={{ color: 'var(--text-disabled)' }}>SMA20</span><span style={{ color: 'var(--warn)' }}>${sma20?.toFixed(2)}</span></>}
+        {sma50 != null && <><span style={{ color: 'var(--text-disabled)' }}>SMA50</span><span style={{ color: '#a855f7' }}>${sma50?.toFixed(2)}</span></>}
       </div>
+    </div>
+  );
+}
+
+function RsiTooltip({ active, payload }) {
+  if (!active || !payload?.length) return null;
+  const { fullDate, rsi } = payload[0].payload;
+  if (rsi == null) return null;
+  const color = rsi >= 70 ? 'var(--neg)' : rsi <= 30 ? 'var(--pos)' : 'var(--accent)';
+  return (
+    <div style={{
+      background: 'var(--surface-elevated)',
+      border: '1px solid var(--chrome-mid)',
+      borderRadius: 8,
+      padding: '6px 10px',
+      fontSize: 12,
+      boxShadow: 'var(--shadow-popup)',
+    }}>
+      <div style={{ color: 'var(--text-tertiary)', marginBottom: 2, fontFamily: 'Inter, sans-serif', fontSize: 10 }}>{fullDate}</div>
+      <span style={{ color, fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>RSI {rsi.toFixed(1)}</span>
     </div>
   );
 }
@@ -69,7 +121,6 @@ function CandleShape({ x, y, width, height, payload }) {
   const isUp = close >= open;
   const color = isUp ? 'var(--pos)' : 'var(--neg)';
 
-  // Pixel positions within this bar's bounding box (y = top = high, y+height = bottom = low)
   const bodyTopPx = y + ((high - Math.max(open, close)) / priceRange) * height;
   const bodyBotPx = y + ((high - Math.min(open, close)) / priceRange) * height;
   const bodyH = Math.max(1, bodyBotPx - bodyTopPx);
@@ -93,9 +144,26 @@ function CandleShape({ x, y, width, height, payload }) {
   );
 }
 
+// Colored RSI line — segment per point
+function RsiLine({ points, width: _w, height: _h }) {
+  if (!points || points.length < 2) return null;
+  const segments = [];
+  for (let i = 1; i < points.length; i++) {
+    const a = points[i - 1];
+    const b = points[i];
+    if (!a || !b || a.value == null || b.value == null) continue;
+    const val = (a.value + b.value) / 2;
+    const color = val >= 70 ? 'var(--neg)' : val <= 30 ? 'var(--pos)' : 'var(--accent)';
+    segments.push(<line key={i} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={color} strokeWidth={1.5} strokeLinecap="round" />);
+  }
+  return <g>{segments}</g>;
+}
+
 export function PriceChart({ historical, ticker }) {
   const [period, setPeriod] = useState('3M');
   const [mode, setMode] = useState('area');
+  const [showSma50, setShowSma50] = useState(false);
+  const [showRsi, setShowRsi] = useState(false);
 
   const visible = useMemo(() => {
     if (!historical?.length) return [];
@@ -104,7 +172,9 @@ export function PriceChart({ historical, ticker }) {
   }, [historical, period]);
 
   const chartData = useMemo(() => {
-    const sma20 = computeSma(visible, 20);
+    const sma20vals = computeSma(visible, 20);
+    const sma50vals = computeSma(visible, 50);
+    const rsiVals = computeRsi(visible);
     return visible.map((p, i) => {
       const o = parseFloat((p.open ?? p.close).toFixed(2));
       const h = parseFloat((p.high ?? p.close).toFixed(2));
@@ -114,9 +184,12 @@ export function PriceChart({ historical, ticker }) {
         date: formatDate(p.date, visible.length),
         fullDate: new Date(p.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }),
         price: c,
-        sma20: sma20[i],
+        sma20: sma20vals[i],
+        sma50: sma50vals[i],
+        rsi: rsiVals[i],
         open: o, close: c, high: h, low: l,
         wickRange: [l, h],
+        volume: p.volume ?? 0,
       };
     });
   }, [visible]);
@@ -131,11 +204,31 @@ export function PriceChart({ historical, ticker }) {
   const padding = (maxP - minP) * 0.05;
   const tickInterval = Math.max(0, Math.floor(chartData.length / 5) - 1);
 
+  const maxVol = Math.max(...chartData.map((d) => d.volume || 0));
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.titleRow}>
           <span className={styles.title}>{ticker} — Price History</span>
+          <div className={styles.indicatorBtns}>
+            <button
+              className={`${styles.indicatorBtn} ${showSma50 ? styles.indicatorBtnActive : ''}`}
+              onClick={() => setShowSma50((v) => !v)}
+              title="Toggle SMA 50"
+              style={showSma50 ? { '--ind-color': '#a855f7' } : {}}
+            >
+              SMA50
+            </button>
+            <button
+              className={`${styles.indicatorBtn} ${showRsi ? styles.indicatorBtnActive : ''}`}
+              onClick={() => setShowRsi((v) => !v)}
+              title="Toggle RSI (14)"
+              style={showRsi ? { '--ind-color': 'var(--accent)' } : {}}
+            >
+              RSI
+            </button>
+          </div>
           <button
             className={`${styles.modeBtn} ${mode === 'candle' ? styles.modeBtnActive : ''}`}
             onClick={() => setMode((m) => m === 'area' ? 'candle' : 'area')}
@@ -173,15 +266,17 @@ export function PriceChart({ historical, ticker }) {
           })}
         </div>
       </div>
-      <ResponsiveContainer width="100%" height={320}>
-        <ComposedChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+
+      {/* Main price chart */}
+      <ResponsiveContainer width="100%" height={300}>
+        <ComposedChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="priceGrad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.20} />
               <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="var(--chrome-dim)" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--chrome-dim)" vertical={false} />
           <XAxis
             dataKey="date"
             tick={{ fontSize: 10, fill: 'var(--text-disabled)', fontFamily: 'Inter, sans-serif' }}
@@ -190,6 +285,7 @@ export function PriceChart({ historical, ticker }) {
             interval={tickInterval}
           />
           <YAxis
+            yAxisId="price"
             domain={[minP - padding, maxP + padding]}
             tick={{ fontSize: 10, fill: 'var(--text-disabled)', fontFamily: "'JetBrains Mono', monospace" }}
             axisLine={false}
@@ -197,9 +293,29 @@ export function PriceChart({ historical, ticker }) {
             tickFormatter={(v) => `$${v.toFixed(0)}`}
             width={55}
           />
+          {maxVol > 0 && (
+            <YAxis
+              yAxisId="vol"
+              orientation="right"
+              domain={[0, maxVol * 4]}
+              hide
+            />
+          )}
           <Tooltip content={<PriceTooltip />} />
+          {/* Volume bars in background */}
+          {maxVol > 0 && (
+            <Bar
+              yAxisId="vol"
+              dataKey="volume"
+              fill="var(--chrome-dim)"
+              opacity={0.45}
+              isAnimationActive={false}
+              maxBarSize={8}
+            />
+          )}
           {mode === 'area' ? (
             <Area
+              yAxisId="price"
               type="monotone"
               dataKey="price"
               stroke="var(--accent)"
@@ -210,6 +326,7 @@ export function PriceChart({ historical, ticker }) {
             />
           ) : (
             <Bar
+              yAxisId="price"
               dataKey="wickRange"
               shape={<CandleShape />}
               isAnimationActive={false}
@@ -217,6 +334,7 @@ export function PriceChart({ historical, ticker }) {
             />
           )}
           <Line
+            yAxisId="price"
             type="monotone"
             dataKey="sma20"
             stroke="var(--warn)"
@@ -226,8 +344,65 @@ export function PriceChart({ historical, ticker }) {
             isAnimationActive={false}
             connectNulls
           />
+          {showSma50 && (
+            <Line
+              yAxisId="price"
+              type="monotone"
+              dataKey="sma50"
+              stroke="#a855f7"
+              strokeWidth={1.5}
+              dot={false}
+              strokeDasharray="4 2"
+              isAnimationActive={false}
+              connectNulls
+            />
+          )}
         </ComposedChart>
       </ResponsiveContainer>
+
+      {/* RSI sub-chart */}
+      {showRsi && (
+        <div className={styles.rsiSection}>
+          <div className={styles.rsiLabel}>RSI (14)</div>
+          <ResponsiveContainer width="100%" height={90}>
+            <ComposedChart data={chartData} margin={{ top: 0, right: 10, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--chrome-dim)" vertical={false} />
+              <XAxis dataKey="date" hide />
+              <YAxis
+                domain={[0, 100]}
+                tick={{ fontSize: 9, fill: 'var(--text-disabled)', fontFamily: "'JetBrains Mono', monospace" }}
+                axisLine={false}
+                tickLine={false}
+                ticks={[30, 50, 70]}
+                width={28}
+              />
+              <Tooltip content={<RsiTooltip />} />
+              <ReferenceLine y={70} stroke="var(--neg)" strokeDasharray="3 3" strokeOpacity={0.5} strokeWidth={1} />
+              <ReferenceLine y={30} stroke="var(--pos)" strokeDasharray="3 3" strokeOpacity={0.5} strokeWidth={1} />
+              <ReferenceLine y={50} stroke="var(--chrome-mid)" strokeDasharray="2 4" strokeOpacity={0.4} strokeWidth={1} />
+              <Line
+                type="monotone"
+                dataKey="rsi"
+                stroke="var(--accent)"
+                strokeWidth={1.5}
+                dot={false}
+                isAnimationActive={false}
+                connectNulls
+              />
+            </ComposedChart>
+          </ResponsiveContainer>
+          <div className={styles.rsiLegend}>
+            <span className={styles.rsiOverbought}>Overbought (70)</span>
+            <span className={styles.rsiOversold}>Oversold (30)</span>
+          </div>
+        </div>
+      )}
+
+      {/* Chart legend */}
+      <div className={styles.legend}>
+        <span className={styles.legendItem} style={{ '--lc': 'var(--warn)' }}>SMA 20</span>
+        {showSma50 && <span className={styles.legendItem} style={{ '--lc': '#a855f7' }}>SMA 50</span>}
+      </div>
     </div>
   );
 }

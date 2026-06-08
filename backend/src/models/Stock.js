@@ -69,6 +69,13 @@ const stockSchema = new mongoose.Schema(
       fiftyTwoWeekLow: Number,
       dividendYield: Number,
       spyPrice: Number,
+      marketState: String,
+      preMarketPrice: Number,
+      preMarketChange: Number,
+      preMarketChangePercent: Number,
+      postMarketPrice: Number,
+      postMarketChange: Number,
+      postMarketChangePercent: Number,
     },
     // Set once on first analysis; used for relative-performance vs SPY calculation
     stockPriceAtAdd: Number,
