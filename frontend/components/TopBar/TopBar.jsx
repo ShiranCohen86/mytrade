@@ -71,9 +71,12 @@ function UserAvatar({ user, size = 32 }) {
   );
 }
 
+const ADMIN_ROLES = new Set(['super_admin', 'admin', 'support_agent', 'analyst']);
+
 function UserMenu({ user, onClose }) {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const isAdmin = ADMIN_ROLES.has(user?.role);
 
   const handleLogout = async () => {
     onClose();
@@ -91,6 +94,19 @@ function UserMenu({ user, onClose }) {
         </div>
       </div>
       <div className={styles.userDropdownDivider} />
+      {isAdmin && (
+        <button
+          className={styles.userDropdownItem}
+          onClick={() => { navigate('/admin'); onClose(); }}
+          role="menuitem"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" />
+          </svg>
+          Admin Panel
+        </button>
+      )}
       <button
         className={styles.userDropdownItem}
         onClick={() => { navigate('/settings'); onClose(); }}
