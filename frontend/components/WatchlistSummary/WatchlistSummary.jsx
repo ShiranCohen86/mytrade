@@ -52,6 +52,15 @@ export function WatchlistSummary({ stocks, portfolio = [] }) {
     return { avgReturn, winners, losers: positions.length - winners, total: positions.length, best: sorted[0], worst: sorted[sorted.length - 1] };
   }, [portfolio, stocks]);
 
+  const watchlistReturn = useMemo(() => {
+    const tracked = stocks.filter((s) => s.stockPriceAtAdd != null && s.cachedData?.price != null);
+    if (!tracked.length) return null;
+    const returns = tracked.map((s) => ((s.cachedData.price - s.stockPriceAtAdd) / s.stockPriceAtAdd) * 100);
+    const avg = returns.reduce((sum, r) => sum + r, 0) / returns.length;
+    const winners = returns.filter((r) => r >= 0).length;
+    return { avg, winners, losers: returns.length - winners, total: returns.length };
+  }, [stocks]);
+
   if (!stats) return null;
 
   return (
@@ -90,6 +99,15 @@ export function WatchlistSummary({ stocks, portfolio = [] }) {
               </div>
             )}
           </>
+        )}
+        {watchlistReturn != null && !pnlStats && (
+          <div className={styles.card}>
+            <span className={styles.label}>Watchlist Return</span>
+            <span className={`${styles.value} ${watchlistReturn.avg >= 0 ? styles.safe : styles.danger}`}>
+              {watchlistReturn.avg >= 0 ? '+' : ''}{watchlistReturn.avg.toFixed(1)}%
+            </span>
+            <span className={styles.sub}>avg since added · {watchlistReturn.winners}↑ {watchlistReturn.losers}↓</span>
+          </div>
         )}
         <div className={styles.card}>
           <span className={styles.label}>Avg Risk</span>
