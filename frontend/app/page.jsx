@@ -57,6 +57,7 @@ export default function DashboardPage() {
   const [earningsFilter, setEarningsFilter] = useState(null);
   const [staleFilter, setStaleFilter] = useState(false);
   const [expectFilter, setExpectFilter] = useState(null); // 'high' | 'low' | null
+  const [regimeFilter, setRegimeFilter] = useState(null); // 'BULLISH' | 'BEARISH' | 'VOLATILE' | null
   const [groupBySector, setGroupBySector] = useState(false);
   const importRef = useRef(null);
 
@@ -118,11 +119,12 @@ export default function DashboardPage() {
       if (expectFilter === 'high') return sc >= 56;
       return sc < 34;
     });
+    if (regimeFilter) result = result.filter((s) => s.analysis?.marketRegime === regimeFilter);
     return result;
-  }, [sortedStocks, sectorFilter, riskFilter, earningsFilter, staleFilter, expectFilter]);
+  }, [sortedStocks, sectorFilter, riskFilter, earningsFilter, staleFilter, expectFilter, regimeFilter]);
 
-  const hasActiveFilters = sectorFilter !== null || riskFilter !== null || earningsFilter !== null || staleFilter || expectFilter !== null;
-  const clearFilters = useCallback(() => { setSectorFilter(null); setRiskFilter(null); setEarningsFilter(null); setStaleFilter(false); setExpectFilter(null); }, []);
+  const hasActiveFilters = sectorFilter !== null || riskFilter !== null || earningsFilter !== null || staleFilter || expectFilter !== null || regimeFilter !== null;
+  const clearFilters = useCallback(() => { setSectorFilter(null); setRiskFilter(null); setEarningsFilter(null); setStaleFilter(false); setExpectFilter(null); setRegimeFilter(null); }, []);
 
   // Toast when analysis finishes
   useEffect(() => {
@@ -453,6 +455,28 @@ export default function DashboardPage() {
                 title="Expectation score &lt; 34"
               >
                 ↓ Low Expect
+              </button>
+              <span className={styles.filterDivider} aria-hidden="true" />
+              <button
+                className={`${styles.filterPill} ${styles.filterPillBull} ${regimeFilter === 'BULLISH' ? styles.filterPillActive : ''}`}
+                onClick={() => setRegimeFilter(regimeFilter === 'BULLISH' ? null : 'BULLISH')}
+                title="Bullish market regime"
+              >
+                ↑ Bullish
+              </button>
+              <button
+                className={`${styles.filterPill} ${styles.filterPillVol} ${regimeFilter === 'VOLATILE' ? styles.filterPillActive : ''}`}
+                onClick={() => setRegimeFilter(regimeFilter === 'VOLATILE' ? null : 'VOLATILE')}
+                title="Volatile market regime"
+              >
+                ~ Volatile
+              </button>
+              <button
+                className={`${styles.filterPill} ${styles.filterPillBear} ${regimeFilter === 'BEARISH' ? styles.filterPillActive : ''}`}
+                onClick={() => setRegimeFilter(regimeFilter === 'BEARISH' ? null : 'BEARISH')}
+                title="Bearish market regime"
+              >
+                ↓ Bearish
               </button>
               {sectors.length > 1 && <span className={styles.filterDivider} aria-hidden="true" />}
               {sectors.length > 1 && sectors.map((s) => (
