@@ -52,11 +52,23 @@ function SearchIcon() {
   );
 }
 
+const RECENT_KEY = 'cmd-palette-recent';
+const MAX_RECENT = 5;
+
+function loadRecent() {
+  try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); } catch { return []; }
+}
+
+function saveRecent(items) {
+  try { localStorage.setItem(RECENT_KEY, JSON.stringify(items)); } catch { /* storage unavailable */ }
+}
+
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [stockResults, setStockResults] = useState([]);
   const [highlighted, setHighlighted] = useState(0);
+  const [recentItems, setRecentItems] = useState(loadRecent);
   const inputRef = useRef(null);
   const debounceRef = useRef(null);
   const navigate = useNavigate();
@@ -128,8 +140,12 @@ export function CommandPalette() {
       }));
   }, [query, watchlistStocks]);
 
+  // Recent items shown when no query (exclude ones currently in watchlist match set)
+  const visibleRecent = !query.trim() ? recentItems : [];
+
   // Flat list of all selectable items (for keyboard nav)
   const allItems = [
+    ...visibleRecent,
     ...filteredNav,
     ...filteredWatchlist,
     ...stockResults
@@ -148,6 +164,15 @@ export function CommandPalette() {
 
   const execute = useCallback((item) => {
     if (item?.path) navigate(item.path);
+    // Track recently visited stock/watchlist items
+    if (item && (item.type === 'stock' || item.type === 'watchlist') && item.ticker) {
+      const entry = { id: `recent:${item.ticker}`, type: 'recent', ticker: item.ticker, label: item.label || item.ticker, sector: item.sector, path: item.path || `/stocks/${item.ticker}` };
+      setRecentItems((prev) => {
+        const next = [entry, ...prev.filter((r) => r.ticker !== item.ticker)].slice(0, MAX_RECENT);
+        saveRecent(next);
+        return next;
+      });
+    }
     close();
   }, [navigate, close]);
 
@@ -193,6 +218,27 @@ export function CommandPalette() {
         </div>
 
         <div className={styles.body}>
+          {visibleRecent.length > 0 && (
+            <div className={styles.group}>
+              <span className={styles.groupLabel}>Recent</span>
+              {visibleRecent.map((r) => {
+                const idx = allItems.findIndex((a) => a.id === r.id);
+                return (
+                  <button
+                    key={r.id}
+                    className={`${styles.item} ${highlighted === idx ? styles.itemActive : ''}`}
+                    onClick={() => execute(r)}
+                    onMouseEnter={() => setHighlighted(idx)}
+                  >
+                    <span className={styles.itemTicker}>{r.ticker}</span>
+                    <span className={styles.itemLabel}>{r.label}</span>
+                    {r.sector && r.sector !== 'Unknown' && <span className={styles.itemMeta}>{r.sector}</span>}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
           {filteredNav.length > 0 && (
             <div className={styles.group}>
               {!query && <span className={styles.groupLabel}>Navigate</span>}
