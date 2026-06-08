@@ -113,6 +113,7 @@ function StockRowInner({
 
   const currentPrice = cachedData?.price ?? null;
   const entryPrice = portfolioEntry?.entryPrice ?? null;
+  const shares = portfolioEntry?.shares ?? null;
 
   const marketStatus = getMarketStatus();
   const extPrice = marketStatus === 'pre' && cachedData?.preMarketPrice != null
@@ -127,6 +128,7 @@ function StockRowInner({
     : null;
   const extLabel = marketStatus === 'pre' ? 'PRE' : 'AH';
   const pnlPct = entryPrice && currentPrice ? ((currentPrice - entryPrice) / entryPrice) * 100 : null;
+  const pnlAbs = pnlPct != null && shares != null ? (currentPrice - entryPrice) * shares : null;
 
   const alertTriggered = priceAlert && currentPrice !== null && (
     priceAlert.direction === 'above'
@@ -276,6 +278,8 @@ function StockRowInner({
             priceAlert={priceAlert}
             note={note}
             pnlPct={pnlPct}
+            pnlAbs={pnlAbs}
+            shares={shares}
             onUpdateEntryPrice={onUpdateEntryPrice}
             onUpdateAlert={onUpdateAlert}
             onUpdateNote={onUpdateNote}
@@ -293,6 +297,8 @@ function StockRowInner({
           priceAlert={priceAlert}
           note={note}
           pnlPct={pnlPct}
+          pnlAbs={pnlAbs}
+          shares={shares}
           onUpdateEntryPrice={onUpdateEntryPrice}
           onUpdateAlert={onUpdateAlert}
           onUpdateNote={onUpdateNote}

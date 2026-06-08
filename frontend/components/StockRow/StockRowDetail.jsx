@@ -5,7 +5,7 @@ import styles from './StockRowDetail.module.scss';
 import { fmtPrice } from '@/lib/format';
 
 export function StockRowDetail({
-  stock, portfolioEntry, priceAlert, note, pnlPct,
+  stock, portfolioEntry, priceAlert, note, pnlPct, pnlAbs = null, shares = null,
   onUpdateEntryPrice, onUpdateAlert, onUpdateNote, onRemove, onAnalyzeTicker, analysisError,
   inSheet = false, isAnalyzing = false,
 }) {
@@ -13,6 +13,7 @@ export function StockRowDetail({
 
   // Entry price form state
   const [entryInput, setEntryInput] = useState('');
+  const [sharesInput, setSharesInput] = useState('');
   const [entryLoading, setEntryLoading] = useState(false);
 
   // Alert form state
@@ -29,8 +30,14 @@ export function StockRowDetail({
     e.preventDefault();
     const price = parseFloat(entryInput);
     if (!isFinite(price) || price <= 0) return;
+    const s = parseFloat(sharesInput);
+    const sharesVal = isFinite(s) && s > 0 ? s : null;
     setEntryLoading(true);
-    try { await onUpdateEntryPrice?.(ticker, price); setEntryInput(''); } finally { setEntryLoading(false); }
+    try {
+      await onUpdateEntryPrice?.(ticker, price, sharesVal);
+      setEntryInput('');
+      setSharesInput('');
+    } finally { setEntryLoading(false); }
   };
 
   const handleAlertSubmit = async (e) => {
@@ -90,9 +97,13 @@ export function StockRowDetail({
           {portfolioEntry ? (
             <div className={styles.formInfo}>
               <span className={styles.formInfoVal}>@ {fmtPrice(portfolioEntry.entryPrice)}</span>
+              {shares != null && (
+                <span className={styles.sharesHint}>× {shares}</span>
+              )}
               {pnlPct !== null && (
                 <span className={`${styles.pnlVal} ${pnlPct >= 0 ? styles.pos : styles.neg}`}>
                   {pnlPct >= 0 ? '+' : ''}{pnlPct.toFixed(2)}%
+                  {pnlAbs != null && ` (${pnlAbs >= 0 ? '+' : ''}${fmtPrice(pnlAbs)})`}
                 </span>
               )}
               <button
@@ -111,6 +122,14 @@ export function StockRowDetail({
                 placeholder="Entry price"
                 value={entryInput}
                 onChange={(e) => setEntryInput(e.target.value)}
+                disabled={entryLoading}
+              />
+              <input
+                type="number" step="0.01" min="0.01"
+                className={`${styles.input} ${styles.inputShares}`}
+                placeholder="Shares"
+                value={sharesInput}
+                onChange={(e) => setSharesInput(e.target.value)}
                 disabled={entryLoading}
               />
               <button type="submit" className={styles.submitBtn} disabled={entryLoading || !entryInput}>SET</button>
