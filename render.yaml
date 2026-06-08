@@ -26,7 +26,7 @@ services:
         sync: false           # Set in Render dashboard → Environment
 
       # ── Frontend URL (used for password reset links + Google OAuth redirect)
-      # Set this to your Render service URL: https://mytrade.onrender.com
+      # Set this to your Render service URL: https://mytrade-zty9.onrender.com
       - key: CLIENT_URL
         sync: false           # Set in Render dashboard → Environment
 
@@ -36,7 +36,7 @@ services:
       # - key: GOOGLE_CLIENT_SECRET
       #   sync: false
       # - key: GOOGLE_CALLBACK_URL
-      #   value: https://mytrade.onrender.com/auth/google/callback
+      #   value: https://mytrade-zty9.onrender.com/auth/google/callback
 
       # ── News & Cache ──────────────────────────────────────────────────────
       - key: CACHE_TTL_MINUTES

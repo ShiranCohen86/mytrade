@@ -2,7 +2,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import styles from './EarningsCalendar.module.scss';
 
-export function EarningsCalendar({ stocks }) {
+export function EarningsCalendar({ stocks, onTriggerClick }) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export function EarningsCalendar({ stocks }) {
     <>
       <button
         className={styles.trigger}
-        onClick={() => setOpen(true)}
+        onClick={() => { setOpen(true); onTriggerClick?.(); }}
         aria-label={`Open earnings calendar — ${entries.length} upcoming`}
       >
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={styles.icon}>

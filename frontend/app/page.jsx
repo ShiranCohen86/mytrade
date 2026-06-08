@@ -338,7 +338,7 @@ export default function DashboardPage() {
                   >
                     ↑↓ Market Movers
                   </button>
-                  <EarningsCalendar stocks={stocks} onClose={() => setMoreOpen(false)} />
+                  <EarningsCalendar stocks={stocks} onTriggerClick={() => setMoreOpen(false)} />
                   <button
                     className={styles.moreItem}
                     onClick={() => { exportCSV(); setMoreOpen(false); }}
