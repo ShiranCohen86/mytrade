@@ -1,7 +1,8 @@
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { searchStocks } from '@/lib/apiClient';
+import { useStocks } from '@/hooks/useStocks';
 import styles from './CommandPalette.module.scss';
 
 const NAV_ITEMS = [
@@ -59,6 +60,7 @@ export function CommandPalette() {
   const inputRef = useRef(null);
   const debounceRef = useRef(null);
   const navigate = useNavigate();
+  const { stocks: watchlistStocks } = useStocks();
 
   // ⌘K / Ctrl+K to open; also listen for custom event from TopBar button
   useEffect(() => {
@@ -109,17 +111,37 @@ export function CommandPalette() {
     ? NAV_ITEMS.filter((n) => n.label.toLowerCase().includes(query.toLowerCase()))
     : NAV_ITEMS;
 
+  // Watchlist stocks that match the query
+  const filteredWatchlist = useMemo(() => {
+    if (!query.trim()) return [];
+    const q = query.toLowerCase();
+    return watchlistStocks
+      .filter((s) => s.ticker.toLowerCase().includes(q) || (s.name || '').toLowerCase().includes(q))
+      .slice(0, 5)
+      .map((s) => ({
+        id: `watchlist:${s.ticker}`,
+        type: 'watchlist',
+        label: s.name || s.ticker,
+        ticker: s.ticker,
+        sector: s.sector,
+        path: `/stocks/${s.ticker}`,
+      }));
+  }, [query, watchlistStocks]);
+
   // Flat list of all selectable items (for keyboard nav)
   const allItems = [
     ...filteredNav,
-    ...stockResults.map((r) => ({
-      id: `stock:${r.ticker}`,
-      type: 'stock',
-      label: r.name,
-      sublabel: r.ticker,
-      exchange: r.exchange,
-      path: `/stocks/${r.ticker}`,
-    })),
+    ...filteredWatchlist,
+    ...stockResults
+      .filter((r) => !filteredWatchlist.some((w) => w.ticker === r.ticker))
+      .map((r) => ({
+        id: `stock:${r.ticker}`,
+        type: 'stock',
+        label: r.name,
+        sublabel: r.ticker,
+        exchange: r.exchange,
+        path: `/stocks/${r.ticker}`,
+      })),
   ];
 
   const close = useCallback(() => { setOpen(false); setQuery(''); }, []);
@@ -192,24 +214,47 @@ export function CommandPalette() {
             </div>
           )}
 
-          {stockResults.length > 0 && (
+          {filteredWatchlist.length > 0 && (
             <div className={styles.group}>
-              <span className={styles.groupLabel}>Stocks</span>
-              {stockResults.map((r) => {
-                const idx = allItems.findIndex((a) => a.id === `stock:${r.ticker}`);
+              <span className={styles.groupLabel}>My Watchlist</span>
+              {filteredWatchlist.map((r) => {
+                const idx = allItems.findIndex((a) => a.id === r.id);
                 return (
                   <button
-                    key={r.ticker}
+                    key={r.id}
                     className={`${styles.item} ${highlighted === idx ? styles.itemActive : ''}`}
-                    onClick={() => execute({ path: `/stocks/${r.ticker}` })}
+                    onClick={() => execute(r)}
                     onMouseEnter={() => setHighlighted(idx)}
                   >
                     <span className={styles.itemTicker}>{r.ticker}</span>
-                    <span className={styles.itemLabel}>{r.name}</span>
-                    {r.exchange && <span className={styles.itemMeta}>{r.exchange}</span>}
+                    <span className={styles.itemLabel}>{r.label}</span>
+                    {r.sector && r.sector !== 'Unknown' && <span className={styles.itemMeta}>{r.sector}</span>}
                   </button>
                 );
               })}
+            </div>
+          )}
+
+          {stockResults.filter((r) => !filteredWatchlist.some((w) => w.ticker === r.ticker)).length > 0 && (
+            <div className={styles.group}>
+              <span className={styles.groupLabel}>Stocks</span>
+              {stockResults
+                .filter((r) => !filteredWatchlist.some((w) => w.ticker === r.ticker))
+                .map((r) => {
+                  const idx = allItems.findIndex((a) => a.id === `stock:${r.ticker}`);
+                  return (
+                    <button
+                      key={r.ticker}
+                      className={`${styles.item} ${highlighted === idx ? styles.itemActive : ''}`}
+                      onClick={() => execute({ path: `/stocks/${r.ticker}` })}
+                      onMouseEnter={() => setHighlighted(idx)}
+                    >
+                      <span className={styles.itemTicker}>{r.ticker}</span>
+                      <span className={styles.itemLabel}>{r.name}</span>
+                      {r.exchange && <span className={styles.itemMeta}>{r.exchange}</span>}
+                    </button>
+                  );
+                })}
             </div>
           )}
 
