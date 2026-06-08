@@ -76,6 +76,28 @@
   .change { color: $text-secondary; }
 }
 
+// ─── Market Mood ──────────────────────────────────────────────────────────────
+
+.moodItem {
+  border-left: 1px solid $chrome-dim;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.moodLabel {
+  font-family: $font-ui;
+  font-size: $text-sm;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.bullish .moodLabel { color: $pos; }
+.bearish .moodLabel { color: $neg; }
+.volatile .moodLabel { color: $warn; }
+.mixed .moodLabel { color: $accent; }
+.neutral_mood .moodLabel { color: $text-secondary; }
+
 // ─── Mobile ───────────────────────────────────────────────────────────────────
 
 @media (max-width: $bp-sm) {
@@ -89,4 +111,6 @@
 
   .price { font-size: $text-sm; }
   .change { font-size: $text-2xs; }
+
+  .moodLabel { font-size: $text-xs; }
 }

@@ -10,6 +10,22 @@ function fmtNum(n) {
   return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+function computeMood(data) {
+  const spy = data.find((d) => d.ticker === 'SPY');
+  const qqq = data.find((d) => d.ticker === 'QQQ');
+  const vix = data.find((d) => d.ticker === 'VIX');
+
+  const spyPct = spy?.changePercent ?? 0;
+  const qqqPct = qqq?.changePercent ?? 0;
+  const vixPrice = vix?.price ?? 0;
+
+  if (vixPrice >= 25) return { label: 'VOLATILE', cls: 'volatile', emoji: '⚡' };
+  if (spyPct >= 0.5 && qqqPct >= 0.5) return { label: 'BULLISH', cls: 'bullish', emoji: '▲' };
+  if (spyPct <= -0.5 && qqqPct <= -0.5) return { label: 'BEARISH', cls: 'bearish', emoji: '▼' };
+  if (Math.abs(spyPct - qqqPct) > 1) return { label: 'MIXED', cls: 'mixed', emoji: '↔' };
+  return { label: 'NEUTRAL', cls: 'neutral_mood', emoji: '—' };
+}
+
 export function MarketOverview() {
   const [data, setData] = useState([]);
 
@@ -27,6 +43,8 @@ export function MarketOverview() {
   }, [load]);
 
   if (data.length === 0) return null;
+
+  const mood = computeMood(data);
 
   return (
     <div className={styles.strip} aria-label="Market overview">
@@ -47,6 +65,11 @@ export function MarketOverview() {
           </div>
         );
       })}
+      <div className={`${styles.item} ${styles.moodItem} ${styles[mood.cls]}`} aria-label={`Market mood: ${mood.label}`}>
+        <span className={styles.name}>Market Mood</span>
+        <span className={styles.ticker}>MOOD</span>
+        <span className={styles.moodLabel}>{mood.emoji} {mood.label}</span>
+      </div>
     </div>
   );
 }

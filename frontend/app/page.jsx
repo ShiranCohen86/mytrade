@@ -11,13 +11,22 @@ import { WelcomeCard } from '@/components/Onboarding/WelcomeCard';
 import { useToast } from '@/components/Toast/ToastProvider';
 import styles from './page.module.scss';
 
-function sortStocks(stocks, key) {
+function sortStocks(stocks, key, portfolio) {
   if (key === 'default') return stocks;
   return [...stocks].sort((a, b) => {
     switch (key) {
       case 'risk-desc': return (b.analysis?.riskScore ?? 0) - (a.analysis?.riskScore ?? 0);
       case 'expectation-desc': return (b.analysis?.expectationScore ?? 0) - (a.analysis?.expectationScore ?? 0);
       case 'name-asc': return (a.name || a.ticker).localeCompare(b.name || b.ticker);
+      case 'change-desc': return (b.cachedData?.changePercent ?? -Infinity) - (a.cachedData?.changePercent ?? -Infinity);
+      case 'pnl-desc': {
+        const getPnl = (s) => {
+          const entry = portfolio?.find((p) => p.ticker === s.ticker);
+          if (!entry || s.cachedData?.price == null) return -Infinity;
+          return ((s.cachedData.price - entry.entryPrice) / entry.entryPrice) * 100;
+        };
+        return getPnl(b) - getPnl(a);
+      }
       default: return 0;
     }
   });
@@ -66,7 +75,7 @@ export default function DashboardPage() {
     try { localStorage.setItem('watchlist-sort', sortKey); } catch { /* storage unavailable */ }
   }, [sortKey]);
 
-  const sortedStocks = useMemo(() => sortStocks(stocks, sortKey), [stocks, sortKey]);
+  const sortedStocks = useMemo(() => sortStocks(stocks, sortKey, portfolio), [stocks, sortKey, portfolio]);
 
   // Toast when analysis finishes
   useEffect(() => {
