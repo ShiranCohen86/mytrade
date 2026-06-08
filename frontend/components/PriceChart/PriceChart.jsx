@@ -159,7 +159,7 @@ function RsiLine({ points, width: _w, height: _h }) {
   return <g>{segments}</g>;
 }
 
-export function PriceChart({ historical, ticker }) {
+export function PriceChart({ historical, ticker, entryPrice = null }) {
   const [period, setPeriod] = useState('3M');
   const [mode, setMode] = useState('area');
   const [showSma50, setShowSma50] = useState(false);
@@ -199,8 +199,9 @@ export function PriceChart({ historical, ticker }) {
   }
 
   const prices = visible.flatMap((p) => [p.high ?? p.close, p.low ?? p.close]).filter(Boolean);
-  const minP = Math.min(...prices);
-  const maxP = Math.max(...prices);
+  const allPricePoints = entryPrice != null ? [...prices, entryPrice] : prices;
+  const minP = Math.min(...allPricePoints);
+  const maxP = Math.max(...allPricePoints);
   const padding = (maxP - minP) * 0.05;
   const tickInterval = Math.max(0, Math.floor(chartData.length / 5) - 1);
 
@@ -355,6 +356,16 @@ export function PriceChart({ historical, ticker }) {
               strokeDasharray="4 2"
               isAnimationActive={false}
               connectNulls
+            />
+          )}
+          {entryPrice != null && (
+            <ReferenceLine
+              yAxisId="price"
+              y={entryPrice}
+              stroke="var(--warn)"
+              strokeWidth={1.5}
+              strokeDasharray="5 3"
+              label={{ value: `Entry $${entryPrice.toFixed(2)}`, position: 'insideBottomLeft', fontSize: 10, fill: 'var(--warn)', fontFamily: 'Inter, sans-serif' }}
             />
           )}
         </ComposedChart>
