@@ -8,6 +8,7 @@ import { AddTickerForm } from '@/components/AddTickerForm/AddTickerForm';
 import { EarningsCalendar } from '@/components/EarningsCalendar/EarningsCalendar';
 import { MarketOverview } from '@/components/MarketOverview/MarketOverview';
 import { TopMovers } from '@/components/TopMovers/TopMovers';
+import { BottomSheet } from '@/components/BottomSheet/BottomSheet';
 import { WelcomeCard } from '@/components/Onboarding/WelcomeCard';
 import { useToast } from '@/components/Toast/ToastProvider';
 import styles from './page.module.scss';
@@ -49,6 +50,7 @@ export default function DashboardPage() {
   });
   const [dismissedError, setDismissedError] = useState(null);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [moversOpen, setMoversOpen] = useState(false);
   const moreRef = useRef(null);
   const [sectorFilter, setSectorFilter] = useState(null);
   const [riskFilter, setRiskFilter] = useState(null);
@@ -208,6 +210,9 @@ export default function DashboardPage() {
             {/* Desktop-only secondary actions */}
             {stocks.length > 0 && (
               <div className={styles.desktopActions}>
+                <button className={styles.toolBtn} onClick={() => setMoversOpen(true)} title="Today's top movers">
+                  ↑↓ Movers
+                </button>
                 <EarningsCalendar stocks={stocks} />
                 <button className={styles.toolBtn} onClick={exportCSV} title="Export to CSV">
                   ↓ CSV
@@ -254,6 +259,13 @@ export default function DashboardPage() {
               </button>
               {moreOpen && (
                 <div className={styles.moreDropdown} role="menu">
+                  <button
+                    className={styles.moreItem}
+                    onClick={() => { setMoversOpen(true); setMoreOpen(false); }}
+                    role="menuitem"
+                  >
+                    ↑↓ Market Movers
+                  </button>
                   <EarningsCalendar stocks={stocks} onClose={() => setMoreOpen(false)} />
                   <button
                     className={styles.moreItem}
@@ -404,6 +416,14 @@ export default function DashboardPage() {
             </>
           )}
         </>
+      )}
+
+      {moversOpen && (
+        <BottomSheet title="Market Movers" onClose={() => setMoversOpen(false)}>
+          <div style={{ padding: '16px' }}>
+            <TopMovers onAdd={(ticker) => { handleAdd(ticker); setMoversOpen(false); }} />
+          </div>
+        </BottomSheet>
       )}
     </div>
   );
