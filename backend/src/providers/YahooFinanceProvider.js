@@ -146,11 +146,15 @@ class YahooFinanceProvider extends BaseProvider {
 
       const beta = stats.beta?.raw ?? stats.beta ?? null;
 
+      const rawDesc = profile.longBusinessSummary || '';
       return {
         company: {
           name: quoteType.longName || quoteType.shortName || profile.longName || profile.shortName || ticker,
           sector: profile.sector || 'Unknown',
           industry: profile.industry || 'Unknown',
+          description: rawDesc.length > 600 ? rawDesc.slice(0, 597) + '…' : rawDesc,
+          employees: profile.fullTimeEmployees ?? null,
+          website: profile.website ?? null,
           peRatio: stats.forwardPE?.raw ?? stats.forwardPE ?? stats.trailingPE?.raw ?? stats.trailingPE ?? null,
           analystTargetPrice: financial.targetMeanPrice?.raw ?? financial.targetMeanPrice ?? null,
           analystLowPrice: financial.targetLowPrice?.raw ?? financial.targetLowPrice ?? null,

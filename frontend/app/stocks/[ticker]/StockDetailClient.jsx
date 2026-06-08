@@ -83,7 +83,7 @@ export default function StockDetailClient({ ticker }) {
     );
   }
 
-  const { cachedData, analysis, name, sector, scoreHistory } = stock;
+  const { cachedData, analysis, name, sector, scoreHistory, description, industry, employees, website } = stock;
   const hist = cachedData?.historical || [];
 
   const sectorPeers = allStocks
@@ -197,6 +197,28 @@ export default function StockDetailClient({ ticker }) {
           <PanelCard title="Price Chart">
             <PriceChart historical={hist} ticker={ticker} />
           </PanelCard>
+          {description && (
+            <PanelCard title="About">
+              <div className={styles.aboutSection}>
+                <p className={styles.aboutText}>{description}</p>
+                <div className={styles.aboutMeta}>
+                  {industry && industry !== 'Unknown' && (
+                    <span className={styles.aboutChip}>{industry}</span>
+                  )}
+                  {employees != null && (
+                    <span className={styles.aboutChip}>
+                      {employees >= 1000 ? `${(employees / 1000).toFixed(0)}k employees` : `${employees} employees`}
+                    </span>
+                  )}
+                  {website && (
+                    <a href={website} target="_blank" rel="noopener noreferrer" className={styles.aboutLink}>
+                      {new URL(website).hostname.replace('www.', '')} ↗
+                    </a>
+                  )}
+                </div>
+              </div>
+            </PanelCard>
+          )}
           {(scoreHistory?.length ?? 0) >= 3 && (
             <PanelCard title="Risk & Expectation Trend">
               <ScoreTrendChart scoreHistory={scoreHistory} />

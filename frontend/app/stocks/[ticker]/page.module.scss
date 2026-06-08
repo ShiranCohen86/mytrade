@@ -138,6 +138,59 @@
   color: $text-tertiary;
 }
 
+// ─── About section ───────────────────────────────────────────────────────────
+
+.aboutSection {
+  padding: $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.aboutText {
+  font-family: $font-ui;
+  font-size: 13px;
+  line-height: 1.7;
+  color: $text-secondary;
+  margin: 0;
+}
+
+.aboutMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+  align-items: center;
+}
+
+.aboutChip {
+  font-family: $font-ui;
+  font-size: 11px;
+  font-weight: 600;
+  color: $text-tertiary;
+  background: $surface-raised;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-pill;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+.aboutLink {
+  font-family: $font-ui;
+  font-size: 11px;
+  font-weight: 600;
+  color: $accent-text;
+  text-decoration: none;
+  padding: 2px 8px;
+  border-radius: $radius-pill;
+  border: 1px solid transparent;
+  transition: color $motion-fast, border-color $motion-fast;
+
+  &:hover {
+    color: $accent;
+    border-color: $chrome-dim;
+  }
+}
+
 // ─── Sector Peers ─────────────────────────────────────────────────────────────
 
 .peerList {

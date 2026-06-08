@@ -42,6 +42,10 @@ const stockSchema = new mongoose.Schema(
     },
     name: { type: String, default: '' },
     sector: { type: String, default: 'Unknown' },
+    industry: { type: String, default: '' },
+    description: { type: String, default: '' },
+    employees: { type: Number, default: null },
+    website: { type: String, default: '' },
 
     cachedData: {
       price: Number,

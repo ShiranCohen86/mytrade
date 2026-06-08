@@ -93,6 +93,10 @@ async function analyzeStock(ticker) {
         ticker: t,
         name: companyInfo.name,
         sector: companyInfo.sector,
+        industry: companyInfo.industry || '',
+        description: companyInfo.description || '',
+        employees: companyInfo.employees ?? null,
+        website: companyInfo.website || '',
         cachedData: {
           price: quote.price,
           change: quote.change,
