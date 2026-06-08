@@ -33,7 +33,11 @@ export default function SectorsPage() {
         const avgExp = analyzed.length
           ? analyzed.reduce((sum, s) => sum + (s.analysis?.expectationScore ?? 0), 0) / analyzed.length
           : null;
-        return { name, items, avgRisk, avgExp };
+        const priced = items.filter((s) => s.cachedData?.changePercent != null);
+        const avgChange = priced.length
+          ? priced.reduce((sum, s) => sum + s.cachedData.changePercent, 0) / priced.length
+          : null;
+        return { name, items, avgRisk, avgExp, avgChange };
       })
       .sort((a, b) => b.items.length - a.items.length);
   }, [stocks]);
@@ -62,11 +66,19 @@ export default function SectorsPage() {
         </div>
       ) : (
         <div className={styles.grid}>
-          {sectors.map(({ name, items, avgRisk, avgExp }) => (
+          {sectors.map(({ name, items, avgRisk, avgExp, avgChange }) => (
             <div key={name} className={styles.card}>
               <div className={styles.cardHeader}>
                 <span className={styles.sectorName}>{name}</span>
                 <div className={styles.headerStats}>
+                  {avgChange != null && (
+                    <div className={styles.stat}>
+                      <span className={styles.statLabel}>Today</span>
+                      <span className={`${styles.statValue} ${avgChange >= 0 ? styles.pos : styles.neg}`}>
+                        {avgChange >= 0 ? '+' : ''}{avgChange.toFixed(2)}%
+                      </span>
+                    </div>
+                  )}
                   {avgRisk != null && (
                     <div className={styles.stat}>
                       <span className={styles.statLabel}>Risk</span>

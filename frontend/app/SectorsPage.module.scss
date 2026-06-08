@@ -1,6 +1,9 @@
 @use '../styles/variables' as *;
 @use '../styles/mixins' as *;
 
+.pos { color: $pos; }
+.neg { color: $neg; }
+
 .page {
   display: flex;
   flex-direction: column;
