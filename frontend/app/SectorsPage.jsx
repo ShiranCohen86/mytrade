@@ -46,7 +46,12 @@ export default function SectorsPage() {
         const avgChange = priced.length
           ? priced.reduce((sum, s) => sum + s.cachedData.changePercent, 0) / priced.length
           : null;
-        return { name, items, avgRisk, avgExp, avgChange };
+        const withRegime = analyzed.filter((s) => s.analysis?.marketRegime);
+        const bullish  = withRegime.filter((s) => s.analysis.marketRegime === 'BULLISH').length;
+        const bearish  = withRegime.filter((s) => s.analysis.marketRegime === 'BEARISH').length;
+        const volatile = withRegime.filter((s) => s.analysis.marketRegime === 'VOLATILE').length;
+        const regimeTotal = withRegime.length;
+        return { name, items, avgRisk, avgExp, avgChange, bullish, bearish, volatile, regimeTotal };
       });
 
     switch (sortBy) {
@@ -135,6 +140,14 @@ export default function SectorsPage() {
                   style={{ width: `${(items.length / maxCount) * 100}%` }}
                 />
               </div>
+
+              {regimeTotal > 0 && (bullish > 0 || bearish > 0 || volatile > 0) && (
+                <div className={styles.regimeBar}>
+                  {bullish > 0 && <div className={styles.regimeBull} style={{ width: `${(bullish / regimeTotal) * 100}%` }} title={`${bullish} Bullish`} />}
+                  {volatile > 0 && <div className={styles.regimeVol} style={{ width: `${(volatile / regimeTotal) * 100}%` }} title={`${volatile} Volatile`} />}
+                  {bearish > 0 && <div className={styles.regimeBear} style={{ width: `${(bearish / regimeTotal) * 100}%` }} title={`${bearish} Bearish`} />}
+                </div>
+              )}
 
               <div className={styles.stockList}>
                 {items.map((s) => {

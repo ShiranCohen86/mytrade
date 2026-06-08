@@ -171,6 +171,21 @@
   transition: width $motion-base;
 }
 
+// ─── Regime bar ───────────────────────────────────────────────────────────────
+
+.regimeBar {
+  display: flex;
+  height: 3px;
+  border-radius: $radius-pill;
+  overflow: hidden;
+  margin-top: $space-2;
+  background: $chrome-dim;
+}
+
+.regimeBull { background: $pos; transition: width $motion-base; }
+.regimeVol  { background: $warn; transition: width $motion-base; }
+.regimeBear { background: $neg; transition: width $motion-base; }
+
 // ─── Stock rows inside card ───────────────────────────────────────────────────
 
 .stockList {
