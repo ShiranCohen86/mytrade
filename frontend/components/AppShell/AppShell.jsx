@@ -1,5 +1,6 @@
 
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import styles from './AppShell.module.scss';
 import { TopBar } from '@/components/TopBar/TopBar';
 import { Sidebar } from '@/components/Sidebar/Sidebar';
@@ -18,6 +19,12 @@ export function useAppShell() {
 export function AppShell({ children }) {
   const [isSidebarCollapsed, setCollapsed] = useState(false);
   const [isMobileOpen, setMobileOpen] = useState(false);
+  const contentRef = useRef(null);
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    contentRef.current?.scrollTo({ top: 0, behavior: 'instant' });
+  }, [pathname]);
 
   const toggleSidebar = () => {
     setCollapsed((v) => !v);
@@ -34,7 +41,7 @@ export function AppShell({ children }) {
         {isMobileOpen && (
           <div className={styles.backdrop} onClick={closeMobile} aria-hidden="true" />
         )}
-        <main className={styles.content}>{children}</main>
+        <main className={styles.content} ref={contentRef}>{children}</main>
         <BottomNav />
         <CommandPalette />
       </div>
