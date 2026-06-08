@@ -429,7 +429,7 @@ export default function DashboardPage() {
             )}
           </div>
 
-          <SummaryStrip stocks={stocks} />
+          <SummaryStrip stocks={stocks} portfolio={portfolio} />
 
           {filteredStocks.length === 0 ? (
             <div className={styles.filterEmpty}>
