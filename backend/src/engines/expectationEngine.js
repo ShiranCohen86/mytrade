@@ -31,12 +31,28 @@ function momentumScore(historicalPrices) {
 
   const momentum10 = ((current - price10) / price10) * 100;
   const momentum30 = ((current - price30) / price30) * 100;
-  const avgMomentum = (momentum10 + momentum30) / 2;
 
-  if (avgMomentum > 15) return 40;
-  if (avgMomentum > 8) return 30;
-  if (avgMomentum > 3) return 20;
-  if (avgMomentum > 0) return 12;
+  // Exponential weighting: short-term momentum matters more than month-ago momentum.
+  // 65/35 split gives stronger signal from recent price action.
+  const weightedMomentum = momentum10 * 0.65 + momentum30 * 0.35;
+
+  // Normalize by 30-day realized volatility so a 5% move in TSLA ≠ 5% move in JNJ.
+  const returns = [];
+  for (let i = 1; i < sorted.length && i <= 30; i++) {
+    const prev = sorted[sorted.length - i - 1]?.close;
+    const curr = sorted[sorted.length - i]?.close;
+    if (prev && prev > 0) returns.push((curr - prev) / prev);
+  }
+  const stddev = returns.length >= 5
+    ? Math.sqrt(returns.reduce((s, r) => s + r ** 2, 0) / returns.length) * 100
+    : 1.5; // fallback daily stddev in %
+  // Normalize: how many daily-stddev moves is this weighted momentum?
+  const normalizedMomentum = weightedMomentum / Math.max(stddev * Math.sqrt(10), 1);
+
+  if (normalizedMomentum > 2.5) return 40;
+  if (normalizedMomentum > 1.5) return 30;
+  if (normalizedMomentum > 0.75) return 20;
+  if (normalizedMomentum > 0.2) return 12;
   return 5;
 }
 
