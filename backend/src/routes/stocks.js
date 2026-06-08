@@ -95,7 +95,9 @@ router.post('/stocks', async (req, res) => {
     try {
       await User.updateOne({ _id: req.user.id }, { $addToSet: { watchlist: t } });
     } catch (watchlistErr) {
-      await Stock.deleteOne({ ticker: t }).catch(() => {});
+      // Only clean up the Stock doc if no other user tracks this ticker
+      const otherTrackers = await User.countDocuments({ _id: { $ne: req.user.id }, watchlist: t }).catch(() => 1);
+      if (otherTrackers === 0) await Stock.deleteOne({ ticker: t }).catch(() => {});
       throw watchlistErr;
     }
 

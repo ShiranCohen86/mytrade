@@ -32,6 +32,7 @@ export default function DashboardPage() {
 
   const toast = useToast();
   const prevAnalyzingRef = useRef(false);
+  const alertsTriggeredRef = useRef(null);
 
   const [sortKey, setSortKey] = useState(() => {
     try { return localStorage.getItem('watchlist-sort') || 'default'; } catch { return 'default'; }
@@ -81,6 +82,34 @@ export default function DashboardPage() {
     prevAnalyzingRef.current = isAnalyzing;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAnalyzing]);
+
+  // Fire toast when a price alert triggers for the first time in this session
+  useEffect(() => {
+    if (!stocks.length || !priceAlerts.length) return;
+    const nowTriggered = new Set();
+    for (const alert of priceAlerts) {
+      const stock = stocks.find((s) => s.ticker === alert.ticker);
+      const price = stock?.cachedData?.price;
+      if (price == null) continue;
+      const hit = alert.direction === 'above' ? price >= alert.targetPrice : price <= alert.targetPrice;
+      if (hit) nowTriggered.add(alert.ticker);
+    }
+    if (alertsTriggeredRef.current !== null) {
+      for (const ticker of nowTriggered) {
+        if (!alertsTriggeredRef.current.has(ticker)) {
+          const alert = priceAlerts.find((a) => a.ticker === ticker);
+          const stock = stocks.find((s) => s.ticker === ticker);
+          const price = stock?.cachedData?.price;
+          toast.warning(
+            `${ticker} alert: ${alert.direction === 'above' ? '▲' : '▼'} $${alert.targetPrice.toFixed(2)} — now $${price?.toFixed(2)}`,
+            0
+          );
+        }
+      }
+    }
+    alertsTriggeredRef.current = nowTriggered;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stocks, priceAlerts]);
 
   const showError = error && error !== dismissedError;
 
