@@ -2,9 +2,6 @@
 @use '../../styles/mixins' as *;
 
 // Column tracks per breakpoint — must mirror StockRow.module.scss
-// xs removes the name column: name is display:none at ≤480px so dropping the
-// track keeps header/data rows aligned (4 items → 4 tracks).
-// drag / ticker / name / price / chg% / pnl / risk / expect / regime / earnings / spark / actions
 $cols-desktop: 20px 56px 1fr 104px 76px 68px 48px 76px 92px 56px 60px 34px;
 $cols-lg:      20px 56px 1fr 104px 76px 68px 48px 76px 92px 34px;
 $cols-md:      20px 56px 1fr 104px 76px 68px 48px 34px;
@@ -26,7 +23,7 @@ $cols-xs:      44px 1fr 68px 34px;
   align-items: center;
   gap: 0 $space-3;
   padding: 0 $space-4;
-  height: 40px;
+  height: 38px;
   position: sticky;
   top: 44px;
   z-index: 9;
@@ -59,16 +56,9 @@ $cols-xs:      44px 1fr 68px 34px;
 }
 
 .th {
-  font-family: $font-ui;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: $text-disabled;
-  white-space: nowrap;
+  @include section-label;
   overflow: hidden;
   text-overflow: ellipsis;
-  user-select: none;
 }
 
 .sortable {
@@ -81,13 +71,11 @@ $cols-xs:      44px 1fr 68px 34px;
   &:hover { color: $text-secondary; }
 }
 
-.sortActive {
-  color: $accent-text;
-}
+.sortActive { color: $accent-text; }
 
 .sortArrow {
   font-size: 9px;
-  opacity: 0.7;
+  opacity: 0.6;
   color: $chrome-bright;
 
   .sortActive & {
@@ -131,7 +119,7 @@ $cols-xs:      44px 1fr 68px 34px;
   user-select: none;
   transition: background $motion-fast;
   position: sticky;
-  top: 84px;
+  top: 82px;
   z-index: 8;
 
   &:hover { background: $surface-hover; }
@@ -141,10 +129,10 @@ $cols-xs:      44px 1fr 68px 34px;
   font-size: 9px;
   color: $text-disabled;
   width: 12px;
+  transition: transform $motion-fast;
 }
 
 .sectorHeaderName {
-  font-family: $font-ui;
   font-size: 11px;
   font-weight: 700;
   color: $text-secondary;
@@ -154,8 +142,8 @@ $cols-xs:      44px 1fr 68px 34px;
 }
 
 .sectorHeaderCount {
-  font-family: $font-data;
-  font-size: 11px;
+  @include mono-value(10px);
+  font-weight: 600;
   color: $text-disabled;
   background: $surface-panel;
   border: 1px solid $chrome-dim;
@@ -164,13 +152,12 @@ $cols-xs:      44px 1fr 68px 34px;
 }
 
 .sectorAvgRisk {
-  font-family: $font-data;
-  font-size: 10px;
+  @include mono-value(10px);
   font-weight: 700;
   padding: 1px 7px;
   border-radius: $radius-pill;
 }
 
-.riskHigh { color: $neg; background: $neg-bg; }
+.riskHigh { color: $neg;  background: $neg-bg; }
 .riskMid  { color: $warn; background: $warn-bg; }
-.riskLow  { color: $pos; background: $pos-bg; }
+.riskLow  { color: $pos;  background: $pos-bg; }

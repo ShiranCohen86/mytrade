@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { fmtPrice } from '@/lib/format';
+import { useFmtPrice } from '@/hooks/useFmtPrice';
 import styles from './HeroBar.module.scss';
 
 export function HeroBar({
@@ -9,6 +9,7 @@ export function HeroBar({
   marketState,
   onRefresh, isRefreshing,
 }) {
+  const { fmtPrice } = useFmtPrice();
   const pct = changePercent ?? 0;
   const isPos = pct >= 0;
 

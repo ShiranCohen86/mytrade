@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, Outlet, useParams } from 'react
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { CurrencyProvider } from '@/context/CurrencyContext';
 import { ToastProvider } from '@/components/Toast/ToastProvider';
 import { PrivateRoute } from '@/components/PrivateRoute/PrivateRoute';
 import { AdminRoute } from '@/components/AdminRoute/AdminRoute';
@@ -58,6 +59,7 @@ export default function App() {
   return (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <DirectionSync />
+      <CurrencyProvider>
       <ToastProvider>
       <AuthProvider>
         <Routes>
@@ -97,6 +99,7 @@ export default function App() {
         </Routes>
       </AuthProvider>
       </ToastProvider>
+      </CurrencyProvider>
     </BrowserRouter>
   );
 }

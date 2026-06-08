@@ -1,9 +1,10 @@
-import { fmtPrice } from '@/lib/format';
+import { useFmtPrice } from '@/hooks/useFmtPrice';
 import styles from './ExtPriceBadge.module.scss';
 
 // Shows pre-market (PRE) or after-hours (AH) price badge when applicable.
 // Pass cachedData directly — component renders nothing if no extended-hours data.
 export function ExtPriceBadge({ cachedData }) {
+  const { fmtPrice } = useFmtPrice();
   const state = cachedData?.marketState;
   const isPreMarket  = state === 'PRE'  && cachedData?.preMarketPrice  != null;
   const isPostMarket = state === 'POST' && cachedData?.postMarketPrice != null;

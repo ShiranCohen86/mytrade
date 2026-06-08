@@ -2,46 +2,54 @@
 
 // ─── Theme tokens — light (default) ──────────────────────────────────────────
 :root, [data-theme="light"] {
-  --surface-base:     #F2F3FA;
+  // Surfaces — clean neutral foundation (enterprise-grade, not blue-tinted)
+  --surface-base:     #F5F6FA;
   --surface-panel:    #FFFFFF;
-  --surface-raised:   #ECEDF6;
-  --surface-hover:    rgba(99, 102, 241, 0.06);
+  --surface-raised:   #EDEEF5;
+  --surface-hover:    rgba(79, 70, 229, 0.05);
   --surface-elevated: #FFFFFF;
-  --surface-overlay:  rgba(8, 8, 28, 0.55);
-  --surface-glass:    rgba(255, 255, 255, 0.82);
+  --surface-overlay:  rgba(9, 9, 26, 0.52);
+  --surface-glass:    rgba(255, 255, 255, 0.88);
+  --surface-subtle:   #FAFBFE;
 
-  --chrome-dim:    #E2E4EF;
-  --chrome-mid:    #CBD0E4;
-  --chrome-bright: #9BA0C0;
+  // Chrome (borders) — crisp, minimal
+  --chrome-dim:    #E3E5F0;
+  --chrome-mid:    #C9CCDF;
+  --chrome-bright: #9096BE;
 
-  --text-primary:   #09091C;
-  --text-secondary: #363B56;
-  --text-tertiary:  #636688;
-  --text-disabled:  #9EA3C2;
+  // Text hierarchy — deep and readable
+  --text-primary:   #09091E;
+  --text-secondary: #3B4068;
+  --text-tertiary:  #686D96;
+  --text-disabled:  #A5AACB;
 
-  --accent:           #5B5FE3;
-  --accent-hover:     #4A4EC8;
-  --accent-secondary: #8B5CF6;
-  --accent-faint:     rgba(91, 95, 227, 0.08);
-  --accent-glow:      rgba(91, 95, 227, 0.20);
-  --accent-dim:       rgba(91, 95, 227, 0.05);
+  // Accent — Indigo 600 (enterprise standard)
+  --accent:           #4F46E5;
+  --accent-hover:     #4338CA;
+  --accent-secondary: #7C3AED;
+  --accent-faint:     rgba(79, 70, 229, 0.07);
+  --accent-glow:      rgba(79, 70, 229, 0.18);
+  --accent-dim:       rgba(79, 70, 229, 0.04);
   --accent-text:      #4338CA;
 
-  --pos:    #0AB47A;
-  --pos-bg: rgba(10, 180, 122, 0.09);
-  --neg:    #E53E3E;
-  --neg-bg: rgba(229, 62, 62, 0.08);
+  // Semantic
+  --pos:    #059669;
+  --pos-bg: rgba(5, 150, 105, 0.08);
+  --neg:    #DC2626;
+  --neg-bg: rgba(220, 38, 38, 0.08);
   --warn:   #D97706;
   --warn-bg: rgba(217, 119, 6, 0.08);
 
-  --shadow-xs:    0 1px 2px rgba(0, 0, 0, 0.04), 0 0 1px rgba(0, 0, 0, 0.02);
-  --shadow-sm:    0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
-  --shadow-md:    0 4px 16px rgba(0, 0, 0, 0.09), 0 2px 6px rgba(0, 0, 0, 0.05);
-  --shadow-lg:    0 8px 32px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06);
-  --shadow-popup: 0 24px 64px rgba(0, 0, 0, 0.18), 0 8px 24px rgba(0, 0, 0, 0.10);
-  --shadow-glow:      0 0 0 3px rgba(91, 95, 227, 0.22);
-  --shadow-glow-pos:  0 0 0 3px rgba(10, 180, 122, 0.20);
-  --shadow-glow-neg:  0 0 0 3px rgba(229, 62, 62, 0.20);
+  // Shadows — Tailwind-inspired, ultra-clean layering
+  --shadow-xs:    0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm:    0 1px 3px rgba(0, 0, 0, 0.07), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md:    0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+  --shadow-lg:    0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --shadow-xl:    0 20px 25px -5px rgba(0, 0, 0, 0.09), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --shadow-popup: 0 24px 48px -12px rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  --shadow-glow:      0 0 0 3px rgba(79, 70, 229, 0.20);
+  --shadow-glow-pos:  0 0 0 3px rgba(5, 150, 105, 0.18);
+  --shadow-glow-neg:  0 0 0 3px rgba(220, 38, 38, 0.18);
 
   // Legacy compat
   --shadow-panel: var(--shadow-sm);
@@ -50,53 +58,65 @@
 
 // ─── Theme tokens — dark ──────────────────────────────────────────────────────
 [data-theme="dark"] {
-  --surface-base:     #07071A;
-  --surface-panel:    #0D0D22;
-  --surface-raised:   #13132A;
-  --surface-hover:    rgba(129, 140, 248, 0.07);
-  --surface-elevated: #1A1A30;
-  --surface-overlay:  rgba(0, 0, 16, 0.82);
-  --surface-glass:    rgba(13, 13, 34, 0.78);
+  // Surfaces — deep professional dark (Bloomberg-inspired clarity)
+  --surface-base:     #080818;
+  --surface-panel:    #0E0E24;
+  --surface-raised:   #141430;
+  --surface-hover:    rgba(129, 140, 248, 0.06);
+  --surface-elevated: #1A1A38;
+  --surface-overlay:  rgba(0, 0, 16, 0.84);
+  --surface-glass:    rgba(14, 14, 36, 0.82);
+  --surface-subtle:   #0A0A1E;
 
-  --chrome-dim:    #1C1C35;
-  --chrome-mid:    #272742;
-  --chrome-bright: #3A3A58;
+  // Chrome
+  --chrome-dim:    #1C1C38;
+  --chrome-mid:    #272748;
+  --chrome-bright: #383860;
 
+  // Text
   --text-primary:   #EEEEFF;
-  --text-secondary: #B8B8D4;
-  --text-tertiary:  #727290;
-  --text-disabled:  #44445C;
+  --text-secondary: #B8BCD8;
+  --text-tertiary:  #6D7098;
+  --text-disabled:  #3F4264;
 
+  // Accent
   --accent:           #818CF8;
   --accent-hover:     #A5B4FC;
   --accent-secondary: #C084FC;
-  --accent-faint:     rgba(129, 140, 248, 0.10);
-  --accent-glow:      rgba(129, 140, 248, 0.22);
-  --accent-dim:       rgba(129, 140, 248, 0.06);
+  --accent-faint:     rgba(129, 140, 248, 0.09);
+  --accent-glow:      rgba(129, 140, 248, 0.20);
+  --accent-dim:       rgba(129, 140, 248, 0.05);
   --accent-text:      #A5B4FC;
 
+  // Semantic
   --pos:    #34D399;
-  --pos-bg: rgba(52, 211, 153, 0.11);
+  --pos-bg: rgba(52, 211, 153, 0.10);
   --neg:    #F87171;
-  --neg-bg: rgba(248, 113, 113, 0.11);
+  --neg-bg: rgba(248, 113, 113, 0.10);
   --warn:   #FBBF24;
-  --warn-bg: rgba(251, 191, 36, 0.10);
+  --warn-bg: rgba(251, 191, 36, 0.09);
 
+  // Shadows (heavier for dark surfaces)
   --shadow-xs:    0 1px 2px rgba(0, 0, 0, 0.50);
-  --shadow-sm:    0 2px 10px rgba(0, 0, 0, 0.60), 0 1px 3px rgba(0, 0, 0, 0.40);
-  --shadow-md:    0 4px 20px rgba(0, 0, 0, 0.70), 0 2px 8px rgba(0, 0, 0, 0.50);
-  --shadow-lg:    0 8px 36px rgba(0, 0, 0, 0.80), 0 4px 12px rgba(0, 0, 0, 0.60);
-  --shadow-popup: 0 24px 70px rgba(0, 0, 0, 0.90), 0 8px 28px rgba(0, 0, 0, 0.70);
-  --shadow-glow:      0 0 0 3px rgba(129, 140, 248, 0.25);
-  --shadow-glow-pos:  0 0 0 3px rgba(52, 211, 153, 0.22);
-  --shadow-glow-neg:  0 0 0 3px rgba(248, 113, 113, 0.22);
+  --shadow-sm:    0 2px 8px rgba(0, 0, 0, 0.55), 0 1px 3px rgba(0, 0, 0, 0.40);
+  --shadow-md:    0 4px 16px rgba(0, 0, 0, 0.65), 0 2px 6px rgba(0, 0, 0, 0.45);
+  --shadow-lg:    0 10px 30px rgba(0, 0, 0, 0.75), 0 4px 10px rgba(0, 0, 0, 0.55);
+  --shadow-xl:    0 20px 40px rgba(0, 0, 0, 0.82), 0 8px 16px rgba(0, 0, 0, 0.60);
+  --shadow-popup: 0 28px 64px rgba(0, 0, 0, 0.92), 0 8px 24px rgba(0, 0, 0, 0.72);
+  --shadow-glow:      0 0 0 3px rgba(129, 140, 248, 0.24);
+  --shadow-glow-pos:  0 0 0 3px rgba(52, 211, 153, 0.20);
+  --shadow-glow-neg:  0 0 0 3px rgba(248, 113, 113, 0.20);
 
   --shadow-panel: var(--shadow-sm);
   --shadow-popup-legacy: var(--shadow-popup);
 }
 
 // ─── Global reset ─────────────────────────────────────────────────────────────
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 html {
   font-size: 16px;
@@ -112,6 +132,8 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
   min-height: 100vh;
 }
 
@@ -120,13 +142,22 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 input, button, textarea, select { outline: none; }
 
 // ─── Scrollbar ────────────────────────────────────────────────────────────────
-::-webkit-scrollbar       { width: 4px; height: 4px; }
+::-webkit-scrollbar       { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: $chrome-mid; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: $chrome-bright; }
 
 // ─── Touch ────────────────────────────────────────────────────────────────────
 * { -webkit-tap-highlight-color: transparent; }
+
+// ─── Reduced-motion support ───────────────────────────────────────────────────
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
 
 // ─── Global Button System ─────────────────────────────────────────────────────
 .btn {
@@ -146,6 +177,7 @@ input, button, textarea, select { outline: none; }
   user-select: none;
   text-decoration: none;
   letter-spacing: -0.01em;
+  position: relative;
   transition:
     background   $motion-fast,
     border-color $motion-fast,
@@ -186,24 +218,45 @@ input, button, textarea, select { outline: none; }
   font-size: 15px;
   font-weight: 600;
   border-radius: $radius-lg;
+  letter-spacing: -0.02em;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
+  background: var(--accent);
   color: #fff;
   border-color: transparent;
-  box-shadow: 0 2px 8px rgba(91, 95, 227, 0.30);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(79, 70, 229, 0.28);
 
   &:hover:not(:disabled) {
-    filter: brightness(1.08);
+    background: var(--accent-hover);
     transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(91, 95, 227, 0.40);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.32);
   }
 
   &:active:not(:disabled) {
     transform: translateY(0);
-    box-shadow: 0 2px 6px rgba(91, 95, 227, 0.25);
-    filter: brightness(0.96);
+    box-shadow: 0 1px 2px rgba(79, 70, 229, 0.18);
+  }
+}
+
+.btn-primary-gradient {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
+  color: #fff;
+  border-color: transparent;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.28);
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.07);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(79, 70, 229, 0.38);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 1px 4px rgba(79, 70, 229, 0.22);
+    filter: brightness(0.97);
   }
 }
 
@@ -211,10 +264,12 @@ input, button, textarea, select { outline: none; }
   background: $surface-raised;
   color: $text-primary;
   border-color: $chrome-mid;
+  font-weight: 500;
 
   &:hover:not(:disabled) {
     background: $surface-hover;
     border-color: $chrome-bright;
+    color: $text-primary;
   }
 
   &:active:not(:disabled) {
@@ -301,17 +356,120 @@ input, button, textarea, select { outline: none; }
   color: $text-primary;
   font-family: $font-ui;
   font-size: 13px;
-  transition: border-color $motion-fast, box-shadow $motion-fast;
+  transition: border-color $motion-fast, box-shadow $motion-fast, background $motion-fast;
 
   &:focus {
     outline: none;
     border-color: $accent;
     box-shadow: $shadow-glow;
+    background: $surface-panel;
   }
 
   &::placeholder { color: $text-disabled; }
-  &:disabled { opacity: 0.45; }
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
 }
+
+.input-lg {
+  height: 42px;
+  padding: 0 14px;
+  font-size: 14px;
+  border-radius: $radius-lg;
+}
+
+// ─── Card utility ─────────────────────────────────────────────────────────────
+.card {
+  background: $surface-panel;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-sm;
+}
+
+.card-elevated {
+  background: $surface-elevated;
+  border: 1px solid $chrome-mid;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-md;
+}
+
+// ─── Badge utility ────────────────────────────────────────────────────────────
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: $radius-pill;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.badge-accent  { background: $accent-faint; color: $accent; }
+.badge-pos     { background: $pos-bg;       color: $pos; }
+.badge-neg     { background: $neg-bg;       color: $neg; }
+.badge-warn    { background: $warn-bg;      color: $warn; }
+.badge-muted   { background: $surface-raised; color: $text-tertiary; border: 1px solid $chrome-dim; }
+
+// ─── Divider ─────────────────────────────────────────────────────────────────
+.divider {
+  height: 1px;
+  background: $chrome-dim;
+  margin: $space-4 0;
+}
+
+// ─── Recharts global overrides ────────────────────────────────────────────────
+.recharts-cartesian-grid line { stroke: $chrome-dim !important; opacity: 0.6; }
+.recharts-text                { fill: $text-tertiary !important; font-size: 11px !important; font-family: $font-data !important; }
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: $surface-elevated !important;
+  border: 1px solid $chrome-mid !important;
+  border-radius: $radius-lg !important;
+  color: $text-primary !important;
+  box-shadow: $shadow-popup !important;
+  font-size: 12px !important;
+  padding: 10px 14px !important;
+}
+
+// ─── Global animation keyframes ──────────────────────────────────────────────
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 0.30; }
+  50%       { opacity: 0.70; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.40; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+// ─── Animation utilities ─────────────────────────────────────────────────────
+.anim-drop-in  { animation: dropIn  160ms cubic-bezier(0.16, 1, 0.3, 1); }
+.anim-fade-in  { animation: fadeIn  200ms ease-out; }
+.anim-slide-up { animation: slideUp 200ms cubic-bezier(0.16, 1, 0.3, 1); }
+.anim-scale-in { animation: scaleIn 150ms cubic-bezier(0.16, 1, 0.3, 1); }
 
 // ─── RTL (Hebrew) support ─────────────────────────────────────────────────────
 [dir="rtl"] {
@@ -319,24 +477,11 @@ input, button, textarea, select { outline: none; }
     font-family: 'Heebo', 'Inter', sans-serif;
   }
 
-  // Flip text alignment defaults
+  // Remove letter-spacing that looks bad in Hebrew
   .btn { letter-spacing: 0; }
 
-  // Logical property shims — override directional classes
-  // Any flex row with gap should flip naturally due to dir=rtl on html
-
-  // Scrollbars stay on the left in RTL on some browsers; normalize
-  ::-webkit-scrollbar { width: 4px; height: 4px; }
-}
-
-// ─── Recharts global overrides ────────────────────────────────────────────────
-.recharts-cartesian-grid line { stroke: $chrome-dim !important; opacity: 0.5; }
-.recharts-text                { fill: $text-tertiary !important; font-size: 11px !important; font-family: $font-data !important; }
-.recharts-tooltip-wrapper .recharts-default-tooltip {
-  background: $surface-elevated !important;
-  border: 1px solid $chrome-mid !important;
-  border-radius: $radius-md !important;
-  color: $text-primary !important;
-  box-shadow: $shadow-popup !important;
-  font-size: 12px !important;
+  // Flip directional arrows/icons in text — the browser handles flexbox/text naturally
+  // Logical margin/padding utilities
+  .ml-auto { margin-left: unset; margin-right: auto; }
+  .mr-auto { margin-right: unset; margin-left: auto; }
 }

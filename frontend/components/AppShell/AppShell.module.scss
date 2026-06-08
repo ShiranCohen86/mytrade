@@ -22,7 +22,7 @@
   overflow-x: hidden;
   background: $surface-base;
 
-  &::-webkit-scrollbar       { width: 4px; }
+  &::-webkit-scrollbar       { width: 5px; }
   &::-webkit-scrollbar-track { background: transparent; }
   &::-webkit-scrollbar-thumb { background: $chrome-mid; border-radius: 4px; }
   &::-webkit-scrollbar-thumb:hover { background: $chrome-bright; }
@@ -46,7 +46,6 @@
     grid-template-columns: 0 1fr;
   }
 
-  // Content area adds bottom padding to avoid bottom nav overlap
   .content {
     padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
   }
@@ -61,8 +60,8 @@
   top: calc(60px + env(safe-area-inset-top, 0px));
   background: var(--surface-overlay);
   z-index: 90;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   animation: fadeIn 160ms ease;
 
   @media (max-width: 640px) {

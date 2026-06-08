@@ -1,4 +1,5 @@
 @use '../styles/variables' as *;
+@use '../styles/mixins' as *;
 
 .page {
   display: flex;
@@ -14,22 +15,9 @@
   background: $surface-panel;
   border-bottom: 1px solid $chrome-dim;
   flex-shrink: 0;
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: $space-6;
-    right: $space-6;
-    height: 1px;
-    background: linear-gradient(90deg,
-      var(--accent) 0%,
-      var(--accent-secondary) 50%,
-      transparent 100%
-    );
-    opacity: 0.12;
-  }
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
 .toolbarRow {
@@ -89,16 +77,11 @@
     display: flex;
     align-items: center;
 
-    // analyzeBtn takes remaining space on mobile so it fills the row nicely
-    > .analyzeBtn {
-      flex: 1;
-    }
+    > .analyzeBtn { flex: 1; }
   }
 }
 
-.moreWrap {
-  position: relative;
-}
+.moreWrap { position: relative; }
 
 .moreDropdown {
   position: absolute;
@@ -109,11 +92,11 @@
   border: 1px solid $chrome-mid;
   border-radius: $radius-lg;
   box-shadow: $shadow-popup;
-  min-width: 180px;
+  min-width: 190px;
   padding: $space-2;
   display: flex;
   flex-direction: column;
-  gap: $space-1;
+  gap: 2px;
   animation: dropIn 140ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -129,7 +112,6 @@
   width: 100%;
   padding: $space-2 $space-3;
   border-radius: $radius-sm;
-  font-family: $font-ui;
   font-size: 13px;
   font-weight: 500;
   color: $text-secondary;
@@ -147,19 +129,18 @@
   }
 }
 
+// ─── Page title & stock count ─────────────────────────────────────────────────
+
 .pageTitle {
-  font-family: $font-ui;
   font-size: 16px;
   font-weight: 700;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.035em;
   color: $text-primary;
   white-space: nowrap;
 }
 
 .stockCount {
-  font-family: $font-data;
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
+  @include mono-value(11px);
   font-weight: 600;
   color: $text-tertiary;
   background: $surface-raised;
@@ -174,8 +155,7 @@
 .toolBtn {
   display: inline-flex;
   align-items: center;
-  gap: $space-2;
-  font-family: $font-ui;
+  gap: 5px;
   font-size: 12px;
   font-weight: 500;
   color: $text-secondary;
@@ -184,9 +164,10 @@
   border-radius: $radius-md;
   border: 1px solid $chrome-mid;
   background: $surface-raised;
-  transition: background $motion-fast, color $motion-fast, border-color $motion-fast;
+  transition: background $motion-fast, color $motion-fast, border-color $motion-fast, box-shadow $motion-fast;
   white-space: nowrap;
   letter-spacing: -0.01em;
+  flex-shrink: 0;
 
   &:hover:not(:disabled) {
     background: $surface-hover;
@@ -243,10 +224,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: $space-3 $space-6;
+  padding: 10px $space-6;
   background: $neg-bg;
-  border-bottom: 1px solid $neg;
-  font-family: $font-ui;
+  border-bottom: 1px solid rgba(220, 38, 38, 0.20);
   font-size: 13px;
   color: $neg;
   gap: $space-4;
@@ -254,15 +234,15 @@
 }
 
 .dismissBtn {
-  font-size: 12px;
+  font-size: 11px;
   color: $neg;
   padding: 2px 8px;
   border-radius: $radius-sm;
-  border: 1px solid $neg;
+  border: 1px solid rgba(220, 38, 38, 0.30);
   flex-shrink: 0;
   transition: background $motion-fast;
 
-  &:hover { background: $neg-bg; }
+  &:hover { background: rgba(220, 38, 38, 0.12); }
 }
 
 // ─── Offline pill ─────────────────────────────────────────────────────────────
@@ -271,8 +251,7 @@
   display: flex;
   align-items: center;
   gap: $space-2;
-  padding: $space-2 $space-6;
-  font-family: $font-ui;
+  padding: 8px $space-6;
   font-size: 12px;
   color: $text-tertiary;
   background: $surface-raised;
@@ -290,7 +269,7 @@
 
   @keyframes pulse {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
+    50%       { opacity: 0.35; }
   }
 }
 
@@ -307,20 +286,21 @@
   align-items: center;
   gap: $space-4;
   padding: 0 $space-6;
-  height: 46px;
+  height: 48px;
   border-bottom: 1px solid $chrome-dim;
 }
 
 .skeletonCell {
   height: 8px;
   border-radius: $radius-pill;
-  background: $chrome-dim;
-  animation: shimmer 1.8s ease-in-out infinite;
+  background: linear-gradient(90deg, $chrome-dim 25%, $surface-raised 50%, $chrome-dim 75%);
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.6s ease-in-out infinite;
 }
 
-@keyframes shimmer {
-  0%, 100% { opacity: 0.30; }
-  50%       { opacity: 0.65; }
+@keyframes skeletonShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 // ─── Empty state ──────────────────────────────────────────────────────────────
@@ -331,42 +311,43 @@
   align-items: center;
   justify-content: center;
   flex: 1;
-  gap: $space-5;
-  min-height: 400px;
-  padding: $space-10;
+  gap: $space-4;
+  min-height: 360px;
+  padding: $space-10 $space-6;
+  text-align: center;
 }
 
 .emptyIcon {
-  width: 72px;
-  height: 56px;
+  width: 64px;
+  height: 52px;
   color: $accent;
   margin-bottom: $space-2;
-  opacity: 0.50;
+  opacity: 0.40;
 }
 
 .emptyTitle {
-  font-family: $font-ui;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   color: $text-secondary;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
 }
 
 .emptySubtitle {
-  font-family: $font-ui;
   font-size: 14px;
   color: $text-tertiary;
-  text-align: center;
   max-width: 380px;
   line-height: 1.7;
 }
 
 .emptyHint {
-  font-family: $font-data;
-  font-size: 12px;
+  @include mono-value(12px);
   color: $text-disabled;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   margin-top: $space-1;
+  background: $surface-raised;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-pill;
+  padding: 4px 14px;
 }
 
 // ─── Responsive ──────────────────────────────────────────────────────────────
@@ -377,9 +358,7 @@
     height: 52px;
   }
 
-  .desktopActions {
-    display: none;
-  }
+  .desktopActions { display: none; }
 }
 
 @media (max-width: 640px) {
@@ -391,13 +370,10 @@
 
   .toolBtn {
     padding: 0 $space-2;
-    font-size: 12px;
-    height: 32px;
+    height: 30px;
   }
 
-  .pageTitle {
-    font-size: 15px;
-  }
+  .pageTitle { font-size: 15px; }
 }
 
 // ─── Filter / Screener Bar ────────────────────────────────────────────────────
@@ -408,7 +384,7 @@
   gap: $space-3;
   padding: $space-2 $space-6;
   border-bottom: 1px solid $chrome-dim;
-  background: $surface-base;
+  background: $surface-panel;
   flex-shrink: 0;
 
   @media (max-width: 640px) {
@@ -419,10 +395,11 @@
 .filterScroll {
   display: flex;
   align-items: center;
-  gap: $space-2;
+  gap: 6px;
   overflow-x: auto;
   flex: 1;
   scrollbar-width: none;
+  padding: 2px 0;
   &::-webkit-scrollbar { display: none; }
 }
 
@@ -433,15 +410,15 @@
   border-radius: $radius-pill;
   font-size: 11px;
   font-weight: 600;
-  font-family: $font-ui;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   white-space: nowrap;
   color: $text-tertiary;
   background: $surface-raised;
   border: 1px solid $chrome-dim;
-  transition: color $motion-fast, background $motion-fast, border-color $motion-fast;
+  transition: color $motion-fast, background $motion-fast, border-color $motion-fast, box-shadow $motion-fast;
   flex-shrink: 0;
   cursor: pointer;
+  height: 24px;
 
   &:hover {
     color: $text-secondary;
@@ -453,7 +430,7 @@
 .filterPillActive {
   color: $accent;
   background: $accent-faint;
-  border-color: $accent;
+  border-color: rgba(79, 70, 229, 0.30);
 
   &:hover {
     color: $accent;
@@ -464,75 +441,74 @@
 .filterPillHighRisk {
   &.filterPillActive {
     color: $neg;
-    background: rgba(239, 68, 68, 0.12);
-    border-color: $neg;
+    background: rgba(220, 38, 38, 0.08);
+    border-color: rgba(220, 38, 38, 0.30);
   }
 }
 
 .filterPillMedRisk {
   &.filterPillActive {
     color: $warn;
-    background: rgba(245, 158, 11, 0.12);
-    border-color: $warn;
+    background: rgba(217, 119, 6, 0.08);
+    border-color: rgba(217, 119, 6, 0.30);
   }
 }
 
 .filterPillLowRisk {
   &.filterPillActive {
     color: $pos;
-    background: rgba(34, 197, 94, 0.12);
-    border-color: $pos;
+    background: rgba(5, 150, 105, 0.08);
+    border-color: rgba(5, 150, 105, 0.30);
   }
 }
 
 .filterPillStale {
   color: $warn;
-  background: rgba(245, 158, 11, 0.10);
-  border-color: $warn;
+  background: rgba(217, 119, 6, 0.07);
+  border-color: rgba(217, 119, 6, 0.25);
 
   &:hover {
-    color: $warn;
-    background: rgba(245, 158, 11, 0.18);
+    background: rgba(217, 119, 6, 0.12);
   }
 }
 
 .filterPillHighExpect {
   &.filterPillActive {
     color: $pos;
-    background: rgba(34, 197, 94, 0.12);
-    border-color: $pos;
+    background: rgba(5, 150, 105, 0.08);
+    border-color: rgba(5, 150, 105, 0.30);
   }
 }
 
 .filterPillLowExpect {
   &.filterPillActive {
     color: $neg;
-    background: rgba(239, 68, 68, 0.12);
-    border-color: $neg;
+    background: rgba(220, 38, 38, 0.08);
+    border-color: rgba(220, 38, 38, 0.30);
   }
 }
 
 .filterPillBull {
   &.filterPillActive {
     color: $pos;
-    background: rgba(34, 197, 94, 0.12);
-    border-color: $pos;
+    background: rgba(5, 150, 105, 0.08);
+    border-color: rgba(5, 150, 105, 0.30);
   }
 }
 
 .filterPillVol {
   &.filterPillActive {
     color: $warn;
-    background: rgba(234, 179, 8, 0.12);
-    border-color: $warn;
+    background: rgba(217, 119, 6, 0.08);
+    border-color: rgba(217, 119, 6, 0.30);
   }
 }
 
 .filterPillBear {
   &.filterPillActive {
     color: $neg;
-    background: rgba(239, 68, 68, 0.12);
-    border-color: $neg;
+    background: rgba(220, 38, 38, 0.08);
+    border-color: rgba(220, 38, 38, 0.30);
   }
 }
 
@@ -541,21 +517,24 @@
   height: 14px;
   background: $chrome-mid;
   flex-shrink: 0;
-  opacity: 0.5;
+  opacity: 0.4;
 }
 
 .filterClear {
   flex-shrink: 0;
   font-size: 11px;
   font-weight: 600;
-  font-family: $font-ui;
   color: $text-tertiary;
   padding: 3px 8px;
   border-radius: $radius-sm;
-  transition: color $motion-fast;
+  height: 24px;
+  transition: color $motion-fast, background $motion-fast;
   white-space: nowrap;
 
-  &:hover { color: $accent; }
+  &:hover {
+    color: $neg;
+    background: $neg-bg;
+  }
 }
 
 .filterEmpty {
@@ -563,7 +542,7 @@
   text-align: center;
   color: $text-tertiary;
   font-size: 14px;
-  font-family: $font-ui;
+  animation: fadeIn 200ms ease-out;
 }
 
 .filterEmptyLink {
@@ -571,7 +550,11 @@
   font-weight: 600;
   text-decoration: underline;
   font-size: 14px;
-  font-family: $font-ui;
 
   &:hover { opacity: 0.8; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

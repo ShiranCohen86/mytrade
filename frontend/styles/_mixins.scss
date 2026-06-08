@@ -5,6 +5,7 @@
   font-family: $font-data;
   font-size: $size;
   font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
   letter-spacing: 0;
 }
 
@@ -16,6 +17,7 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: $text-tertiary;
+  user-select: none;
 }
 
 // Panel border with elevation
@@ -28,8 +30,16 @@
 @mixin card-elevated {
   background: $surface-panel;
   border: 1px solid $chrome-dim;
-  border-radius: $radius-lg;
+  border-radius: $radius-xl;
   box-shadow: $shadow-sm;
+}
+
+// Premium card with deeper elevation
+@mixin card-popup {
+  background: $surface-elevated;
+  border: 1px solid $chrome-mid;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-popup;
 }
 
 // Focus ring using glow shadow
@@ -59,9 +69,33 @@
   white-space: nowrap;
 }
 
+// Truncate with ellipsis
+@mixin truncate {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+// Interactive row hover
+@mixin hover-row {
+  transition: background $motion-fast;
+  &:hover { background: $surface-hover; }
+}
+
+// Glass surface
+@mixin glass-surface {
+  background: $surface-glass;
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+}
+
 // ─── Responsive breakpoint mixins ─────────────────────────────────────────────
-@mixin below-xl { @media (max-width: $bp-xl) { @content; } }
-@mixin below-lg { @media (max-width: $bp-lg) { @content; } }
-@mixin below-md { @media (max-width: $bp-md) { @content; } }
-@mixin below-sm { @media (max-width: $bp-sm) { @content; } }
-@mixin below-xs { @media (max-width: $bp-xs) { @content; } }
+@mixin below-2xl { @media (max-width: $bp-2xl) { @content; } }
+@mixin below-xl  { @media (max-width: $bp-xl)  { @content; } }
+@mixin below-lg  { @media (max-width: $bp-lg)  { @content; } }
+@mixin below-md  { @media (max-width: $bp-md)  { @content; } }
+@mixin below-sm  { @media (max-width: $bp-sm)  { @content; } }
+@mixin below-xs  { @media (max-width: $bp-xs)  { @content; } }
+
+@mixin above-md  { @media (min-width: #{$bp-md + 1}) { @content; } }
+@mixin above-lg  { @media (min-width: #{$bp-lg + 1}) { @content; } }

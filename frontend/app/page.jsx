@@ -1,5 +1,6 @@
 
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useStocks } from '@/hooks/useStocks';
 import { WatchlistTable } from '@/components/WatchlistTable/WatchlistTable';
 import { SummaryStrip } from '@/components/SummaryStrip/SummaryStrip';
@@ -27,7 +28,6 @@ function sortStocks(stocks, key, portfolio) {
           if (price == null) return -Infinity;
           const entry = portfolio?.find((p) => p.ticker === s.ticker);
           if (entry) return ((price - entry.entryPrice) / entry.entryPrice) * 100;
-          // Fallback: sort by since-add return
           return s.stockPriceAtAdd != null ? ((price - s.stockPriceAtAdd) / s.stockPriceAtAdd) * 100 : -Infinity;
         };
         return getPnl(b) - getPnl(a);
@@ -45,6 +45,7 @@ export default function DashboardPage() {
   } = useStocks();
 
   const toast = useToast();
+  const { t } = useTranslation();
   const prevAnalyzingRef = useRef(false);
   const alertsTriggeredRef = useRef(null);
 
@@ -60,8 +61,8 @@ export default function DashboardPage() {
   const [riskFilter, setRiskFilter] = useState(null);
   const [earningsFilter, setEarningsFilter] = useState(null);
   const [staleFilter, setStaleFilter] = useState(false);
-  const [expectFilter, setExpectFilter] = useState(null); // 'high' | 'low' | null
-  const [regimeFilter, setRegimeFilter] = useState(null); // 'BULLISH' | 'BEARISH' | 'VOLATILE' | null
+  const [expectFilter, setExpectFilter] = useState(null);
+  const [regimeFilter, setRegimeFilter] = useState(null);
   const [groupBySector, setGroupBySector] = useState(false);
   const importRef = useRef(null);
 
@@ -81,7 +82,6 @@ export default function DashboardPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, stocks.length]);
 
-  // Press "r" to reload — when not typing in a field
   useEffect(() => {
     const handler = (e) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
@@ -137,22 +137,20 @@ export default function DashboardPage() {
   const hasActiveFilters = sectorFilter !== null || riskFilter !== null || earningsFilter !== null || staleFilter || expectFilter !== null || regimeFilter !== null;
   const clearFilters = useCallback(() => { setSectorFilter(null); setRiskFilter(null); setEarningsFilter(null); setStaleFilter(false); setExpectFilter(null); setRegimeFilter(null); }, []);
 
-  // Toast when analysis finishes
   useEffect(() => {
     if (prevAnalyzingRef.current && !isAnalyzing && stocks.length > 0) {
       const n = stocks.length;
       const failed = analysisErrors.size;
       if (failed === 0) {
-        toast.success(`Analysis complete — ${n} stock${n !== 1 ? 's' : ''} updated.`);
+        toast.success(t('dashboard.analysisComplete', { count: n }));
       } else {
-        toast.warning(`Analysis complete — ${n - failed} updated, ${failed} failed.`);
+        toast.warning(t('dashboard.analysisCompleteWithErrors', { updated: n - failed, failed }));
       }
     }
     prevAnalyzingRef.current = isAnalyzing;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAnalyzing]);
 
-  // Fire toast when a price alert triggers for the first time in this session
   useEffect(() => {
     if (!stocks.length || !priceAlerts.length) return;
     const nowTriggered = new Set();
@@ -170,7 +168,12 @@ export default function DashboardPage() {
           const stock = stocks.find((s) => s.ticker === ticker);
           const price = stock?.cachedData?.price;
           toast.warning(
-            `${ticker} alert: ${alert.direction === 'above' ? '▲' : '▼'} $${alert.targetPrice.toFixed(2)} — now $${price?.toFixed(2)}`,
+            t('dashboard.priceAlert', {
+              ticker,
+              dir: alert.direction === 'above' ? '▲' : '▼',
+              price: alert.targetPrice.toFixed(2),
+              current: price?.toFixed(2),
+            }),
             0
           );
         }
@@ -184,11 +187,11 @@ export default function DashboardPage() {
 
   const handleAdd = useCallback(async (ticker) => {
     await add(ticker);
-    toast.success(`${ticker.toUpperCase()} added to watchlist.`);
+    toast.success(t('dashboard.addedToWatchlist', { ticker: ticker.toUpperCase() }));
     setTimeout(() => {
       document.querySelector(`[data-ticker="${ticker.toUpperCase()}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 150);
-  }, [add, toast]);
+  }, [add, toast, t]);
 
   const exportCSV = useCallback(() => {
     const target = hasActiveFilters ? filteredStocks : stocks;
@@ -215,8 +218,8 @@ export default function DashboardPage() {
     a.download = `mytrade-watchlist-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success(`Exported ${target.length} stock${target.length !== 1 ? 's' : ''} to CSV.`);
-  }, [stocks, filteredStocks, hasActiveFilters, toast]);
+    toast.success(t('dashboard.exported', { count: target.length }));
+  }, [stocks, filteredStocks, hasActiveFilters, toast, t]);
 
   const handleImportFile = useCallback(async (e) => {
     const file = e.target.files?.[0];
@@ -225,8 +228,7 @@ export default function DashboardPage() {
     if (!file) return;
     const text = await file.text();
     const lines = text.split(/\r?\n/).filter(Boolean);
-    if (!lines.length) { toast.error('CSV file is empty.'); return; }
-    // Auto-detect ticker column: look for header row with "ticker" (case-insensitive)
+    if (!lines.length) { toast.error(t('dashboard.csvEmpty')); return; }
     const header = lines[0].split(',').map((h) => h.trim().replace(/^"|"$/g, '').toLowerCase());
     const tickerIdx = header.indexOf('ticker');
     const dataLines = tickerIdx >= 0 ? lines.slice(1) : lines;
@@ -239,15 +241,15 @@ export default function DashboardPage() {
         })
         .filter((t) => /^[A-Z]{1,5}$/.test(t) && !existing.has(t))
     )];
-    if (!tickers.length) { toast.warning('No new valid tickers found in CSV.'); return; }
-    toast.info(`Importing ${tickers.length} ticker${tickers.length !== 1 ? 's' : ''}…`);
+    if (!tickers.length) { toast.warning(t('dashboard.noNewTickers')); return; }
+    toast.info(t('dashboard.importing', { count: tickers.length }));
     let added = 0;
-    for (const t of tickers) {
-      try { await add(t); added++; } catch { /* skip invalid */ }
+    for (const ticker of tickers) {
+      try { await add(ticker); added++; } catch { /* skip invalid */ }
     }
-    if (added > 0) toast.success(`Added ${added} ticker${added !== 1 ? 's' : ''} from CSV.`);
-    else toast.error('No tickers could be added.');
-  }, [stocks, add, toast]);
+    if (added > 0) toast.success(t('dashboard.addedFromCsv', { count: added }));
+    else toast.error(t('dashboard.noTickersAdded'));
+  }, [stocks, add, toast, t]);
 
   return (
     <div className={styles.page}>
@@ -255,10 +257,9 @@ export default function DashboardPage() {
 
       {/* Workspace toolbar */}
       <div className={styles.toolbar}>
-        {/* Row 1: title + desktop actions */}
         <div className={styles.toolbarRow}>
           <div className={styles.toolbarLeft}>
-            <span className={styles.pageTitle}>Watchlist</span>
+            <span className={styles.pageTitle}>{t('dashboard.watchlist')}</span>
             {stocks.length > 0 && (
               <span className={styles.stockCount}>
                 {hasActiveFilters ? `${filteredStocks.length} / ${stocks.length}` : stocks.length}
@@ -266,33 +267,32 @@ export default function DashboardPage() {
             )}
           </div>
           <div className={styles.toolbarRight}>
-            {/* Desktop-only secondary actions */}
             {stocks.length > 0 && (
               <div className={styles.desktopActions}>
                 <button
                   className={`${styles.toolBtn} ${groupBySector ? styles.toolBtnActive : ''}`}
                   onClick={() => setGroupBySector((v) => !v)}
-                  title="Group by sector"
+                  title={t('dashboard.groupTitle')}
                 >
-                  ⊞ Group
+                  ⊞ {t('dashboard.groupBySector')}
                 </button>
-                <button className={styles.toolBtn} onClick={() => setMoversOpen(true)} title="Today's top movers">
-                  ↑↓ Movers
+                <button className={styles.toolBtn} onClick={() => setMoversOpen(true)} title={t('dashboard.movers')}>
+                  {t('dashboard.movers')}
                 </button>
                 <EarningsCalendar stocks={stocks} />
-                <button className={styles.toolBtn} onClick={exportCSV} title="Export to CSV">
-                  ↓ CSV
+                <button className={styles.toolBtn} onClick={exportCSV} title={t('dashboard.exportCsv')}>
+                  {t('dashboard.exportCsv')}
                 </button>
-                <button className={styles.toolBtn} onClick={() => importRef.current?.click()} title="Import tickers from CSV">
-                  ↑ Import
+                <button className={styles.toolBtn} onClick={() => importRef.current?.click()} title={t('dashboard.importCsv')}>
+                  {t('dashboard.importCsv')}
                 </button>
                 <button
                   className={styles.toolBtn}
                   onClick={reload}
                   disabled={isLoading || isAnalyzing}
-                  title="Reload from server (R)"
+                  title={t('dashboard.reloadTitle')}
                 >
-                  ↺ Reload
+                  {t('dashboard.reload')}
                 </button>
               </div>
             )}
@@ -302,10 +302,10 @@ export default function DashboardPage() {
                 <button
                   className={styles.toolBtn}
                   onClick={() => setMoreOpen((v) => !v)}
-                  aria-label="More actions"
+                  aria-label={t('dashboard.more')}
                   aria-expanded={moreOpen}
                 >
-                  ⋯ More
+                  {t('dashboard.moreActions')}
                 </button>
                 {moreOpen && (
                   <div className={styles.moreDropdown} role="menu">
@@ -314,7 +314,7 @@ export default function DashboardPage() {
                       onClick={() => { setMoversOpen(true); setMoreOpen(false); }}
                       role="menuitem"
                     >
-                      ↑↓ Market Movers
+                      {t('dashboard.marketMovers')}
                     </button>
                     <EarningsCalendar stocks={stocks} onTriggerClick={() => setMoreOpen(false)} />
                     <button
@@ -322,14 +322,14 @@ export default function DashboardPage() {
                       onClick={() => { exportCSV(); setMoreOpen(false); }}
                       role="menuitem"
                     >
-                      ↓ Export CSV
+                      {t('dashboard.exportCsvMenu')}
                     </button>
                     <button
                       className={styles.moreItem}
                       onClick={() => { importRef.current?.click(); setMoreOpen(false); }}
                       role="menuitem"
                     >
-                      ↑ Import CSV
+                      {t('dashboard.importCsvMenu')}
                     </button>
                     <button
                       className={styles.moreItem}
@@ -337,7 +337,7 @@ export default function DashboardPage() {
                       disabled={isLoading || isAnalyzing}
                       role="menuitem"
                     >
-                      ↺ Reload
+                      {t('dashboard.reload')}
                     </button>
                   </div>
                 )}
@@ -353,7 +353,7 @@ export default function DashboardPage() {
           <button
             className={styles.dismissBtn}
             onClick={() => setDismissedError(error)}
-            aria-label="Dismiss error"
+            aria-label={t('dashboard.dismissError')}
           >
             ✕
           </button>
@@ -363,11 +363,10 @@ export default function DashboardPage() {
       {isConnected === false && !showError && (
         <div className={styles.offlinePill} role="status" aria-live="polite">
           <span className={styles.offlineDot} />
-          No connection — prices may be stale
+          {t('dashboard.offlinePill')}
         </div>
       )}
 
-      {/* Loading state */}
       {isLoading && stocks.length === 0 ? (
         <div className={styles.loadingState}>
           {Array.from({ length: 5 }, (_, i) => (
@@ -381,7 +380,6 @@ export default function DashboardPage() {
           ))}
         </div>
       ) : stocks.length === 0 ? (
-        /* Empty state */
         <>
         <WelcomeCard />
         <TopMovers onAdd={handleAdd} />
@@ -390,11 +388,9 @@ export default function DashboardPage() {
             <polyline points="4,40 18,24 28,32 40,14 52,20 60,10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.25"/>
             <circle cx="60" cy="10" r="3" fill="currentColor" opacity="0.25"/>
           </svg>
-          <p className={styles.emptyTitle}>Your watchlist is empty</p>
-          <p className={styles.emptySubtitle}>
-            Add a ticker above to start tracking risk, expectation scores, and earnings events.
-          </p>
-          <p className={styles.emptyHint}>Try: AAPL · MSFT · NVDA · TSLA</p>
+          <p className={styles.emptyTitle}>{t('dashboard.emptyTitle')}</p>
+          <p className={styles.emptySubtitle}>{t('dashboard.emptySubtitle')}</p>
+          <p className={styles.emptyHint}>{t('dashboard.emptyHint')}</p>
         </div>
         </>
       ) : (
@@ -406,70 +402,65 @@ export default function DashboardPage() {
                 className={`${styles.filterPill} ${styles.filterPillHighRisk} ${riskFilter === 'high' ? styles.filterPillActive : ''}`}
                 onClick={() => setRiskFilter(riskFilter === 'high' ? null : 'high')}
               >
-                High Risk
+                {t('dashboard.highRisk')}
               </button>
               <button
                 className={`${styles.filterPill} ${styles.filterPillMedRisk} ${riskFilter === 'medium' ? styles.filterPillActive : ''}`}
                 onClick={() => setRiskFilter(riskFilter === 'medium' ? null : 'medium')}
               >
-                Med Risk
+                {t('dashboard.medRisk')}
               </button>
               <button
                 className={`${styles.filterPill} ${styles.filterPillLowRisk} ${riskFilter === 'low' ? styles.filterPillActive : ''}`}
                 onClick={() => setRiskFilter(riskFilter === 'low' ? null : 'low')}
               >
-                Low Risk
+                {t('dashboard.lowRisk')}
               </button>
               <span className={styles.filterDivider} aria-hidden="true" />
               <button
                 className={`${styles.filterPill} ${earningsFilter === 'soon' ? styles.filterPillActive : ''}`}
                 onClick={() => setEarningsFilter(earningsFilter === 'soon' ? null : 'soon')}
               >
-                Earnings ≤14d
+                {t('dashboard.earningsSoon')}
               </button>
               <button
                 className={`${styles.filterPill} ${staleFilter ? styles.filterPillStale : ''}`}
                 onClick={() => setStaleFilter((v) => !v)}
-                title="Show stocks with analysis older than 7 days"
+                title={t('dashboard.needsUpdate')}
               >
-                ⚠ Needs Update
+                {t('dashboard.needsUpdate')}
               </button>
               <span className={styles.filterDivider} aria-hidden="true" />
               <button
                 className={`${styles.filterPill} ${styles.filterPillHighExpect} ${expectFilter === 'high' ? styles.filterPillActive : ''}`}
                 onClick={() => setExpectFilter(expectFilter === 'high' ? null : 'high')}
-                title="Expectation score ≥ 56"
               >
-                ↑ High Expect
+                {t('dashboard.highExpect')}
               </button>
               <button
                 className={`${styles.filterPill} ${styles.filterPillLowExpect} ${expectFilter === 'low' ? styles.filterPillActive : ''}`}
                 onClick={() => setExpectFilter(expectFilter === 'low' ? null : 'low')}
-                title="Expectation score &lt; 34"
               >
-                ↓ Low Expect
+                {t('dashboard.lowExpect')}
               </button>
               <span className={styles.filterDivider} aria-hidden="true" />
               <button
                 className={`${styles.filterPill} ${styles.filterPillBull} ${regimeFilter === 'BULLISH' ? styles.filterPillActive : ''}`}
                 onClick={() => setRegimeFilter(regimeFilter === 'BULLISH' ? null : 'BULLISH')}
-                title="Bullish market regime"
               >
-                ↑ Bullish
+                {t('dashboard.bullish')}
               </button>
               <button
                 className={`${styles.filterPill} ${styles.filterPillVol} ${regimeFilter === 'VOLATILE' ? styles.filterPillActive : ''}`}
                 onClick={() => setRegimeFilter(regimeFilter === 'VOLATILE' ? null : 'VOLATILE')}
-                title="Volatile market regime"
               >
-                ~ Volatile
+                {t('dashboard.volatile')}
               </button>
               <button
                 className={`${styles.filterPill} ${styles.filterPillBear} ${regimeFilter === 'BEARISH' ? styles.filterPillActive : ''}`}
                 onClick={() => setRegimeFilter(regimeFilter === 'BEARISH' ? null : 'BEARISH')}
-                title="Bearish market regime"
               >
-                ↓ Bearish
+                {t('dashboard.bearish')}
               </button>
               {sectors.length > 1 && <span className={styles.filterDivider} aria-hidden="true" />}
               {sectors.length > 1 && sectors.map((s) => (
@@ -483,8 +474,8 @@ export default function DashboardPage() {
               ))}
             </div>
             {hasActiveFilters && (
-              <button className={styles.filterClear} onClick={clearFilters} aria-label="Clear all filters">
-                Clear
+              <button className={styles.filterClear} onClick={clearFilters} aria-label={t('dashboard.clearAllFilters')}>
+                {t('dashboard.clearFilters')}
               </button>
             )}
           </div>
@@ -493,8 +484,8 @@ export default function DashboardPage() {
 
           {filteredStocks.length === 0 ? (
             <div className={styles.filterEmpty}>
-              No stocks match the current filters.{' '}
-              <button className={styles.filterEmptyLink} onClick={clearFilters}>Clear filters</button>
+              {t('dashboard.noMatchFilters')}{' '}
+              <button className={styles.filterEmptyLink} onClick={clearFilters}>{t('dashboard.clearFiltersLink')}</button>
             </div>
           ) : (
             <>
@@ -522,14 +513,13 @@ export default function DashboardPage() {
       )}
 
       {moversOpen && (
-        <BottomSheet title="Market Movers" onClose={() => setMoversOpen(false)}>
+        <BottomSheet title={t('dashboard.marketMoversTitle')} onClose={() => setMoversOpen(false)}>
           <div style={{ padding: '16px' }}>
             <TopMovers onAdd={(ticker) => { handleAdd(ticker); setMoversOpen(false); }} />
           </div>
         </BottomSheet>
       )}
 
-      {/* Hidden file input for CSV import */}
       <input
         ref={importRef}
         type="file"

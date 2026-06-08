@@ -4,7 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import styles from './StockRow.module.scss';
 import { StockRowDetail } from './StockRowDetail';
 import { BottomSheet } from '@/components/BottomSheet/BottomSheet';
-import { fmtPrice, fmtVolume, scoreClass } from '@/lib/format';
+import { fmtVolume, scoreClass } from '@/lib/format';
+import { useFmtPrice } from '@/hooks/useFmtPrice';
 import { getMarketStatus } from '@/lib/marketHours';
 
 // Inline sparkline for risk trend
@@ -66,6 +67,7 @@ function StockRowInner({
   onUpdateEntryPrice, onUpdateAlert, onUpdateNote, onAnalyzeTicker,
   isDragging = false, onDragStart, onDragOver, onDragEnd, isDropTarget = false,
 }) {
+  const { fmtPrice } = useFmtPrice();
   const [expanded, setExpanded] = useState(false);
   const [flash, setFlash] = useState(null);
   const prevPriceRef = useRef(null);

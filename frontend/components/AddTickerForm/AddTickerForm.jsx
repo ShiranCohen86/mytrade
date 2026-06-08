@@ -1,5 +1,6 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { searchStocks } from '@/lib/apiClient';
 import styles from './AddTickerForm.module.scss';
 
@@ -14,6 +15,7 @@ function parseTickers(raw) {
 }
 
 export function AddTickerForm({ onAdd }) {
+  const { t } = useTranslation();
   const [value, setValue] = useState('');
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(null);
@@ -27,7 +29,6 @@ export function AddTickerForm({ onAdd }) {
   const inputRef = useRef(null);
   const debounceRef = useRef(null);
 
-  // Press "/" anywhere to focus the add-ticker input (unless already in a field)
   useEffect(() => {
     const handler = (e) => {
       if (e.key !== '/') return;
@@ -42,7 +43,6 @@ export function AddTickerForm({ onAdd }) {
 
   const isBulk = value.includes(',') || value.includes(';');
 
-  // Debounced ticker search — skip in bulk mode or if empty
   useEffect(() => {
     const q = value.trim().toUpperCase();
     if (isBulk || q.length < 1) {
@@ -72,7 +72,6 @@ export function AddTickerForm({ onAdd }) {
     return () => clearTimeout(debounceRef.current);
   }, [value, isBulk]);
 
-  // Close dropdown on outside click
   useEffect(() => {
     if (!showDropdown) return;
     const onOutside = (e) => {
@@ -113,13 +112,13 @@ export function AddTickerForm({ onAdd }) {
     const tickers = parseTickers(value);
 
     if (tickers.length === 0) {
-      setError('Enter a valid ticker (e.g. AAPL) or comma-separated list (AAPL, MSFT)');
+      setError(t('addTicker.invalidTicker'));
       return;
     }
 
-    const invalid = tickers.find((t) => !TICKER_RE.test(t));
+    const invalid = tickers.find((ticker) => !TICKER_RE.test(ticker));
     if (invalid) {
-      setError(`"${invalid}" is not a valid ticker (1–5 letters)`);
+      setError(t('addTicker.invalidTickerValue', { ticker: invalid }));
       return;
     }
 
@@ -131,7 +130,7 @@ export function AddTickerForm({ onAdd }) {
         await onAdd(tickers[0]);
         setValue('');
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to add ticker');
+        setError(err instanceof Error ? err.message : t('addTicker.failedToAdd'));
       } finally {
         setLoading(false);
         setProgress(null);
@@ -139,14 +138,13 @@ export function AddTickerForm({ onAdd }) {
       return;
     }
 
-    // Bulk mode
     const errors = [];
     for (let i = 0; i < tickers.length; i++) {
-      setProgress(`Adding ${i + 1}/${tickers.length} (${tickers[i]})…`);
+      setProgress(t('addTicker.adding', { current: i + 1, total: tickers.length, ticker: tickers[i] }));
       try {
         await onAdd(tickers[i]);
       } catch (err) {
-        const msg = err instanceof Error ? err.message : `Failed to add ${tickers[i]}`;
+        const msg = err instanceof Error ? err.message : t('addTicker.failedToAdd');
         errors.push(`${tickers[i]}: ${msg}`);
       }
     }
@@ -167,7 +165,7 @@ export function AddTickerForm({ onAdd }) {
             ref={inputRef}
             type="text"
             className={styles.input}
-            placeholder={isBulk ? 'AAPL, MSFT, TSLA' : 'Add ticker (e.g. AAPL)'}
+            placeholder={isBulk ? t('addTicker.placeholderBulk') : t('addTicker.placeholder')}
             value={value}
             onChange={(e) => setValue(e.target.value.slice(0, 50))}
             onBlur={(e) => {
@@ -181,7 +179,7 @@ export function AddTickerForm({ onAdd }) {
             maxLength={50}
             spellCheck={false}
             autoComplete="off"
-            aria-label="Add stock ticker or comma-separated list (press / to focus)"
+            aria-label={t('addTicker.ariaLabel')}
             aria-autocomplete="list"
             aria-expanded={showDropdown}
           />
@@ -210,7 +208,7 @@ export function AddTickerForm({ onAdd }) {
               ? <span className={styles.progressText}>{progress.split('(')[0].trim()}</span>
               : <span className={styles.spinner} />
           ) : (
-            isBulk ? '+ Add All' : '+ Add'
+            isBulk ? t('addTicker.addAllButton') : t('addTicker.addButton')
           )}
         </button>
       </div>

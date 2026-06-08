@@ -1,23 +1,9 @@
 
 import { useRef, useState, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ErrorBoundary } from '@/components/ErrorBoundary/ErrorBoundary';
 import { StockRow } from '@/components/StockRow/StockRow';
 import styles from './WatchlistTable.module.scss';
-
-const COLUMNS = [
-  { key: null, label: '', className: styles.colDrag },
-  { key: 'name-asc', label: 'Ticker', className: styles.colTicker, sortable: true },
-  { key: null, label: 'Name', className: styles.colName },
-  { key: null, label: 'Price', className: styles.colPrice },
-  { key: 'change-desc', label: 'Chg%', className: styles.colChange, sortable: true },
-  { key: 'pnl-desc', label: 'P&L / Since Add', className: styles.colPnl, sortable: true },
-  { key: 'risk-desc', label: 'Risk', className: styles.colRisk, sortable: true },
-  { key: 'expectation-desc', label: 'Expect', className: styles.colExpect, sortable: true },
-  { key: null, label: 'Regime', className: styles.colRegime },
-  { key: null, label: 'Earnings', className: styles.colEarnings },
-  { key: null, label: 'Trend', className: styles.colSpark },
-  { key: null, label: '', className: styles.colActions },
-];
 
 export function WatchlistTable({
   stocks, analyzingTickers, analysisErrors,
@@ -26,9 +12,25 @@ export function WatchlistTable({
   onRemove, onUpdateEntryPrice, onUpdateAlert, onUpdateNote, onReorder, onAnalyzeTicker,
   groupBySector = false,
 }) {
+  const { t } = useTranslation();
   const dragFrom = useRef(null);
   const [dragOver, setDragOver] = useState(null);
   const [collapsedSectors, setCollapsedSectors] = useState(new Set());
+
+  const COLUMNS = [
+    { key: null,              label: '',                        className: styles.colDrag },
+    { key: 'name-asc',        label: t('table.ticker'),         className: styles.colTicker, sortable: true },
+    { key: null,              label: t('table.name'),           className: styles.colName },
+    { key: null,              label: t('table.price'),          className: styles.colPrice },
+    { key: 'change-desc',     label: t('table.change'),         className: styles.colChange, sortable: true },
+    { key: 'pnl-desc',        label: t('table.pnl'),            className: styles.colPnl, sortable: true },
+    { key: 'risk-desc',       label: t('table.risk'),           className: styles.colRisk, sortable: true },
+    { key: 'expectation-desc',label: t('table.expect'),         className: styles.colExpect, sortable: true },
+    { key: null,              label: t('table.regime'),         className: styles.colRegime },
+    { key: null,              label: t('table.earnings'),       className: styles.colEarnings },
+    { key: null,              label: t('table.trend'),          className: styles.colSpark },
+    { key: null,              label: '',                        className: styles.colActions },
+  ];
 
   const toggleSector = useCallback((sector) => {
     setCollapsedSectors((prev) => {
@@ -76,7 +78,7 @@ export function WatchlistTable({
   };
 
   return (
-    <div className={styles.table} role="table" aria-label="Watchlist">
+    <div className={styles.table} role="table" aria-label={t('dashboard.watchlist')}>
       {/* Column headers */}
       <div className={styles.thead} role="row">
         {COLUMNS.map((col, i) => (
@@ -122,7 +124,7 @@ export function WatchlistTable({
                   <span className={styles.sectorHeaderCount}>{sectorStocks.length}</span>
                   {avgRisk != null && (
                     <span className={`${styles.sectorAvgRisk} ${avgRisk >= 70 ? styles.riskHigh : avgRisk >= 40 ? styles.riskMid : styles.riskLow}`}>
-                      Risk {avgRisk.toFixed(0)}
+                      {t('table.riskAvg', { score: avgRisk.toFixed(0) })}
                     </span>
                   )}
                 </div>

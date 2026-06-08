@@ -1,8 +1,9 @@
 import { useMemo, useCallback, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, LineChart, Line, XAxis, YAxis, ReferenceLine, Area, AreaChart } from 'recharts';
+import { useTranslation } from 'react-i18next';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, ReferenceLine, Area, AreaChart, XAxis, YAxis } from 'recharts';
 import { useStocks } from '@/hooks/useStocks';
-import { fmtPrice } from '@/lib/format';
+import { useFmtPrice } from '@/hooks/useFmtPrice';
 import { getMarketOverview } from '@/lib/apiClient';
 import { ExtPriceBadge } from '@/components/ExtPriceBadge/ExtPriceBadge';
 import styles from './PortfolioPage.module.scss';
@@ -32,7 +33,7 @@ function SectorTooltip({ active, payload }) {
   return (
     <div style={{ background: 'var(--surface-elevated)', border: '1px solid var(--chrome-mid)', borderRadius: 8, padding: '8px 12px', fontSize: 12, boxShadow: '0 4px 16px rgba(0,0,0,0.3)' }}>
       <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: 2 }}>{name}</strong>
-      <span style={{ color: 'var(--text-secondary)' }}>{count} position{count !== 1 ? 's' : ''}</span>
+      <span style={{ color: 'var(--text-secondary)' }}>{count}</span>
     </div>
   );
 }
@@ -42,7 +43,7 @@ function fmtPct(n) {
   return `${n >= 0 ? '+' : ''}${n.toFixed(2)}%`;
 }
 
-function riskClass(score) {
+function riskClass(score, styles) {
   if (score >= 70) return styles.high;
   if (score >= 40) return styles.mid;
   return styles.low;
@@ -50,6 +51,8 @@ function riskClass(score) {
 
 export default function PortfolioPage() {
   const { stocks, portfolio, isLoading } = useStocks();
+  const { t } = useTranslation();
+  const { fmtPrice } = useFmtPrice();
 
   const rows = useMemo(() => {
     if (!portfolio.length || !stocks.length) return [];
@@ -85,7 +88,6 @@ export default function PortfolioPage() {
   const totals = useMemo(() => {
     const withPrice = rows.filter((r) => r.pnlAbsPerShare != null);
     if (!withPrice.length) return null;
-    // Use share-weighted totals when available, otherwise fall back to per-position (1 share)
     const withShares = withPrice.filter((r) => r.shares != null);
     const useShares = withShares.length > 0;
     const totalCost  = useShares
@@ -146,7 +148,7 @@ export default function PortfolioPage() {
     if (!series.length) return [];
 
     const totalCost = series.reduce((s, p) => s + p.cost, 0);
-    const useWeighted = series.every((p) => p.cost !== p.entryPrice); // shares are set on all positions
+    const useWeighted = series.every((p) => p.cost !== p.entryPrice);
 
     const dateMap = new Map();
     for (const { entryPrice, cost, history } of series) {
@@ -174,7 +176,6 @@ export default function PortfolioPage() {
   const [sortDir, setSortDir] = useState('desc');
   const [spyChange, setSpyChange] = useState(null);
 
-  // Fetch SPY change% for daily comparison
   useEffect(() => {
     getMarketOverview().then((quotes) => {
       const spy = Array.isArray(quotes) ? quotes.find((q) => q.ticker === 'SPY') : null;
@@ -182,14 +183,12 @@ export default function PortfolioPage() {
     }).catch(() => {});
   }, []);
 
-  // Average today's change across portfolio positions that have current price data
   const portfolioTodayChange = useMemo(() => {
     const priced = rows.filter((r) => r.cachedData?.changePercent != null);
     if (!priced.length) return null;
     return priced.reduce((s, r) => s + r.cachedData.changePercent, 0) / priced.length;
   }, [rows]);
 
-  // Today's dollar P&L = sum of (change$ * shares) for all positions with shares
   const portfolioTodayDollar = useMemo(() => {
     const withShares = rows.filter((r) => r.shares != null && r.cachedData?.change != null);
     if (!withShares.length) return null;
@@ -252,16 +251,29 @@ export default function PortfolioPage() {
     a.download = `mytrade-portfolio-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [rows]);
+  }, [rows, totals]);
+
+  const TABLE_COLS = [
+    { col: 'ticker',   label: t('portfolio.colTicker'),  left: true },
+    { col: 'sector',   label: t('portfolio.colSector') },
+    { col: 'entry',    label: t('portfolio.colEntry') },
+    { col: 'current',  label: t('portfolio.colCurrent') },
+    { col: 'todayPct', label: t('portfolio.colToday') },
+    { col: 'pnlAbs',   label: t('portfolio.colPnl') },
+    { col: 'pnlPct',   label: t('portfolio.colReturn') },
+    ...(totals?.useShares ? [{ col: 'alloc', label: t('portfolio.colAlloc') }] : []),
+    { col: 'risk',     label: t('portfolio.colRisk') },
+    { col: 'expect',   label: t('portfolio.colExpect') },
+  ];
 
   return (
     <div className={styles.page}>
       <div className={styles.toolbar}>
-        <span className={styles.pageTitle}>Portfolio</span>
+        <span className={styles.pageTitle}>{t('portfolio.title')}</span>
         {rows.length > 0 && (
           <>
-            <span className={styles.count}>{rows.length} position{rows.length !== 1 ? 's' : ''}</span>
-            <button className={styles.exportBtn} onClick={exportCSV} title="Export to CSV">↓ CSV</button>
+            <span className={styles.count}>{t('portfolio.positions', { count: rows.length })}</span>
+            <button className={styles.exportBtn} onClick={exportCSV} title={t('portfolio.exportCsv')}>{t('portfolio.exportCsv')}</button>
           </>
         )}
       </div>
@@ -269,28 +281,28 @@ export default function PortfolioPage() {
       {totals && (
         <div className={styles.summary}>
           <div className={styles.summaryCard}>
-            <span className={styles.summaryLabel}>Total Cost</span>
+            <span className={styles.summaryLabel}>{t('portfolio.totalCost')}</span>
             <span className={styles.summaryValue}>{fmtPrice(totals.totalCost)}</span>
           </div>
           <div className={styles.summaryCard}>
-            <span className={styles.summaryLabel}>Market Value</span>
+            <span className={styles.summaryLabel}>{t('portfolio.marketValue')}</span>
             <span className={styles.summaryValue}>{fmtPrice(totals.totalValue)}</span>
           </div>
           <div className={styles.summaryCard}>
-            <span className={styles.summaryLabel}>Total P&amp;L</span>
+            <span className={styles.summaryLabel}>{t('portfolio.totalPnl')}</span>
             <span className={`${styles.summaryValue} ${totals.totalPnlAbs >= 0 ? styles.pos : styles.neg}`}>
               {fmtPrice(totals.totalPnlAbs)}
             </span>
           </div>
           <div className={styles.summaryCard}>
-            <span className={styles.summaryLabel}>Return</span>
+            <span className={styles.summaryLabel}>{t('portfolio.return')}</span>
             <span className={`${styles.summaryValue} ${totals.totalPnlPct >= 0 ? styles.pos : styles.neg}`}>
               {fmtPct(totals.totalPnlPct)}
             </span>
           </div>
           {portfolioTodayChange != null && (
             <div className={styles.summaryCard}>
-              <span className={styles.summaryLabel}>Today (avg)</span>
+              <span className={styles.summaryLabel}>{t('portfolio.todayAvg')}</span>
               <span className={`${styles.summaryValue} ${portfolioTodayChange >= 0 ? styles.pos : styles.neg}`}>
                 {portfolioTodayChange >= 0 ? '+' : ''}{portfolioTodayChange.toFixed(2)}%
               </span>
@@ -298,7 +310,7 @@ export default function PortfolioPage() {
           )}
           {portfolioTodayDollar != null && (
             <div className={styles.summaryCard}>
-              <span className={styles.summaryLabel}>Today ($)</span>
+              <span className={styles.summaryLabel}>{t('portfolio.todayDollar')}</span>
               <span className={`${styles.summaryValue} ${portfolioTodayDollar >= 0 ? styles.pos : styles.neg}`}>
                 {portfolioTodayDollar >= 0 ? '+' : ''}{fmtPrice(portfolioTodayDollar)}
               </span>
@@ -306,7 +318,7 @@ export default function PortfolioPage() {
           )}
           {portfolioTodayChange != null && spyChange != null && (
             <div className={styles.summaryCard}>
-              <span className={styles.summaryLabel}>vs S&amp;P 500</span>
+              <span className={styles.summaryLabel}>{t('portfolio.vsSP500')}</span>
               <span className={`${styles.summaryValue} ${(portfolioTodayChange - spyChange) >= 0 ? styles.pos : styles.neg}`}>
                 {(portfolioTodayChange - spyChange) >= 0 ? '+' : ''}{(portfolioTodayChange - spyChange).toFixed(2)}%
               </span>
@@ -317,9 +329,8 @@ export default function PortfolioPage() {
 
       {rows.length > 0 && (
         <div className={styles.insights}>
-          {/* Sector allocation donut */}
           <div className={styles.insightCard}>
-            <span className={styles.insightTitle}>Sector Allocation{sectorValueWeighted ? ' (by value)' : ''}</span>
+            <span className={styles.insightTitle}>{sectorValueWeighted ? t('portfolio.sectorAllocationByValue') : t('portfolio.sectorAllocation')}</span>
             <div className={styles.donutRow}>
               <div className={styles.donutChart}>
                 <ResponsiveContainer width="100%" height="100%">
@@ -359,30 +370,28 @@ export default function PortfolioPage() {
             </div>
           </div>
 
-          {/* Avg portfolio risk */}
           {avgRisk != null && (
             <div className={styles.insightCard}>
-              <span className={styles.insightTitle}>Avg Portfolio Risk</span>
+              <span className={styles.insightTitle}>{t('portfolio.avgPortfolioRisk')}</span>
               <span className={`${styles.insightBigNum} ${avgRisk >= 70 ? styles.neg : avgRisk >= 40 ? styles.warn : styles.pos}`}>
                 {avgRisk.toFixed(0)}
               </span>
               <span className={`${styles.insightSubLabel} ${avgRisk >= 70 ? styles.neg : avgRisk >= 40 ? styles.warn : styles.pos}`}>
-                {avgRisk >= 70 ? 'HIGH RISK' : avgRisk >= 40 ? 'MEDIUM RISK' : 'LOW RISK'}
+                {avgRisk >= 70 ? t('portfolio.riskHigh') : avgRisk >= 40 ? t('portfolio.riskMedium') : t('portfolio.riskLow')}
               </span>
             </div>
           )}
 
-          {/* Win / loss count */}
           {winLoss && (
             <div className={styles.insightCard}>
-              <span className={styles.insightTitle}>Positions</span>
+              <span className={styles.insightTitle}>{t('portfolio.positions')}</span>
               <div className={styles.winLossRow}>
                 <span className={`${styles.winLossNum} ${styles.pos}`}>+{winLoss.wins}</span>
                 <span className={styles.winLossSep}>/</span>
                 <span className={`${styles.winLossNum} ${winLoss.losses > 0 ? styles.neg : styles.winLossZero}`}>−{winLoss.losses}</span>
               </div>
               <span className={styles.insightSubLabel} style={{ color: 'var(--text-disabled)' }}>
-                {winLoss.wins} profitable · {winLoss.losses} at loss
+                {t('portfolio.profitable', { count: winLoss.wins })} · {t('portfolio.atLoss', { count: winLoss.losses })}
               </span>
             </div>
           )}
@@ -392,8 +401,10 @@ export default function PortfolioPage() {
       {portfolioChartData.length >= 5 && (
         <div className={styles.chartSection}>
           <div className={styles.chartHeader}>
-            <span className={styles.chartTitle}>Portfolio Performance</span>
-            <span className={styles.chartSubtitle}>{portfolioChartWeighted ? 'Share-weighted' : 'Equal-weighted'} return vs. entry price · last {portfolioChartData.length}d</span>
+            <span className={styles.chartTitle}>{t('portfolio.performanceTitle')}</span>
+            <span className={styles.chartSubtitle}>
+              {portfolioChartWeighted ? t('portfolio.shareWeighted') : t('portfolio.equalWeighted')} {t('portfolio.returnVsEntry', { days: portfolioChartData.length })}
+            </span>
           </div>
           <div className={styles.chartWrap}>
             <ResponsiveContainer width="100%" height="100%">
@@ -435,37 +446,24 @@ export default function PortfolioPage() {
 
       {isLoading ? (
         <div className={styles.empty}>
-          <span className={styles.emptyTitle}>Loading…</span>
+          <span className={styles.emptyTitle}>{t('portfolio.loading')}</span>
         </div>
       ) : rows.length === 0 ? (
         <div className={styles.empty}>
-          <span className={styles.emptyTitle}>No positions yet</span>
-          <span className={styles.emptySubtitle}>
-            Expand any stock row in your Watchlist and set an entry price under "Entry / P&amp;L" to track positions here.
-          </span>
+          <span className={styles.emptyTitle}>{t('portfolio.empty')}</span>
+          <span className={styles.emptySubtitle}>{t('portfolio.emptySubtitle')}</span>
         </div>
       ) : (
         <div className={styles.tableWrap}>
           <table className={styles.table}>
             <thead>
               <tr>
-                {[
-                  { col: 'ticker',   label: 'Ticker',  left: true },
-                  { col: 'sector',   label: 'Sector' },
-                  { col: 'entry',    label: 'Entry' },
-                  { col: 'current',  label: 'Current' },
-                  { col: 'todayPct', label: 'Today' },
-                  { col: 'pnlAbs',   label: 'P&L' },
-                  { col: 'pnlPct',   label: 'Return' },
-                  ...(totals?.useShares ? [{ col: 'alloc', label: 'Alloc' }] : []),
-                  { col: 'risk',     label: 'Risk' },
-                  { col: 'expect',   label: 'Expect' },
-                ].map(({ col, label, left }) => (
+                {TABLE_COLS.map(({ col, label, left }) => (
                   <th
                     key={col}
                     className={`${styles.th} ${styles.thSortable} ${sortCol === col ? styles.thActive : ''} ${left ? styles.thLeft : ''}`}
                     onClick={() => handleSort(col)}
-                    title={`Sort by ${label}`}
+                    title={t('portfolio.sortBy', { label })}
                   >
                     {label}
                     {sortCol === col && <span className={styles.sortArrow}>{sortDir === 'desc' ? ' ↓' : ' ↑'}</span>}
@@ -511,7 +509,7 @@ export default function PortfolioPage() {
                   )}
                   <td className={styles.td}>
                     {r.riskScore != null ? (
-                      <span className={`${styles.riskBadge} ${riskClass(r.riskScore)}`}>
+                      <span className={`${styles.riskBadge} ${riskClass(r.riskScore, styles)}`}>
                         {r.riskScore.toFixed(0)}
                       </span>
                     ) : '—'}

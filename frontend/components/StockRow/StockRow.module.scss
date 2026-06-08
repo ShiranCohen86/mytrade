@@ -2,9 +2,6 @@
 @use '../../styles/mixins' as *;
 
 // ─── Column Grid ──────────────────────────────────────────────────────────────
-// Must mirror WatchlistTable.module.scss
-// xs removes the name column entirely (name hidden via display:none at ≤480px)
-// so 4 visible items auto-place correctly into 4 tracks.
 $cols-desktop: 20px 56px 1fr 104px 76px 68px 48px 76px 92px 56px 60px 34px;
 $cols-lg:      20px 56px 1fr 104px 76px 68px 48px 76px 92px 34px;
 $cols-md:      20px 56px 1fr 104px 76px 68px 48px 34px;
@@ -19,8 +16,8 @@ $cols-xs:      44px 1fr 68px 34px;
   &:hover { background: $surface-hover; }
 
   &:nth-child(even) {
-    background: rgba(99, 102, 241, 0.02);
-    [data-theme="dark"] & { background: rgba(129, 140, 248, 0.015); }
+    background: rgba(79, 70, 229, 0.015);
+    [data-theme="dark"] & { background: rgba(129, 140, 248, 0.012); }
     &:hover { background: $surface-hover; }
   }
 
@@ -48,7 +45,7 @@ $cols-xs:      44px 1fr 68px 34px;
   align-items: center;
   gap: 0 $space-3;
   padding: 0 $space-4;
-  height: 46px;
+  height: 48px;
   cursor: pointer;
   user-select: none;
 
@@ -87,6 +84,9 @@ $cols-xs:      44px 1fr 68px 34px;
   opacity: 0;
   transition: opacity $motion-fast, color $motion-fast;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   .rowWrapper:hover & {
     opacity: 1;
@@ -99,19 +99,20 @@ $cols-xs:      44px 1fr 68px 34px;
 // ─── Ticker ──────────────────────────────────────────────────────────────────
 
 .ticker {
-  font-family: $font-data;
-  font-size: 12px;
+  @include mono-value(12px);
   font-weight: 800;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
   color: $accent-text;
   text-decoration: none;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: inline-block;
 
   &:hover {
     color: $accent;
     text-decoration: underline;
+    text-underline-offset: 2px;
     text-decoration-thickness: 1px;
   }
 }
@@ -119,16 +120,13 @@ $cols-xs:      44px 1fr 68px 34px;
 // ─── Name ────────────────────────────────────────────────────────────────────
 
 .name {
-  font-family: $font-ui;
   font-size: 13px;
   color: $text-secondary;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 
-  @media (max-width: 480px) {
-    display: none;
-  }
+  @media (max-width: 480px) { display: none; }
 }
 
 // ─── Price ───────────────────────────────────────────────────────────────────
@@ -149,32 +147,27 @@ $cols-xs:      44px 1fr 68px 34px;
 }
 
 .extBadge {
-  font-family: $font-ui;
   font-size: 8px;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   color: $text-tertiary;
   background: $surface-raised;
   border: 1px solid $chrome-dim;
   border-radius: $radius-pill;
-  padding: 0 3px;
+  padding: 0 4px;
   line-height: 1.5;
 }
 
 .extPrice {
-  font-family: $font-data;
-  font-size: 10px;
+  @include mono-value(10px);
   font-weight: 600;
-  font-variant-numeric: tabular-nums;
   white-space: nowrap;
-  &.pos { color: $pos; background: none; }
-  &.neg { color: $neg; background: none; }
+  &.pos { color: $pos; }
+  &.neg { color: $neg; }
 }
 
 .price {
-  font-family: $font-data;
-  font-size: 13px;
-  font-variant-numeric: tabular-nums;
+  @include mono-value(13px);
   font-weight: 600;
   color: $text-primary;
   white-space: nowrap;
@@ -182,37 +175,32 @@ $cols-xs:      44px 1fr 68px 34px;
 }
 
 @keyframes flashUp {
-  0%   { color: $pos; background: $pos-bg; border-radius: $radius-xs; }
-  100% { color: $text-primary; background: transparent; }
+  0%   { color: $pos; background: $pos-bg; border-radius: $radius-xs; padding: 0 3px; }
+  100% { color: $text-primary; background: transparent; padding: 0; }
 }
 
 @keyframes flashDown {
-  0%   { color: $neg; background: $neg-bg; border-radius: $radius-xs; }
-  100% { color: $text-primary; background: transparent; }
+  0%   { color: $neg; background: $neg-bg; border-radius: $radius-xs; padding: 0 3px; }
+  100% { color: $text-primary; background: transparent; padding: 0; }
 }
 
-.flashUp   { animation: flashUp   280ms ease-out forwards; }
-.flashDown { animation: flashDown 280ms ease-out forwards; }
+.flashUp   { animation: flashUp   320ms ease-out forwards; }
+.flashDown { animation: flashDown 320ms ease-out forwards; }
 
 .connDot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   flex-shrink: 0;
 }
 
-.connOnline  {
-  background: $pos;
-  box-shadow: 0 0 5px var(--pos);
-}
+.connOnline  { background: $pos; box-shadow: 0 0 4px var(--pos); }
 .connOffline { background: $neg; }
 
 // ─── Change % ────────────────────────────────────────────────────────────────
 
 .change {
-  font-family: $font-data;
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
+  @include mono-value(11px);
   font-weight: 700;
   padding: 2px 7px;
   border-radius: $radius-pill;
@@ -223,16 +211,14 @@ $cols-xs:      44px 1fr 68px 34px;
 // ─── P&L ─────────────────────────────────────────────────────────────────────
 
 .pnl {
-  font-family: $font-data;
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
+  @include mono-value(11px);
   font-weight: 600;
   white-space: nowrap;
   text-align: right;
 }
 
 .sinceAdd {
-  opacity: 0.65;
+  opacity: 0.60;
   font-style: italic;
 }
 
@@ -244,13 +230,12 @@ $cols-xs:      44px 1fr 68px 34px;
 // ─── Risk score ──────────────────────────────────────────────────────────────
 
 .risk {
-  font-family: $font-data;
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
+  @include mono-value(11px);
   font-weight: 700;
   text-align: right;
   padding: 2px 7px;
   border-radius: $radius-pill;
+  white-space: nowrap;
 }
 
 .risk_high   { color: $neg;  background: $neg-bg; }
@@ -260,7 +245,6 @@ $cols-xs:      44px 1fr 68px 34px;
 // ─── Expectation ─────────────────────────────────────────────────────────────
 
 .expect {
-  font-family: $font-ui;
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
@@ -278,7 +262,6 @@ $cols-xs:      44px 1fr 68px 34px;
 // ─── Market regime ───────────────────────────────────────────────────────────
 
 .regime {
-  font-family: $font-ui;
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
@@ -299,9 +282,7 @@ $cols-xs:      44px 1fr 68px 34px;
   display: flex;
   align-items: center;
   gap: 4px;
-  font-family: $font-data;
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
+  @include mono-value(11px);
   color: $text-secondary;
   white-space: nowrap;
   justify-content: flex-end;
@@ -320,6 +301,7 @@ $cols-xs:      44px 1fr 68px 34px;
   padding: 1px 6px;
   border-radius: $radius-pill;
 }
+
 .stnDot { color: $neg; }
 
 // ─── Sparkline ───────────────────────────────────────────────────────────────
@@ -394,7 +376,7 @@ $cols-xs:      44px 1fr 68px 34px;
   border-radius: 50%;
   background: $warn;
   pointer-events: none;
-  opacity: 0.7;
+  opacity: 0.65;
 }
 
 // ─── Per-row analyzing spinner ────────────────────────────────────────────────

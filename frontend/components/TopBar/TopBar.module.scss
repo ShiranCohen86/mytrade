@@ -11,16 +11,13 @@
   padding: 0 $space-5;
   padding-top: env(safe-area-inset-top, 0px);
   height: calc(60px + env(safe-area-inset-top, 0px));
-  background: $surface-glass;
-  backdrop-filter: blur(20px) saturate(1.6);
-  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  @include glass-surface;
   border-bottom: 1px solid $chrome-dim;
   z-index: 100;
   flex-shrink: 0;
-  box-shadow: $shadow-sm;
   position: relative;
 
-  // Subtle gradient accent line at bottom
+  // Hairline accent gradient at bottom
   &::after {
     content: '';
     position: absolute;
@@ -28,13 +25,14 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg,
+    background: linear-gradient(
+      90deg,
       transparent 0%,
-      var(--accent) 30%,
-      var(--accent-secondary) 70%,
+      var(--accent) 25%,
+      var(--accent-secondary) 75%,
       transparent 100%
     );
-    opacity: 0.35;
+    opacity: 0.25;
     pointer-events: none;
   }
 }
@@ -44,8 +42,9 @@
 .left {
   display: flex;
   align-items: center;
-  gap: $space-3;
+  gap: $space-2;
   min-width: 0;
+  flex-shrink: 0;
 }
 
 .center {
@@ -53,14 +52,18 @@
   align-items: center;
   justify-content: center;
   flex: 1;
-  padding: 0 $space-3;
+  padding: 0 $space-4;
+
+  @include below-md {
+    display: none;
+  }
 }
 
 .right {
   display: flex;
   align-items: center;
   gap: $space-2;
-  min-width: 0;
+  flex-shrink: 0;
 }
 
 // ─── Hamburger ────────────────────────────────────────────────────────────────
@@ -68,12 +71,12 @@
 .hamburger {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 4.5px;
   padding: 8px;
   border-radius: $radius-md;
   flex-shrink: 0;
-  min-width: 44px;
-  min-height: 44px;
+  min-width: 40px;
+  min-height: 40px;
   align-items: center;
   justify-content: center;
   transition: background $motion-fast;
@@ -81,23 +84,23 @@
 
   &:hover {
     background: $surface-raised;
-    color: $text-primary;
+    color: $text-secondary;
 
     span { background: currentColor; }
+    span:nth-child(2) { width: 16px; }
   }
 
   span {
     display: block;
-    width: 16px;
     height: 1.5px;
     background: $text-tertiary;
     border-radius: 2px;
     transition: background $motion-fast, width $motion-fast;
 
+    &:nth-child(1) { width: 16px; }
     &:nth-child(2) { width: 11px; }
+    &:nth-child(3) { width: 14px; }
   }
-
-  &:hover span:nth-child(2) { width: 16px; }
 }
 
 // ─── Brand ────────────────────────────────────────────────────────────────────
@@ -107,7 +110,7 @@
   align-items: center;
   gap: $space-2;
   text-decoration: none;
-  padding: 4px 6px;
+  padding: 5px 8px;
   border-radius: $radius-md;
   transition: background $motion-fast;
 
@@ -119,24 +122,23 @@
 }
 
 .brandMark {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: $radius-sm;
   flex-shrink: 0;
-  box-shadow: $shadow-sm;
   display: block;
   object-fit: contain;
 }
 
 .brandName {
   font-family: $font-ui;
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 800;
   color: $text-primary;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
   transition: color $motion-fast;
 
-  @media (max-width: $bp-sm) { display: none; }
+  @include below-sm { display: none; }
 }
 
 // ─── Command palette trigger ──────────────────────────────────────────────────
@@ -153,26 +155,29 @@
   color: $text-tertiary;
   font-family: $font-ui;
   font-size: $text-xs;
-  transition: border-color $motion-fast, color $motion-fast, box-shadow $motion-fast;
+  transition: border-color $motion-fast, color $motion-fast, box-shadow $motion-fast, background $motion-fast;
   white-space: nowrap;
   flex-shrink: 0;
 
   &:hover {
     border-color: $chrome-mid;
     color: $text-secondary;
+    background: $surface-elevated;
     box-shadow: $shadow-xs;
   }
 
-  @media (max-width: $bp-md) {
-    padding: 0 $space-2;
+  @include below-md {
+    padding: 0 8px;
     border: none;
     background: none;
     gap: 0;
+
+    &:hover { background: $surface-raised; }
   }
 }
 
 .paletteBtnLabel {
-  @media (max-width: $bp-md) { display: none; }
+  @include below-md { display: none; }
 }
 
 .paletteBtnKbd {
@@ -184,8 +189,34 @@
   border-radius: $radius-xs;
   padding: 1px 5px;
   margin-left: $space-1;
+  line-height: 1.6;
 
-  @media (max-width: $bp-md) { display: none; }
+  @include below-md { display: none; }
+}
+
+// ─── Currency toggle ──────────────────────────────────────────────────────────
+
+.currencyToggle {
+  font-size: 13px;
+  font-weight: 700;
+  font-family: $font-data;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-md;
+  color: $text-tertiary;
+  border: 1px solid $chrome-dim;
+  background: $surface-raised;
+  transition: background $motion-fast, color $motion-fast, border-color $motion-fast;
+  flex-shrink: 0;
+
+  &:hover {
+    background: $surface-elevated;
+    color: $accent;
+    border-color: $accent;
+  }
 }
 
 // ─── Theme toggle ─────────────────────────────────────────────────────────────
@@ -199,7 +230,7 @@
   justify-content: center;
   border-radius: $radius-md;
   color: $text-tertiary;
-  transition: background $motion-fast, color $motion-fast, transform $motion-fast;
+  transition: background $motion-fast, color $motion-fast, transform $motion-base;
   flex-shrink: 0;
   position: relative;
 
@@ -217,8 +248,10 @@
   &:hover {
     background: $surface-raised;
     color: $text-primary;
-    transform: rotate(12deg);
+    transform: rotate(15deg);
   }
+
+  &:active { transform: rotate(30deg) scale(0.9); }
 }
 
 // ─── User avatar + dropdown ──────────────────────────────────────────────────
@@ -232,32 +265,35 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   padding: 2px;
   border: 1.5px solid $chrome-mid;
   transition: border-color $motion-fast, box-shadow $motion-fast;
 
-  &:hover { border-color: $accent; box-shadow: $shadow-glow; }
+  &:hover {
+    border-color: $accent;
+    box-shadow: $shadow-glow;
+  }
 }
 
 .userDropdown {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 10px);
   right: 0;
   z-index: 300;
-  min-width: 220px;
+  min-width: 224px;
   background: $surface-elevated;
   border: 1px solid $chrome-mid;
   border-radius: $radius-lg;
   box-shadow: $shadow-popup;
   padding: $space-2;
-  animation: dropIn 140ms cubic-bezier(0.16, 1, 0.3, 1);
+  animation: dropIn 150ms cubic-bezier(0.16, 1, 0.3, 1);
 
   @keyframes dropIn {
-    from { opacity: 0; transform: translateY(-6px) scale(0.97); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
+    from { opacity: 0; transform: translateY(-6px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0)    scale(1); }
   }
 }
 
@@ -266,6 +302,7 @@
   align-items: center;
   gap: $space-3;
   padding: $space-2 $space-3;
+  border-radius: $radius-sm;
 }
 
 .userDropdownInfo {
@@ -276,28 +313,22 @@
 }
 
 .userDropdownName {
-  font-family: $font-ui;
   font-size: 13px;
   font-weight: 600;
   color: $text-primary;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  @include truncate;
 }
 
 .userDropdownEmail {
-  font-family: $font-ui;
   font-size: 11px;
   color: $text-tertiary;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  @include truncate;
 }
 
 .userDropdownDivider {
   height: 1px;
   background: $chrome-dim;
-  margin: $space-2 0;
+  margin: $space-1 0;
 }
 
 .userDropdownItem {
@@ -307,7 +338,6 @@
   width: 100%;
   padding: $space-2 $space-3;
   border-radius: $radius-sm;
-  font-family: $font-ui;
   font-size: 13px;
   font-weight: 500;
   color: $text-secondary;
@@ -323,9 +353,7 @@
 // ─── Clock ────────────────────────────────────────────────────────────────────
 
 .clock {
-  font-family: $font-data;
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
+  @include mono-value(11px);
   color: $text-tertiary;
   letter-spacing: 0.04em;
   white-space: nowrap;

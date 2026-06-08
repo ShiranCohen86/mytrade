@@ -13,7 +13,7 @@ import { NewsPanel } from '@/components/NewsPanel/NewsPanel';
 import { HeroBar } from '@/components/HeroBar/HeroBar';
 import { StatsBar } from '@/components/StatsBar/StatsBar';
 import { PanelCard } from '@/components/PanelCard/PanelCard';
-import { fmtPrice, fmtBig } from '@/lib/format';
+import { useFmtPrice } from '@/hooks/useFmtPrice';
 import { ExtPriceBadge } from '@/components/ExtPriceBadge/ExtPriceBadge';
 import styles from './page.module.scss';
 
@@ -85,6 +85,7 @@ function pctChange(historical, days) {
 // ─── Quick Actions inline panel ───────────────────────────────────────────────
 
 function QuickActionsPanel({ ticker, portfolioEntry, priceAlert, note, currentPrice, onUpdateEntryPrice, onUpdateAlert, onUpdateNote }) {
+  const { fmtPrice } = useFmtPrice();
   const [entryInput, setEntryInput] = useState('');
   const [sharesInput, setSharesInput] = useState('');
   const [alertInput, setAlertInput] = useState('');
@@ -193,6 +194,7 @@ function QuickActionsPanel({ ticker, portfolioEntry, priceAlert, note, currentPr
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function StockDetailClient({ ticker }) {
+  const { fmtPrice, fmtBig } = useFmtPrice();
   const { stock, isLoading, isRefreshing, error, refresh } = useStockAnalysis(ticker);
   const { stocks: allStocks, portfolio, priceAlerts, notes, updateEntryPrice, updateAlert, updateNote } = useStocks();
 

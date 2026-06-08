@@ -273,7 +273,20 @@
     "signOut": "Sign out"
   },
   "sectors": {
-    "title": "Sectors"
+    "title": "Sectors",
+    "sectors_one": "{{count}} sector",
+    "sectors_other": "{{count}} sectors",
+    "sortSize": "Size",
+    "sortToday": "Today",
+    "sortRisk": "Risk",
+    "sortExpect": "Expect",
+    "loading": "Loading…",
+    "empty": "No stocks yet",
+    "emptySubtitle": "Add stocks to your watchlist to see sector breakdown here.",
+    "statToday": "Today",
+    "statRisk": "Risk",
+    "statExpect": "Expect",
+    "statStocks": "Stocks"
   },
   "onboarding": {
     "welcome": "Welcome to MyTrade",

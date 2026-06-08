@@ -273,7 +273,20 @@
     "signOut": "התנתק"
   },
   "sectors": {
-    "title": "סקטורים"
+    "title": "סקטורים",
+    "sectors_one": "סקטור אחד",
+    "sectors_other": "{{count}} סקטורים",
+    "sortSize": "גודל",
+    "sortToday": "היום",
+    "sortRisk": "סיכון",
+    "sortExpect": "ציפייה",
+    "loading": "טוען…",
+    "empty": "אין מניות עדיין",
+    "emptySubtitle": "הוסף מניות לרשימת המעקב שלך כדי לראות כאן את הפילוח לפי סקטור.",
+    "statToday": "היום",
+    "statRisk": "סיכון",
+    "statExpect": "ציפייה",
+    "statStocks": "מניות"
   },
   "onboarding": {
     "welcome": "ברוך הבא ל-MyTrade",

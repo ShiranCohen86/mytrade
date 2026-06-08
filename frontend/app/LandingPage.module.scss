@@ -1,4 +1,5 @@
 @use '../styles/variables' as *;
+@use '../styles/mixins' as *;
 
 // ─── Page wrapper ─────────────────────────────────────────────────────────────
 
@@ -21,12 +22,11 @@
   padding: 0 $space-8;
   height: 64px;
   border-bottom: 1px solid $chrome-dim;
-  background: $surface-glass;
-  backdrop-filter: blur(20px) saturate(1.6);
-  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  @include glass-surface;
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: $shadow-sm;
 
   @media (max-width: 640px) {
     padding: 0 $space-5;
@@ -38,18 +38,22 @@
   align-items: center;
   gap: $space-2;
   text-decoration: none;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 800;
   letter-spacing: -0.04em;
   color: $text-primary;
 
-  img { border-radius: $radius-sm; }
+  img {
+    width: 26px;
+    height: 26px;
+    border-radius: $radius-sm;
+  }
 }
 
 .navLinks {
   display: flex;
   align-items: center;
-  gap: $space-3;
+  gap: $space-2;
 }
 
 .navLink {
@@ -66,15 +70,20 @@
 
 .navCta {
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   color: #fff;
-  background: linear-gradient(135deg, $accent 0%, $accent-secondary 100%);
+  background: $accent;
   text-decoration: none;
   padding: $space-2 $space-4;
   border-radius: $radius-md;
-  transition: opacity $motion-fast, box-shadow $motion-fast;
+  transition: background $motion-fast, box-shadow $motion-fast, transform $motion-fast;
+  box-shadow: 0 1px 3px rgba(79, 70, 229, 0.28);
 
-  &:hover { opacity: 0.9; box-shadow: $shadow-glow; }
+  &:hover {
+    background: $accent-hover;
+    box-shadow: 0 3px 10px rgba(79, 70, 229, 0.32);
+    transform: translateY(-1px);
+  }
 }
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
@@ -84,20 +93,33 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 96px $space-8 80px;
+  padding: 100px $space-8 80px;
   position: relative;
 
+  // Radial gradient spotlight
   &::before {
     content: '';
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(ellipse 70% 50% at 50% 0%, color-mix(in srgb, var(--accent) 10%, transparent) 0%, transparent 70%);
+      radial-gradient(ellipse 75% 55% at 50% 0%, rgba(79, 70, 229, 0.09) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 35% at 80% 80%, rgba(124, 58, 237, 0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  // Faint dot grid
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(79, 70, 229, 0.12) 1px, transparent 1px);
+    background-size: 30px 30px;
+    opacity: 0.20;
     pointer-events: none;
   }
 
   @media (max-width: 640px) {
-    padding: 64px $space-5 60px;
+    padding: 72px $space-5 64px;
   }
 }
 
@@ -107,35 +129,40 @@
   gap: $space-2;
   padding: $space-1 $space-4;
   background: $accent-faint;
-  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  border: 1px solid rgba(79, 70, 229, 0.20);
   border-radius: $radius-pill;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
   color: $accent;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   margin-bottom: $space-5;
   position: relative;
+  z-index: 1;
 }
 
 .heroHeading {
-  font-size: clamp(32px, 6vw, 58px);
+  font-size: clamp(32px, 6vw, 60px);
   font-weight: 800;
   letter-spacing: -0.04em;
-  line-height: 1.08;
+  line-height: 1.06;
   color: $text-primary;
-  max-width: 720px;
+  max-width: 740px;
   margin-bottom: $space-5;
   position: relative;
+  z-index: 1;
+
+  span { color: $accent; }
 }
 
 .heroSubheading {
   font-size: clamp(15px, 2vw, 18px);
   color: $text-tertiary;
-  max-width: 520px;
-  line-height: 1.65;
+  max-width: 540px;
+  line-height: 1.68;
   margin-bottom: $space-7;
   position: relative;
+  z-index: 1;
 }
 
 .heroCtas {
@@ -146,6 +173,7 @@
   flex-wrap: wrap;
   justify-content: center;
   position: relative;
+  z-index: 1;
 }
 
 // ─── Market strip ─────────────────────────────────────────────────────────────
@@ -160,9 +188,7 @@
   scrollbar-width: none;
   &::-webkit-scrollbar { display: none; }
 
-  @media (max-width: 640px) {
-    gap: $space-2;
-  }
+  @media (max-width: 640px) { gap: $space-2; }
 }
 
 .tickerCard {
@@ -174,68 +200,71 @@
   background: $surface-panel;
   border: 1px solid $chrome-mid;
   border-radius: $radius-lg;
-  min-width: 100px;
+  min-width: 108px;
   flex-shrink: 0;
+  transition: border-color $motion-fast, box-shadow $motion-fast, transform $motion-fast;
+
+  &:hover {
+    border-color: $chrome-bright;
+    box-shadow: $shadow-sm;
+    transform: translateY(-1px);
+  }
 }
 
 .tickerSymbol {
-  font-family: $font-data;
-  font-size: 11px;
+  @include mono-value(10px);
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: $text-tertiary;
   text-transform: uppercase;
 }
 
 .tickerPrice {
-  font-family: $font-data;
-  font-size: 14px;
+  @include mono-value(14px);
   font-weight: 700;
-  font-variant-numeric: tabular-nums;
   color: $text-primary;
 }
 
 .tickerChange {
-  font-family: $font-data;
-  font-size: 11px;
+  @include mono-value(11px);
   font-weight: 600;
-  font-variant-numeric: tabular-nums;
 }
 
-// ─── CTAs ─────────────────────────────────────────────────────────────────────
+// ─── CTA buttons ─────────────────────────────────────────────────────────────
 
 .ctaPrimary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: $space-3 $space-7;
-  background: linear-gradient(135deg, $accent 0%, $accent-secondary 100%);
+  padding: 13px $space-7;
+  background: $accent;
   color: #fff;
-  font-family: $font-ui;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.01em;
   text-decoration: none;
   border-radius: $radius-md;
-  transition: opacity $motion-fast, box-shadow $motion-fast, transform $motion-fast;
+  transition: background $motion-fast, box-shadow $motion-fast, transform $motion-fast;
   white-space: nowrap;
+  box-shadow: 0 2px 10px rgba(79, 70, 229, 0.30);
 
   &:hover {
-    opacity: 0.92;
-    box-shadow: $shadow-glow;
+    background: $accent-hover;
+    box-shadow: 0 5px 18px rgba(79, 70, 229, 0.38);
     transform: translateY(-1px);
   }
+
+  &:active { transform: translateY(0); }
 }
 
 .ctaGhost {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: $space-3 $space-6;
+  padding: 13px $space-6;
   background: $surface-raised;
   border: 1.5px solid $chrome-mid;
   color: $text-secondary;
-  font-family: $font-ui;
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
@@ -254,11 +283,12 @@
 .statsBar {
   display: flex;
   justify-content: center;
-  gap: 0;
   border-top: 1px solid $chrome-dim;
   border-bottom: 1px solid $chrome-dim;
   background: $surface-panel;
   overflow-x: auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
 }
 
 .stat {
@@ -268,8 +298,10 @@
   padding: $space-6 $space-10;
   gap: $space-1;
   border-right: 1px solid $chrome-dim;
+  transition: background $motion-fast;
 
   &:last-child { border-right: none; }
+  &:hover { background: $surface-raised; }
 
   @media (max-width: 640px) {
     padding: $space-5 $space-6;
@@ -277,11 +309,11 @@
 }
 
 .statNum {
-  font-family: $font-data;
-  font-size: 26px;
+  @include mono-value(26px);
   font-weight: 800;
   color: $accent;
   letter-spacing: -0.04em;
+  line-height: 1;
 }
 
 .statLabel {
@@ -306,12 +338,24 @@
 }
 
 .sectionHeading {
-  font-size: clamp(22px, 4vw, 34px);
+  font-size: clamp(22px, 4vw, 36px);
   font-weight: 800;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.04em;
   color: $text-primary;
   text-align: center;
+  margin-bottom: $space-3;
+  line-height: 1.15;
+}
+
+.sectionSub {
+  font-size: 16px;
+  color: $text-tertiary;
+  text-align: center;
   margin-bottom: $space-10;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
 }
 
 .featureGrid {
@@ -332,17 +376,34 @@
   flex-direction: column;
   gap: $space-3;
   transition: border-color $motion-base, box-shadow $motion-base, transform $motion-base;
+  position: relative;
+  overflow: hidden;
+
+  // Subtle top accent line on hover
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, $accent 0%, $accent-secondary 100%);
+    opacity: 0;
+    transition: opacity $motion-base;
+  }
 
   &:hover {
     border-color: $chrome-mid;
-    box-shadow: $shadow-sm;
+    box-shadow: $shadow-md;
     transform: translateY(-2px);
+
+    &::before { opacity: 0.7; }
   }
 }
 
 .featureIcon {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   border-radius: $radius-md;
   background: $accent-faint;
   color: $accent;
@@ -355,14 +416,14 @@
 .featureTitle {
   font-size: 15px;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
   color: $text-primary;
 }
 
 .featureDesc {
   font-size: 13px;
   color: $text-tertiary;
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 // ─── How it works ─────────────────────────────────────────────────────────────
@@ -381,7 +442,7 @@
 .steps {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: $space-6;
+  gap: $space-5;
   margin-top: $space-10;
 
   @media (max-width: 640px) { grid-template-columns: 1fr; gap: $space-4; }
@@ -395,14 +456,28 @@
   background: $surface-panel;
   border: 1px solid $chrome-dim;
   border-radius: $radius-xl;
+  position: relative;
+
+  // Connecting line (desktop only)
+  @media (min-width: 641px) {
+    &:not(:last-child)::after {
+      content: '→';
+      position: absolute;
+      right: -$space-4;
+      top: 50%;
+      transform: translateY(-50%);
+      color: $text-disabled;
+      font-size: 16px;
+      z-index: 1;
+    }
+  }
 }
 
 .stepNum {
-  font-family: $font-data;
-  font-size: 28px;
+  @include mono-value(28px);
   font-weight: 800;
   color: $accent;
-  opacity: 0.35;
+  opacity: 0.25;
   letter-spacing: -0.04em;
   line-height: 1;
 }
@@ -411,12 +486,13 @@
   font-size: 15px;
   font-weight: 700;
   color: $text-primary;
+  letter-spacing: -0.02em;
 }
 
 .stepDesc {
   font-size: 13px;
   color: $text-tertiary;
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 // ─── CTA banner ───────────────────────────────────────────────────────────────
@@ -432,12 +508,14 @@
   border-bottom: 1px solid $chrome-dim;
   gap: $space-4;
   position: relative;
+  overflow: hidden;
 
   &::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse 60% 70% at 50% 50%, color-mix(in srgb, var(--accent) 6%, transparent) 0%, transparent 70%);
+    background:
+      radial-gradient(ellipse 65% 75% at 50% 50%, rgba(79, 70, 229, 0.05) 0%, transparent 70%);
     pointer-events: none;
   }
 
@@ -447,17 +525,20 @@
 }
 
 .ctaBannerHeading {
-  font-size: clamp(26px, 4vw, 40px);
+  font-size: clamp(26px, 4vw, 42px);
   font-weight: 800;
   letter-spacing: -0.04em;
   color: $text-primary;
   position: relative;
+  line-height: 1.1;
 }
 
 .ctaBannerSub {
-  font-size: 15px;
+  font-size: 16px;
   color: $text-tertiary;
   position: relative;
+  max-width: 440px;
+  line-height: 1.6;
 }
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
@@ -470,6 +551,7 @@
   border-top: 1px solid $chrome-dim;
   gap: $space-4;
   flex-wrap: wrap;
+  background: $surface-panel;
 
   @media (max-width: 640px) {
     padding: $space-5;
@@ -488,7 +570,11 @@
   letter-spacing: -0.03em;
   color: $text-secondary;
 
-  img { border-radius: $radius-sm; }
+  img {
+    width: 20px;
+    height: 20px;
+    border-radius: $radius-xs;
+  }
 }
 
 .footerTagline {
@@ -498,7 +584,7 @@
 
 .footerLinks {
   display: flex;
-  gap: $space-4;
+  gap: $space-5;
 
   a {
     font-size: 13px;

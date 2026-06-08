@@ -1,14 +1,20 @@
-export function fmtPrice(n) {
+export function fmtPrice(n, currency = 'USD', rate = 1) {
   if (n == null) return '—';
-  return n.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
+  const val = n * rate;
+  if (currency === 'ILS') {
+    return `₪${val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+  return val.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
 }
 
-export function fmtBig(n) {
+export function fmtBig(n, currency = 'USD', rate = 1) {
   if (n == null || n === 0) return '—';
-  if (n >= 1e12) return `$${(n / 1e12).toFixed(2)}T`;
-  if (n >= 1e9) return `$${(n / 1e9).toFixed(2)}B`;
-  if (n >= 1e6) return `$${(n / 1e6).toFixed(2)}M`;
-  return `$${n.toLocaleString()}`;
+  const val = n * rate;
+  const sym = currency === 'ILS' ? '₪' : '$';
+  if (val >= 1e12) return `${sym}${(val / 1e12).toFixed(2)}T`;
+  if (val >= 1e9) return `${sym}${(val / 1e9).toFixed(2)}B`;
+  if (val >= 1e6) return `${sym}${(val / 1e6).toFixed(2)}M`;
+  return `${sym}${val.toLocaleString('en-US')}`;
 }
 
 export function fmtVolume(n) {

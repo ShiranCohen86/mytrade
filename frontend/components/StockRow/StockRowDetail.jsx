@@ -2,13 +2,14 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './StockRowDetail.module.scss';
-import { fmtPrice } from '@/lib/format';
+import { useFmtPrice } from '@/hooks/useFmtPrice';
 
 export function StockRowDetail({
   stock, portfolioEntry, priceAlert, note, pnlPct, pnlAbs = null, shares = null,
   onUpdateEntryPrice, onUpdateAlert, onUpdateNote, onRemove, onAnalyzeTicker, analysisError,
   inSheet = false, isAnalyzing = false,
 }) {
+  const { fmtPrice } = useFmtPrice();
   const { ticker, analysis } = stock;
 
   // Entry price form state

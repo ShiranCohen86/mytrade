@@ -1,23 +1,24 @@
 
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { HelpModal } from '@/components/HelpModal/HelpModal';
 import { NAV_ITEMS } from '@/lib/navItems';
 import { useAuth } from '@/context/AuthContext';
 import styles from './Sidebar.module.scss';
 
-function NavSvgIcon({ label }) {
-  if (label === 'Watchlist') return (
+function NavSvgIcon({ labelKey }) {
+  if (labelKey === 'nav.watchlist') return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" />
       <line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" />
     </svg>
   );
-  if (label === 'Portfolio') return (
+  if (labelKey === 'nav.portfolio') return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
     </svg>
   );
-  if (label === 'Sectors') return (
+  if (labelKey === 'nav.sectors') return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" />
       <rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" />
@@ -39,6 +40,7 @@ export function Sidebar({ isCollapsed, isMobileOpen = false, onClose }) {
   const { pathname } = useLocation();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleLogout = async () => {
     if (onClose) onClose();
@@ -58,24 +60,27 @@ export function Sidebar({ isCollapsed, isMobileOpen = false, onClose }) {
         isCollapsed ? styles.collapsed : '',
         isMobileOpen ? styles.mobileOpen : '',
       ].filter(Boolean).join(' ')}
-      aria-label="Navigation"
+      aria-label={t('nav.navigate')}
     >
       <nav className={styles.nav}>
         <div className={styles.section}>
-          <span className={styles.sectionLabel}>{(!isCollapsed || isMobileOpen) ? 'Navigate' : ''}</span>
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              to={item.href}
-              className={`${styles.navItem} ${isActive(item.href) ? styles.navActive : ''}`}
-              title={isCollapsed ? item.label : undefined}
-              aria-label={item.label}
-              onClick={isMobileOpen ? onClose : undefined}
-            >
-              <span className={styles.navIcon}><NavSvgIcon label={item.label} /></span>
-              {(!isCollapsed || isMobileOpen) && <span className={styles.navLabel}>{item.label}</span>}
-            </Link>
-          ))}
+          <span className={styles.sectionLabel}>{(!isCollapsed || isMobileOpen) ? t('nav.navigate') : ''}</span>
+          {NAV_ITEMS.map((item) => {
+            const label = t(item.labelKey);
+            return (
+              <Link
+                key={item.href}
+                to={item.href}
+                className={`${styles.navItem} ${isActive(item.href) ? styles.navActive : ''}`}
+                title={isCollapsed ? label : undefined}
+                aria-label={label}
+                onClick={isMobileOpen ? onClose : undefined}
+              >
+                <span className={styles.navIcon}><NavSvgIcon labelKey={item.labelKey} /></span>
+                {(!isCollapsed || isMobileOpen) && <span className={styles.navLabel}>{label}</span>}
+              </Link>
+            );
+          })}
         </div>
       </nav>
 
@@ -89,8 +94,8 @@ export function Sidebar({ isCollapsed, isMobileOpen = false, onClose }) {
             <button
               className={styles.signOutBtn}
               onClick={handleLogout}
-              title="Sign out"
-              aria-label="Sign out"
+              title={t('sidebar.signOut')}
+              aria-label={t('sidebar.signOut')}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -103,13 +108,13 @@ export function Sidebar({ isCollapsed, isMobileOpen = false, onClose }) {
         <Link
           to="/settings"
           className={`${styles.settingsLink} ${pathname === '/settings' ? styles.settingsLinkActive : ''}`}
-          title={isCollapsed && !isMobileOpen ? 'Settings' : undefined}
+          title={isCollapsed && !isMobileOpen ? t('nav.settings') : undefined}
           onClick={isMobileOpen ? onClose : undefined}
         >
           <span className={styles.navIcon}><SettingsIcon /></span>
-          {(!isCollapsed || isMobileOpen) && <span>Settings</span>}
+          {(!isCollapsed || isMobileOpen) && <span>{t('nav.settings')}</span>}
         </Link>
-        <HelpModal trigger={(!isCollapsed || isMobileOpen) ? '[?] Help' : '?'} />
+        <HelpModal trigger={(!isCollapsed || isMobileOpen) ? t('help.trigger') : t('help.triggerShort')} />
       </div>
     </aside>
   );

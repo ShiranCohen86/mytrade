@@ -1,16 +1,10 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useStocks } from '@/hooks/useStocks';
-import { fmtPrice } from '@/lib/format';
+import { useFmtPrice } from '@/hooks/useFmtPrice';
 import { ExtPriceBadge } from '@/components/ExtPriceBadge/ExtPriceBadge';
 import styles from './SectorsPage.module.scss';
-
-const SORT_OPTIONS = [
-  { key: 'size',   label: 'Size' },
-  { key: 'change', label: 'Today' },
-  { key: 'risk',   label: 'Risk' },
-  { key: 'expect', label: 'Expect' },
-];
 
 function riskPipClass(score) {
   if (score == null) return '';
@@ -21,7 +15,16 @@ function riskPipClass(score) {
 
 export default function SectorsPage() {
   const { stocks, isLoading } = useStocks();
+  const { t } = useTranslation();
+  const { fmtPrice } = useFmtPrice();
   const [sortBy, setSortBy] = useState('size');
+
+  const SORT_OPTIONS = [
+    { key: 'size',   label: t('sectors.sortSize') },
+    { key: 'change', label: t('sectors.sortToday') },
+    { key: 'risk',   label: t('sectors.sortRisk') },
+    { key: 'expect', label: t('sectors.sortExpect') },
+  ];
 
   const sectors = useMemo(() => {
     if (!stocks.length) return [];
@@ -71,10 +74,10 @@ export default function SectorsPage() {
   return (
     <div className={styles.page}>
       <div className={styles.toolbar}>
-        <span className={styles.pageTitle}>Sectors</span>
+        <span className={styles.pageTitle}>{t('sectors.title')}</span>
         {sectors.length > 0 && (
           <>
-            <span className={styles.count}>{sectors.length} sector{sectors.length !== 1 ? 's' : ''}</span>
+            <span className={styles.count}>{t('sectors.sectors', { count: sectors.length })}</span>
             <div className={styles.sortPills}>
               {SORT_OPTIONS.map(({ key, label }) => (
                 <button
@@ -92,14 +95,12 @@ export default function SectorsPage() {
 
       {isLoading ? (
         <div className={styles.empty}>
-          <span className={styles.emptyTitle}>Loading…</span>
+          <span className={styles.emptyTitle}>{t('sectors.loading')}</span>
         </div>
       ) : sectors.length === 0 ? (
         <div className={styles.empty}>
-          <span className={styles.emptyTitle}>No stocks yet</span>
-          <span className={styles.emptySubtitle}>
-            Add stocks to your watchlist to see sector breakdown here.
-          </span>
+          <span className={styles.emptyTitle}>{t('sectors.empty')}</span>
+          <span className={styles.emptySubtitle}>{t('sectors.emptySubtitle')}</span>
         </div>
       ) : (
         <div className={styles.grid}>
@@ -110,7 +111,7 @@ export default function SectorsPage() {
                 <div className={styles.headerStats}>
                   {avgChange != null && (
                     <div className={styles.stat}>
-                      <span className={styles.statLabel}>Today</span>
+                      <span className={styles.statLabel}>{t('sectors.statToday')}</span>
                       <span className={`${styles.statValue} ${avgChange >= 0 ? styles.pos : styles.neg}`}>
                         {avgChange >= 0 ? '+' : ''}{avgChange.toFixed(2)}%
                       </span>
@@ -118,18 +119,18 @@ export default function SectorsPage() {
                   )}
                   {avgRisk != null && (
                     <div className={styles.stat}>
-                      <span className={styles.statLabel}>Risk</span>
+                      <span className={styles.statLabel}>{t('sectors.statRisk')}</span>
                       <span className={styles.statValue}>{avgRisk.toFixed(0)}</span>
                     </div>
                   )}
                   {avgExp != null && (
                     <div className={styles.stat}>
-                      <span className={styles.statLabel}>Expect</span>
+                      <span className={styles.statLabel}>{t('sectors.statExpect')}</span>
                       <span className={styles.statValue}>{avgExp.toFixed(0)}</span>
                     </div>
                   )}
                   <div className={styles.stat}>
-                    <span className={styles.statLabel}>Stocks</span>
+                    <span className={styles.statLabel}>{t('sectors.statStocks')}</span>
                     <span className={styles.statValue}>{items.length}</span>
                   </div>
                 </div>

@@ -1,8 +1,9 @@
-import { fmtPrice } from '@/lib/format';
+import { useFmtPrice } from '@/hooks/useFmtPrice';
 import { ExtPriceBadge } from '@/components/ExtPriceBadge/ExtPriceBadge';
 import styles from './ScenarioPanel.module.scss';
 
 export function ScenarioPanel({ scenarios, currentPrice, cachedData }) {
+  const { fmtPrice } = useFmtPrice();
   if (!scenarios?.bullish) {
     return <div className={styles.empty}>Scenario data unavailable</div>;
   }
