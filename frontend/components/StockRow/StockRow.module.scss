@@ -337,6 +337,17 @@ $cols-xs:      44px 1fr 76px 60px 34px;
   color: $accent;
 }
 
+.activityDot {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: $accent;
+  pointer-events: none;
+}
+
 // ─── Per-row analyzing spinner ────────────────────────────────────────────────
 
 @keyframes rowSpin {

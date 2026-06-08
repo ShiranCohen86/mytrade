@@ -222,6 +222,13 @@ function StockRowInner({
               aria-label={expanded ? 'Collapse row' : 'Expand row'}
             >
               ›
+              {(note?.text || priceAlert) && !expanded && (
+                <span
+                  className={styles.activityDot}
+                  title={[note?.text && 'Has note', priceAlert && 'Has price alert'].filter(Boolean).join(' · ')}
+                  aria-hidden="true"
+                />
+              )}
             </button>
           )}
         </span>
