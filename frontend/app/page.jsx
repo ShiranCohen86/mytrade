@@ -23,9 +23,12 @@ function sortStocks(stocks, key, portfolio) {
       case 'change-desc': return (b.cachedData?.changePercent ?? -Infinity) - (a.cachedData?.changePercent ?? -Infinity);
       case 'pnl-desc': {
         const getPnl = (s) => {
+          const price = s.cachedData?.price;
+          if (price == null) return -Infinity;
           const entry = portfolio?.find((p) => p.ticker === s.ticker);
-          if (!entry || s.cachedData?.price == null) return -Infinity;
-          return ((s.cachedData.price - entry.entryPrice) / entry.entryPrice) * 100;
+          if (entry) return ((price - entry.entryPrice) / entry.entryPrice) * 100;
+          // Fallback: sort by since-add return
+          return s.stockPriceAtAdd != null ? ((price - s.stockPriceAtAdd) / s.stockPriceAtAdd) * 100 : -Infinity;
         };
         return getPnl(b) - getPnl(a);
       }
