@@ -63,6 +63,7 @@ async function analyzeStock(ticker) {
     peRatio: companyInfo.peRatio,
     sector: companyInfo.sector,
     historicalPrices: history,
+    recommendationKey: companyInfo.recommendationKey,
   });
   const risk = riskScoreEngine.calculate({
     historicalPrices: history,

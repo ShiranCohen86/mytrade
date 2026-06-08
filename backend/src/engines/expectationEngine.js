@@ -64,6 +64,19 @@ function analystTargetScore(currentPrice, analystTargetPrice) {
   return 3;
 }
 
+function recommendationScore(key) {
+  if (!key) return 5;
+  switch (key.toLowerCase()) {
+    case 'strong_buy': return 22;
+    case 'buy':        return 16;
+    case 'hold':       return 8;
+    case 'underperform':
+    case 'sell':       return 2;
+    case 'strong_sell': return 0;
+    default: return 5;
+  }
+}
+
 function expectationLabel(score) {
   if (score >= 76) return 'VERY_HIGH';
   if (score >= 56) return 'HIGH';
@@ -71,14 +84,15 @@ function expectationLabel(score) {
   return 'LOW';
 }
 
-function calculate({ currentPrice, analystTargetPrice, peRatio, sector, historicalPrices }) {
+function calculate({ currentPrice, analystTargetPrice, peRatio, sector, historicalPrices, recommendationKey }) {
   const pts = {
     momentum: momentumScore(historicalPrices),
     pe: peScore(peRatio, sector),
     analystTarget: analystTargetScore(currentPrice, analystTargetPrice),
+    recommendation: recommendationScore(recommendationKey),
   };
 
-  const total = Math.min(100, pts.momentum + pts.pe + pts.analystTarget);
+  const total = Math.min(100, pts.momentum + pts.pe + pts.analystTarget + pts.recommendation);
 
   return {
     score: Math.round(total),
