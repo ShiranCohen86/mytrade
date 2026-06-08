@@ -31,12 +31,12 @@ services:
         sync: false           # Set in Render dashboard → Environment
 
       # ── Google OAuth (optional) ────────────────────────────────────────────
-      # - key: GOOGLE_CLIENT_ID
-      #   sync: false
-      # - key: GOOGLE_CLIENT_SECRET
-      #   sync: false
-      # - key: GOOGLE_CALLBACK_URL
-      #   value: https://mytrade-zty9.onrender.com/auth/google/callback
+      - key: GOOGLE_CLIENT_ID
+        sync: false           # Set in Render dashboard
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false           # Set in Render dashboard
+      - key: GOOGLE_CALLBACK_URL
+        value: https://mytrade-zty9.onrender.com/auth/google/callback
 
       # ── News & Cache ──────────────────────────────────────────────────────
       - key: CACHE_TTL_MINUTES
