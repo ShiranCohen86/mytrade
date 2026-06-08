@@ -344,7 +344,13 @@ export default function StockDetailClient({ ticker }) {
         {/* Left column: Chart + Score Trend + News */}
         <div className={styles.leftCol}>
           <PanelCard title="Price Chart">
-            <PriceChart historical={hist} ticker={ticker} entryPrice={portfolioEntry?.entryPrice ?? null} />
+            <PriceChart
+                historical={hist}
+                ticker={ticker}
+                entryPrice={portfolioEntry?.entryPrice ?? null}
+                alertPrice={priceAlert?.targetPrice ?? null}
+                alertDirection={priceAlert?.direction ?? null}
+              />
           </PanelCard>
           {description && (
             <PanelCard title="About">

@@ -159,7 +159,7 @@ function RsiLine({ points, width: _w, height: _h }) {
   return <g>{segments}</g>;
 }
 
-export function PriceChart({ historical, ticker, entryPrice = null }) {
+export function PriceChart({ historical, ticker, entryPrice = null, alertPrice = null, alertDirection = null }) {
   const [period, setPeriod] = useState('3M');
   const [mode, setMode] = useState('area');
   const [showSma50, setShowSma50] = useState(false);
@@ -199,7 +199,11 @@ export function PriceChart({ historical, ticker, entryPrice = null }) {
   }
 
   const prices = visible.flatMap((p) => [p.high ?? p.close, p.low ?? p.close]).filter(Boolean);
-  const allPricePoints = entryPrice != null ? [...prices, entryPrice] : prices;
+  const allPricePoints = [
+    ...prices,
+    ...(entryPrice != null ? [entryPrice] : []),
+    ...(alertPrice != null ? [alertPrice] : []),
+  ];
   const minP = Math.min(...allPricePoints);
   const maxP = Math.max(...allPricePoints);
   const padding = (maxP - minP) * 0.05;
@@ -366,6 +370,22 @@ export function PriceChart({ historical, ticker, entryPrice = null }) {
               strokeWidth={1.5}
               strokeDasharray="5 3"
               label={{ value: `Entry $${entryPrice.toFixed(2)}`, position: 'insideBottomLeft', fontSize: 10, fill: 'var(--warn)', fontFamily: 'Inter, sans-serif' }}
+            />
+          )}
+          {alertPrice != null && (
+            <ReferenceLine
+              yAxisId="price"
+              y={alertPrice}
+              stroke="var(--accent)"
+              strokeWidth={1.5}
+              strokeDasharray="4 4"
+              label={{
+                value: `Alert $${alertPrice.toFixed(2)} ${alertDirection === 'above' ? '▲' : '▼'}`,
+                position: 'insideTopLeft',
+                fontSize: 10,
+                fill: 'var(--accent)',
+                fontFamily: 'Inter, sans-serif',
+              }}
             />
           )}
         </ComposedChart>
