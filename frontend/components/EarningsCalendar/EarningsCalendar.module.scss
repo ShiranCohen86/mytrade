@@ -25,7 +25,11 @@
   &:focus-visible { box-shadow: $shadow-glow; }
 }
 
-.icon { font-size: 12px; }
+.icon {
+  display: block;
+  flex-shrink: 0;
+  color: currentColor;
+}
 
 .badge {
   font-family: $font-data;
