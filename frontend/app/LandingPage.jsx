@@ -85,6 +85,8 @@ const STEPS = [
   { n: '03', title: 'Make informed decisions', desc: 'Act on data — not hope — with risk scores and scenario targets.' },
 ];
 
+const EXPRESS = import.meta.env.VITE_EXPRESS_URL || '';
+
 export default function LandingPage() {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -95,7 +97,7 @@ export default function LandingPage() {
       navigate('/dashboard', { replace: true });
       return;
     }
-    fetch('/api/market/overview')
+    fetch(`${EXPRESS}/api/market/overview`)
       .then((r) => r.ok ? r.json() : [])
       .then(setMarket)
       .catch(() => {});

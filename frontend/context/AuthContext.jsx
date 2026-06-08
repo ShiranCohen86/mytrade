@@ -88,6 +88,19 @@ export function AuthProvider({ children }) {
 
   const updateUser = (partial) => setUser((u) => u ? { ...u, ...partial } : u);
 
+  const loginWithToken = useCallback(async (token) => {
+    setToken(token);
+    try {
+      const res = await fetch(`${EXPRESS}/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data.user);
+      }
+    } catch { /* silent */ }
+  }, []);
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -97,6 +110,7 @@ export function AuthProvider({ children }) {
       register,
       logout,
       updateUser,
+      loginWithToken,
       getToken,
     }}>
       {children}

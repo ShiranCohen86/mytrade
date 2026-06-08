@@ -1,21 +1,22 @@
 import { useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-
-const TOKEN_KEY = 'mytrade-token';
+import { useAuth } from '@/context/AuthContext';
 
 export default function GoogleCallbackPage() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
+  const { loginWithToken } = useAuth();
 
   useEffect(() => {
     const token = params.get('token');
     if (token) {
-      try { localStorage.setItem(TOKEN_KEY, token); } catch { /* ignore */ }
-      navigate('/dashboard', { replace: true });
+      loginWithToken(token).then(() => {
+        navigate('/dashboard', { replace: true });
+      });
     } else {
       navigate('/login?error=google', { replace: true });
     }
-  }, [params, navigate]);
+  }, [params, navigate, loginWithToken]);
 
   return (
     <div style={{

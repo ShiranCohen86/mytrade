@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation, useSearchParams, Navigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import styles from './AuthPage.module.scss';
 
@@ -9,13 +9,16 @@ export default function LoginPage() {
   const { login, isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const from = location.state?.from || '/dashboard';
 
   if (!isLoading && isAuthenticated) return <Navigate to="/dashboard" replace />;
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState(
+    searchParams.get('error') === 'google' ? 'Google sign-in failed. Please try again or use email.' : ''
+  );
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
