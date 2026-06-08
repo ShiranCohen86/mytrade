@@ -89,6 +89,29 @@ export function StockRowDetail({
         </div>
       )}
 
+      {/* Earnings scenarios */}
+      {analysis?.scenarios && (analysis.scenarios.bullish || analysis.scenarios.neutral || analysis.scenarios.bearish) && (
+        <div className={styles.scenarios}>
+          <span className={styles.sectionLabel}>Earnings Scenarios</span>
+          {[
+            { key: 'bullish', label: 'Bull', data: analysis.scenarios.bullish, colorCls: styles.scenarioBull },
+            { key: 'neutral', label: 'Base', data: analysis.scenarios.neutral, colorCls: styles.scenarioBase },
+            { key: 'bearish', label: 'Bear', data: analysis.scenarios.bearish, colorCls: styles.scenarioBear },
+          ].map(({ key, label, data, colorCls }) => data && (
+            <div key={key} className={`${styles.scenarioRow} ${colorCls}`}>
+              <span className={styles.scenarioLabel}>{label}</span>
+              <span className={styles.scenarioTarget}>{fmtPrice(data.priceTarget)}</span>
+              <span className={styles.scenarioPct}>
+                {data.percentMove > 0 ? '+' : ''}{data.percentMove?.toFixed(1)}%
+              </span>
+              {data.probability != null && (
+                <span className={styles.scenarioProb}>{(data.probability * 100).toFixed(0)}%</span>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Inline forms */}
       <div className={styles.forms}>
         {/* Entry price */}

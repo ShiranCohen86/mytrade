@@ -51,7 +51,11 @@ export function MarketOverview() {
       {data.map(({ ticker, price, change, changePercent }) => {
         const pct = changePercent;
         const sign = pct > 0 ? '+' : '';
-        const cls = pct > 0 ? styles.pos : pct < 0 ? styles.neg : styles.neutral;
+        // VIX: inverted semantics — rising VIX means fear/volatility (bearish for stocks)
+        const isVix = ticker === 'VIX';
+        const cls = isVix
+          ? (pct > 0 ? styles.neg : pct < 0 ? styles.pos : styles.neutral)
+          : (pct > 0 ? styles.pos : pct < 0 ? styles.neg : styles.neutral);
         return (
           <div key={ticker} className={`${styles.item} ${cls}`}>
             <span className={styles.name}>{LABELS[ticker] || ticker}</span>

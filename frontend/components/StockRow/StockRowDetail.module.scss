@@ -93,6 +93,64 @@
   display: inline-block;
 }
 
+// ─── Earnings Scenarios ───────────────────────────────────────────────────────
+
+.scenarios {
+  min-width: 160px;
+  flex-shrink: 0;
+}
+
+.scenarioRow {
+  display: grid;
+  grid-template-columns: 36px 56px 44px 32px;
+  align-items: center;
+  gap: $space-2;
+  margin-bottom: $space-2;
+  padding: 3px $space-2;
+  border-radius: $radius-md;
+  background: $surface-panel;
+  border-left: 2px solid transparent;
+}
+
+.scenarioBull { border-left-color: $pos; }
+.scenarioBase { border-left-color: $text-disabled; }
+.scenarioBear { border-left-color: $neg; }
+
+.scenarioLabel {
+  font-family: $font-ui;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $text-disabled;
+}
+
+.scenarioTarget {
+  font-family: $font-data;
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: $text-primary;
+}
+
+.scenarioPct {
+  font-family: $font-data;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+
+  .scenarioBull & { color: $pos; }
+  .scenarioBase & { color: $text-secondary; }
+  .scenarioBear & { color: $neg; }
+}
+
+.scenarioProb {
+  font-family: $font-data;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: $text-disabled;
+}
+
 // ─── Forms ────────────────────────────────────────────────────────────────────
 
 .forms {

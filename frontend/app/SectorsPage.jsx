@@ -102,7 +102,7 @@ export default function SectorsPage() {
         </div>
       ) : (
         <div className={styles.grid}>
-          {sectors.map(({ name, items, avgRisk, avgExp, avgChange }) => (
+          {sectors.map(({ name, items, avgRisk, avgExp, avgChange, bullish, bearish, volatile, regimeTotal }) => (
             <div key={name} className={styles.card}>
               <div className={styles.cardHeader}>
                 <span className={styles.sectorName}>{name}</span>
