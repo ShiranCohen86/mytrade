@@ -5,19 +5,18 @@
  *   1. adminAuth('logs.read') — verifies valid JWT + admin role + not suspended
  *   2. requireIntelligenceRole — further restricts to admin / super_admin only
  *
- * This feature must NEVER be accessible to support_agent or analyst roles.
- * No intelligence data is exposed to regular users under any circumstances.
+ * Scores are based on the expectationEngine: analyst targets, P/E vs sector,
+ * price momentum, and recommendation key — all sourced from Yahoo Finance.
  */
 
 const express = require('express');
 const router = express.Router();
 const adminAuth = require('../../middleware/adminAuth');
-const HotStockScore = require('../../models/HotStockScore');
-const { computeHotScores } = require('../../services/hotStockService');
+const Stock = require('../../models/Stock');
+const expectationEngine = require('../../engines/expectationEngine');
 const audit = require('../../services/auditService');
 
 // ── RBAC guard ─────────────────────────────────────────────────────────────────
-// Explicitly restricts to admin and super_admin — excludes support_agent + analyst.
 const INTELLIGENCE_ROLES = new Set(['admin', 'super_admin']);
 
 function requireIntelligenceRole(req, res, next) {
@@ -29,62 +28,81 @@ function requireIntelligenceRole(req, res, next) {
   next();
 }
 
+// ── Helpers ────────────────────────────────────────────────────────────────────
+
+function labelToTier(label) {
+  const map = { VERY_HIGH: 'very_high', HIGH: 'high', MODERATE: 'moderate', LOW: 'low' };
+  return map[label] || 'low';
+}
+
+function mapStockToCard(s) {
+  return {
+    symbol: s.ticker,
+    name: s.name || s.ticker,
+    sector: s.sector || 'Unknown',
+    score: s.analysis?.expectationScore ?? 0,
+    label: s.analysis?.expectationLabel ?? 'LOW',
+    tier: labelToTier(s.analysis?.expectationLabel),
+    analyzedAt: s.analysis?.analyzedAt || null,
+    price: s.cachedData?.price ?? null,
+    analystTarget: s.cachedData?.analystTargetPrice ?? null,
+    recommendationKey: s.cachedData?.recommendationKey ?? null,
+  };
+}
+
+function mapStockToRow(s) {
+  return {
+    ...mapStockToCard(s),
+    peRatio: s.cachedData?.peRatio ?? null,
+    numberOfAnalysts: s.cachedData?.numberOfAnalysts ?? null,
+  };
+}
+
 // ── GET /admin/intelligence/overview ──────────────────────────────────────────
-// Summary panel: top stocks by stage + sector breakdown + last compute time.
 router.get('/overview', adminAuth('logs.read'), requireIntelligenceRole, async (req, res) => {
   try {
-    const [trending, accelerating, emerging, sectorBreakdown, lastDoc, totalTracked] =
-      await Promise.all([
-        HotStockScore.find({ trendStage: 'trending' })
-          .sort({ hotScore: -1 })
-          .limit(5)
-          .select('symbol name hotScore sector confidence trendStage computedAt')
-          .lean(),
-        HotStockScore.find({ trendStage: 'accelerating' })
-          .sort({ hotScore: -1 })
-          .limit(5)
-          .select('symbol name hotScore sector confidence trendStage computedAt')
-          .lean(),
-        HotStockScore.find({ trendStage: 'emerging' })
-          .sort({ hotScore: -1 })
-          .limit(5)
-          .select('symbol name hotScore sector confidence trendStage computedAt')
-          .lean(),
-        HotStockScore.aggregate([
-          {
-            $group: {
-              _id: '$sector',
-              avgHotScore: { $avg: '$hotScore' },
-              maxHotScore: { $max: '$hotScore' },
-              stockCount: { $sum: 1 },
-              trending: { $sum: { $cond: [{ $eq: ['$trendStage', 'trending'] }, 1, 0] } },
-              accelerating: { $sum: { $cond: [{ $eq: ['$trendStage', 'accelerating'] }, 1, 0] } },
-              emerging: { $sum: { $cond: [{ $eq: ['$trendStage', 'emerging'] }, 1, 0] } },
-            },
+    const baseSelect = 'ticker name sector analysis.expectationScore analysis.expectationLabel analysis.analyzedAt cachedData.price cachedData.analystTargetPrice cachedData.recommendationKey';
+
+    const [veryHigh, high, moderate, sectorBreakdown, lastDoc, totalTracked] = await Promise.all([
+      Stock.find({ 'analysis.expectationLabel': 'VERY_HIGH' })
+        .sort({ 'analysis.expectationScore': -1 }).limit(5).select(baseSelect).lean(),
+      Stock.find({ 'analysis.expectationLabel': 'HIGH' })
+        .sort({ 'analysis.expectationScore': -1 }).limit(5).select(baseSelect).lean(),
+      Stock.find({ 'analysis.expectationLabel': 'MODERATE' })
+        .sort({ 'analysis.expectationScore': -1 }).limit(5).select(baseSelect).lean(),
+      Stock.aggregate([
+        { $match: { 'analysis.expectationScore': { $gt: 0 } } },
+        {
+          $group: {
+            _id: '$sector',
+            avgScore: { $avg: '$analysis.expectationScore' },
+            maxScore: { $max: '$analysis.expectationScore' },
+            stockCount: { $sum: 1 },
+            veryHigh: { $sum: { $cond: [{ $eq: ['$analysis.expectationLabel', 'VERY_HIGH'] }, 1, 0] } },
+            high: { $sum: { $cond: [{ $eq: ['$analysis.expectationLabel', 'HIGH'] }, 1, 0] } },
+            moderate: { $sum: { $cond: [{ $eq: ['$analysis.expectationLabel', 'MODERATE'] }, 1, 0] } },
           },
-          { $sort: { avgHotScore: -1 } },
-          { $limit: 12 },
-        ]),
-        HotStockScore.findOne().sort({ computedAt: -1 }).select('computedAt').lean(),
-        HotStockScore.countDocuments(),
-      ]);
+        },
+        { $sort: { avgScore: -1 } },
+        { $limit: 12 },
+      ]),
+      Stock.findOne({ 'analysis.analyzedAt': { $exists: true } })
+        .sort({ 'analysis.analyzedAt': -1 }).select('analysis.analyzedAt').lean(),
+      Stock.countDocuments({ 'analysis.expectationScore': { $gt: 0 } }),
+    ]);
 
     res.json({
-      trending,
-      accelerating,
-      emerging,
+      veryHigh: veryHigh.map(mapStockToCard),
+      high: high.map(mapStockToCard),
+      moderate: moderate.map(mapStockToCard),
       sectorBreakdown: sectorBreakdown.map((s) => ({
         sector: s._id || 'Unknown',
-        avgHotScore: Math.round(s.avgHotScore ?? 0),
-        maxHotScore: Math.round(s.maxHotScore ?? 0),
+        avgScore: Math.round(s.avgScore ?? 0),
+        maxScore: Math.round(s.maxScore ?? 0),
         stockCount: s.stockCount,
-        breakdown: {
-          trending: s.trending,
-          accelerating: s.accelerating,
-          emerging: s.emerging,
-        },
+        breakdown: { veryHigh: s.veryHigh, high: s.high, moderate: s.moderate },
       })),
-      lastComputed: lastDoc?.computedAt || null,
+      lastComputed: lastDoc?.analysis?.analyzedAt || null,
       totalTracked,
     });
   } catch (err) {
@@ -93,34 +111,32 @@ router.get('/overview', adminAuth('logs.read'), requireIntelligenceRole, async (
 });
 
 // ── GET /admin/intelligence/hot-stocks ────────────────────────────────────────
-// Paginated list of all scored stocks with optional filters.
 router.get('/hot-stocks', adminAuth('logs.read'), requireIntelligenceRole, async (req, res) => {
   try {
     const page = Math.max(1, parseInt(req.query.page) || 1);
     const limit = Math.min(100, Math.max(10, parseInt(req.query.limit) || 25));
     const skip = (page - 1) * limit;
 
-    const filter = {};
-    if (req.query.trendStage) filter.trendStage = req.query.trendStage;
+    const filter = { 'analysis.expectationScore': { $gt: 0 } };
+    if (req.query.label) filter['analysis.expectationLabel'] = req.query.label;
     if (req.query.sector) filter.sector = { $regex: req.query.sector, $options: 'i' };
-    if (req.query.confidence) filter.confidence = req.query.confidence;
     if (req.query.minScore) {
       const min = parseInt(req.query.minScore);
-      if (!isNaN(min)) filter.hotScore = { $gte: min };
+      if (!isNaN(min)) filter['analysis.expectationScore'] = { $gte: min };
     }
 
     const [items, total] = await Promise.all([
-      HotStockScore.find(filter)
-        .sort({ hotScore: -1 })
+      Stock.find(filter)
+        .sort({ 'analysis.expectationScore': -1 })
         .skip(skip)
         .limit(limit)
-        .select('-scoreHistory')
+        .select('ticker name sector analysis.expectationScore analysis.expectationLabel analysis.analyzedAt cachedData.price cachedData.analystTargetPrice cachedData.recommendationKey cachedData.peRatio cachedData.numberOfAnalysts')
         .lean(),
-      HotStockScore.countDocuments(filter),
+      Stock.countDocuments(filter),
     ]);
 
     res.json({
-      items,
+      items: items.map(mapStockToRow),
       pagination: { page, limit, total, pages: Math.ceil(total / limit) },
     });
   } catch (err) {
@@ -129,7 +145,6 @@ router.get('/hot-stocks', adminAuth('logs.read'), requireIntelligenceRole, async
 });
 
 // ── GET /admin/intelligence/hot-stocks/:symbol ────────────────────────────────
-// Full detail for a single stock including score history for trend graph.
 router.get(
   '/hot-stocks/:symbol',
   adminAuth('logs.read'),
@@ -137,11 +152,40 @@ router.get(
   async (req, res) => {
     try {
       const symbol = req.params.symbol.toUpperCase();
-      const doc = await HotStockScore.findOne({ symbol }).lean();
+      const doc = await Stock.findOne({ ticker: symbol })
+        .select('-cachedData.historical -__v')
+        .lean();
       if (!doc) {
-        return res.status(404).json({ error: 'No intelligence data for this symbol.' });
+        return res.status(404).json({ error: 'No data for this symbol.' });
       }
-      res.json(doc);
+
+      const price = doc.cachedData?.price ?? null;
+      const analystTarget = doc.cachedData?.analystTargetPrice ?? null;
+      const upside = price && analystTarget
+        ? parseFloat((((analystTarget - price) / price) * 100).toFixed(1))
+        : null;
+
+      res.json({
+        symbol: doc.ticker,
+        name: doc.name || doc.ticker,
+        sector: doc.sector || 'Unknown',
+        score: doc.analysis?.expectationScore ?? 0,
+        label: doc.analysis?.expectationLabel ?? 'LOW',
+        tier: labelToTier(doc.analysis?.expectationLabel),
+        analyzedAt: doc.analysis?.analyzedAt || null,
+        price,
+        analystTarget,
+        analystLow: doc.cachedData?.analystLowPrice ?? null,
+        analystHigh: doc.cachedData?.analystHighPrice ?? null,
+        upside,
+        recommendationKey: doc.cachedData?.recommendationKey ?? null,
+        peRatio: doc.cachedData?.peRatio ?? null,
+        numberOfAnalysts: doc.cachedData?.numberOfAnalysts ?? null,
+        scoreHistory: (doc.scoreHistory || []).map((h) => ({
+          score: h.expectationScore ?? 0,
+          analyzedAt: h.analyzedAt,
+        })),
+      });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -149,39 +193,35 @@ router.get(
 );
 
 // ── GET /admin/intelligence/sector-heatmap ────────────────────────────────────
-// Aggregated sector momentum data for the heatmap chart.
 router.get(
   '/sector-heatmap',
   adminAuth('logs.read'),
   requireIntelligenceRole,
   async (req, res) => {
     try {
-      const heatmap = await HotStockScore.aggregate([
+      const heatmap = await Stock.aggregate([
+        { $match: { 'analysis.expectationScore': { $gt: 0 } } },
         {
           $group: {
             _id: '$sector',
-            avgHotScore: { $avg: '$hotScore' },
-            maxHotScore: { $max: '$hotScore' },
+            avgScore: { $avg: '$analysis.expectationScore' },
+            maxScore: { $max: '$analysis.expectationScore' },
             stockCount: { $sum: 1 },
-            trending: { $sum: { $cond: [{ $eq: ['$trendStage', 'trending'] }, 1, 0] } },
-            accelerating: { $sum: { $cond: [{ $eq: ['$trendStage', 'accelerating'] }, 1, 0] } },
-            emerging: { $sum: { $cond: [{ $eq: ['$trendStage', 'emerging'] }, 1, 0] } },
+            veryHigh: { $sum: { $cond: [{ $eq: ['$analysis.expectationLabel', 'VERY_HIGH'] }, 1, 0] } },
+            high: { $sum: { $cond: [{ $eq: ['$analysis.expectationLabel', 'HIGH'] }, 1, 0] } },
+            moderate: { $sum: { $cond: [{ $eq: ['$analysis.expectationLabel', 'MODERATE'] }, 1, 0] } },
           },
         },
-        { $sort: { avgHotScore: -1 } },
+        { $sort: { avgScore: -1 } },
       ]);
 
       res.json(
         heatmap.map((h) => ({
           sector: h._id || 'Unknown',
-          avgHotScore: Math.round(h.avgHotScore ?? 0),
-          maxHotScore: Math.round(h.maxHotScore ?? 0),
+          avgScore: Math.round(h.avgScore ?? 0),
+          maxScore: Math.round(h.maxScore ?? 0),
           stockCount: h.stockCount,
-          breakdown: {
-            trending: h.trending,
-            accelerating: h.accelerating,
-            emerging: h.emerging,
-          },
+          breakdown: { veryHigh: h.veryHigh, high: h.high, moderate: h.moderate },
         }))
       );
     } catch (err) {
@@ -191,51 +231,85 @@ router.get(
 );
 
 // ── POST /admin/intelligence/refresh ──────────────────────────────────────────
-// Trigger a manual re-computation of hot stock scores. Logged as admin action.
+// Recomputes expectation scores from cached data (no external API calls).
 router.post('/refresh', adminAuth('audit.read'), requireIntelligenceRole, async (req, res) => {
   try {
     audit.logAdmin(req, 'admin.intelligence.refresh', null, {}, 'info');
-    const results = await computeHotScores();
-    res.json({ computed: results?.length ?? 0, computedAt: new Date() });
+
+    const stocks = await Stock.find({ 'cachedData.price': { $gt: 0 } })
+      .select('ticker sector cachedData.price cachedData.analystTargetPrice cachedData.peRatio cachedData.recommendationKey cachedData.historical')
+      .lean();
+
+    const ops = stocks.map((s) => {
+      const result = expectationEngine.calculate({
+        currentPrice: s.cachedData?.price,
+        analystTargetPrice: s.cachedData?.analystTargetPrice,
+        peRatio: s.cachedData?.peRatio,
+        sector: s.sector,
+        historicalPrices: s.cachedData?.historical || [],
+        recommendationKey: s.cachedData?.recommendationKey,
+      });
+      return {
+        updateOne: {
+          filter: { ticker: s.ticker },
+          update: {
+            $set: {
+              'analysis.expectationScore': result.score,
+              'analysis.expectationLabel': result.label,
+            },
+          },
+        },
+      };
+    });
+
+    if (ops.length > 0) await Stock.bulkWrite(ops);
+
+    res.json({ computed: ops.length, computedAt: new Date() });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // ── GET /admin/intelligence/export ────────────────────────────────────────────
-// Export scored stocks as CSV or JSON. Capped at 1,000 rows. Logged.
 router.get('/export', adminAuth('logs.export'), requireIntelligenceRole, async (req, res) => {
   try {
     const format = req.query.format === 'csv' ? 'csv' : 'json';
-    const filter = {};
-    if (req.query.trendStage) filter.trendStage = req.query.trendStage;
+    const filter = { 'analysis.expectationScore': { $gt: 0 } };
+    if (req.query.label) filter['analysis.expectationLabel'] = req.query.label;
 
-    const items = await HotStockScore.find(filter)
-      .sort({ hotScore: -1 })
+    const items = await Stock.find(filter)
+      .sort({ 'analysis.expectationScore': -1 })
       .limit(1_000)
-      .select('-scoreHistory -_id -__v')
+      .select('ticker name sector analysis.expectationScore analysis.expectationLabel analysis.analyzedAt cachedData.price cachedData.analystTargetPrice cachedData.recommendationKey cachedData.peRatio')
       .lean();
 
     audit.logAdmin(req, 'admin.intelligence.export', null, { format, count: items.length }, 'info');
 
+    const mapped = items.map((s) => ({
+      symbol: s.ticker,
+      name: s.name || s.ticker,
+      sector: s.sector || 'Unknown',
+      expectationScore: s.analysis?.expectationScore ?? 0,
+      expectationLabel: s.analysis?.expectationLabel ?? 'LOW',
+      price: s.cachedData?.price ?? '',
+      analystTarget: s.cachedData?.analystTargetPrice ?? '',
+      recommendationKey: s.cachedData?.recommendationKey ?? '',
+      peRatio: s.cachedData?.peRatio ?? '',
+      analyzedAt: s.analysis?.analyzedAt ?? '',
+    }));
+
     if (format === 'csv') {
-      const COLS = [
-        'symbol', 'name', 'sector', 'hotScore', 'momentumScore',
-        'saturationIndex', 'trendStage', 'confidence', 'computedAt',
-      ];
+      const COLS = ['symbol', 'name', 'sector', 'expectationScore', 'expectationLabel', 'price', 'analystTarget', 'recommendationKey', 'peRatio', 'analyzedAt'];
       const escape = (v) => JSON.stringify(v == null ? '' : String(v));
-      const rows = items.map((item) => COLS.map((c) => escape(item[c])).join(','));
+      const rows = mapped.map((item) => COLS.map((c) => escape(item[c])).join(','));
       const csv = [COLS.join(','), ...rows].join('\n');
 
       res.setHeader('Content-Type', 'text/csv');
-      res.setHeader(
-        'Content-Disposition',
-        `attachment; filename="hot-stocks-${Date.now()}.csv"`
-      );
+      res.setHeader('Content-Disposition', `attachment; filename="expectation-scores-${Date.now()}.csv"`);
       return res.send(csv);
     }
 
-    res.json(items);
+    res.json(mapped);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -31,6 +31,7 @@ function MiniSparkline({ history }) {
 }
 
 const REGIME_ICONS = { BULLISH: '▲', BEARISH: '▼', VOLATILE: '⚡', NEUTRAL: '→' };
+const EXP_SHORT = { VERY_HIGH: 'VH', HIGH: 'H', MODERATE: 'M', LOW: 'L' };
 
 // Circular progress ring showing proximity to next earnings
 function EarningsRing({ daysToEarnings }) {
@@ -205,6 +206,19 @@ function StockRowInner({
           )}
         </span>
 
+        {/* Expectation Score — primary analytical signal */}
+        <span
+          className={`${styles.expect} ${analysis?.expectationScore != null ? styles[`exp_${scoreClass(analysis.expectationScore)}`] : ''}`}
+          title="Expectation score: how much upside is already priced in. HIGH = market expects a lot → cautionary. LOW = little priced in → more room to run."
+        >
+          {analysis?.expectationScore != null ? (
+            <>
+              {analysis.expectationScore}
+              <span className={styles.expLabel}>{EXP_SHORT[analysis.expectationLabel] || ''}</span>
+            </>
+          ) : '—'}
+        </span>
+
         {/* P&L from entry price; fallback to return since added */}
         {pnlPct !== null ? (
           <span className={`${styles.pnl} ${pnlPct >= 0 ? styles.pos : styles.neg}`} title="Return from entry price">
@@ -219,14 +233,6 @@ function StockRowInner({
         {/* Risk score */}
         <span className={`${styles.risk} ${styles[`risk_${riskCls}`]}`}>
           {analysis?.riskScore ?? '—'}
-        </span>
-
-        {/* Expectation Score */}
-        <span
-          className={`${styles.expect} ${analysis?.expectationScore != null ? styles[`exp_${scoreClass(analysis.expectationScore)}`] : ''}`}
-          title="Expectation score: how much upside is already priced in. HIGH = market expects a lot → cautionary. LOW = little priced in → more room to run."
-        >
-          {analysis?.expectationScore != null ? analysis.expectationScore : '—'}
         </span>
 
         {/* Market regime */}

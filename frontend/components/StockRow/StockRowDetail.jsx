@@ -4,13 +4,30 @@ import { Link } from 'react-router-dom';
 import styles from './StockRowDetail.module.scss';
 import { useFmtPrice } from '@/hooks/useFmtPrice';
 
+const REC_LABELS = {
+  strong_buy: 'Strong Buy', buy: 'Buy', hold: 'Hold',
+  underperform: 'Underperform', sell: 'Sell', strong_sell: 'Strong Sell',
+};
+
 export function StockRowDetail({
   stock, portfolioEntry, priceAlert, note, pnlPct, pnlAbs = null, shares = null,
   onUpdateEntryPrice, onUpdateAlert, onUpdateNote, onRemove, onAnalyzeTicker, analysisError,
   inSheet = false, isAnalyzing = false,
 }) {
   const { fmtPrice } = useFmtPrice();
-  const { ticker, analysis } = stock;
+  const { ticker, analysis, cachedData } = stock;
+
+  const analystTarget = cachedData?.analystTargetPrice ?? null;
+  const currentPrice  = cachedData?.price ?? null;
+  const analystLow    = cachedData?.analystLowPrice ?? null;
+  const analystHigh   = cachedData?.analystHighPrice ?? null;
+  const upside = analystTarget && currentPrice
+    ? ((analystTarget - currentPrice) / currentPrice) * 100
+    : null;
+  const recKey = cachedData?.recommendationKey?.toLowerCase() ?? null;
+  const peRatio = cachedData?.peRatio ?? null;
+  const numAnalysts = cachedData?.numberOfAnalysts ?? null;
+  const hasAnalystData = analystTarget || recKey || peRatio;
 
   // Entry price form state
   const [entryInput, setEntryInput] = useState('');
@@ -110,6 +127,46 @@ export function StockRowDetail({
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Analyst Signals */}
+      {hasAnalystData && (
+        <div className={styles.analystPanel}>
+          <span className={styles.sectionLabel}>Analyst Signals</span>
+          {analystTarget && currentPrice && (
+            <div className={styles.analystRow}>
+              <span className={styles.analystLabel}>Target</span>
+              <span className={styles.analystVal}>{fmtPrice(analystTarget)}</span>
+              {upside !== null && (
+                <span className={`${styles.analystPct} ${upside >= 0 ? styles.pos : styles.neg}`}>
+                  {upside >= 0 ? '+' : ''}{upside.toFixed(1)}%
+                </span>
+              )}
+            </div>
+          )}
+          {analystLow && analystHigh && (
+            <div className={styles.analystRow}>
+              <span className={styles.analystLabel}>Range</span>
+              <span className={`${styles.analystVal} ${styles.analystRange}`}>
+                {fmtPrice(analystLow)} – {fmtPrice(analystHigh)}
+              </span>
+            </div>
+          )}
+          {recKey && (
+            <div className={styles.analystRow}>
+              <span className={styles.analystLabel}>{numAnalysts ? `${numAnalysts} Analysts` : 'Rec'}</span>
+              <span className={`${styles.analystRec} ${recKey === 'strong_buy' || recKey === 'buy' ? styles.pos : recKey === 'sell' || recKey === 'strong_sell' ? styles.neg : styles.analystNeutral}`}>
+                {REC_LABELS[recKey] || recKey}
+              </span>
+            </div>
+          )}
+          {peRatio && (
+            <div className={styles.analystRow}>
+              <span className={styles.analystLabel}>P/E</span>
+              <span className={styles.analystVal}>{peRatio.toFixed(1)}</span>
+            </div>
+          )}
         </div>
       )}
 

@@ -22,9 +22,9 @@ export function WatchlistTable({
     { key: 'name-asc',        label: t('table.ticker'),         className: styles.colTicker, sortable: true },
     { key: null,              label: t('table.name'),           className: styles.colName },
     { key: 'change-desc',     label: t('table.price'),          className: styles.colPrice, sortable: true },
+    { key: 'expectation-desc',label: t('table.expect'),         className: styles.colExpect, sortable: true },
     { key: 'pnl-desc',        label: t('table.pnl'),            className: styles.colPnl, sortable: true },
     { key: 'risk-desc',       label: t('table.risk'),           className: styles.colRisk, sortable: true },
-    { key: 'expectation-desc',label: t('table.expect'),         className: styles.colExpect, sortable: true },
     { key: null,              label: t('table.regime'),         className: styles.colRegime },
     { key: null,              label: t('table.earnings'),       className: styles.colEarnings },
     { key: null,              label: t('table.trend'),          className: styles.colSpark },
@@ -109,6 +109,7 @@ export function WatchlistTable({
           grouped.map(([sector, sectorStocks]) => {
             const isCollapsed = collapsedSectors.has(sector);
             const avgRisk = sectorStocks.filter((s) => s.analysis?.riskScore != null).reduce((sum, s, _, arr) => sum + s.analysis.riskScore / arr.length, 0) || null;
+            const avgExp  = sectorStocks.filter((s) => s.analysis?.expectationScore != null).reduce((sum, s, _, arr) => sum + s.analysis.expectationScore / arr.length, 0) || null;
             return (
               <div key={sector}>
                 <div
@@ -122,6 +123,12 @@ export function WatchlistTable({
                   <span className={styles.sectorChevron}>{isCollapsed ? '▶' : '▼'}</span>
                   <span className={styles.sectorHeaderName}>{sector}</span>
                   <span className={styles.sectorHeaderCount}>{sectorStocks.length}</span>
+                  {avgExp != null && (
+                    <span className={`${styles.sectorAvgExp} ${avgExp >= 76 ? styles.expVeryHigh : avgExp >= 56 ? styles.expHigh : avgExp >= 34 ? styles.expMod : styles.expLow}`}
+                      title="Avg Expectation Score">
+                      Exp {avgExp.toFixed(0)}
+                    </span>
+                  )}
                   {avgRisk != null && (
                     <span className={`${styles.sectorAvgRisk} ${avgRisk >= 70 ? styles.riskHigh : avgRisk >= 40 ? styles.riskMid : styles.riskLow}`}>
                       {t('table.riskAvg', { score: avgRisk.toFixed(0) })}

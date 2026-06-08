@@ -151,6 +151,65 @@
   color: $text-tertiary;
 }
 
+// ─── Analyst Signals ─────────────────────────────────────────────────────────
+
+.analystPanel {
+  min-width: 160px;
+  flex-shrink: 0;
+}
+
+.analystRow {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  margin-bottom: $space-2;
+}
+
+.analystLabel {
+  font-family: $font-ui;
+  font-size: 11px;
+  color: $text-tertiary;
+  white-space: nowrap;
+  width: 72px;
+  flex-shrink: 0;
+}
+
+.analystVal {
+  font-family: $font-data;
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: $text-primary;
+  white-space: nowrap;
+}
+
+.analystRange {
+  font-size: 11px;
+  color: $text-secondary;
+}
+
+.analystPct {
+  font-family: $font-data;
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  padding: 1px 5px;
+  border-radius: $radius-pill;
+}
+
+.analystRec {
+  font-family: $font-ui;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: $radius-pill;
+}
+
+.analystNeutral {
+  color: $text-secondary;
+  background: $surface-panel;
+}
+
 // ─── Forms ────────────────────────────────────────────────────────────────────
 
 .forms {

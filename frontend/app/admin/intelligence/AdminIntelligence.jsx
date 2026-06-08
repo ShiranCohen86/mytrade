@@ -31,12 +31,11 @@ async function downloadExport(params = {}) {
   const blob = await res.blob();
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = `hot-stocks-${Date.now()}.csv`;
+  link.download = `expectation-scores-${Date.now()}.csv`;
   link.click();
   URL.revokeObjectURL(link.href);
 }
 
-// Only admin and super_admin may access this page
 const ALLOWED_ROLES = new Set(['admin', 'super_admin']);
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -44,19 +43,44 @@ const ALLOWED_ROLES = new Set(['admin', 'super_admin']);
 const fmtDate = (d) =>
   d ? new Date(d).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
 
+const fmtPrice = (v) => (v != null ? `$${Number(v).toFixed(2)}` : '—');
+
+const fmtPct = (v) => (v != null ? `${v > 0 ? '+' : ''}${v}%` : '—');
+
 function scoreColor(score) {
-  if (score >= 70) return 'var(--hot-red)';
-  if (score >= 45) return 'var(--hot-orange)';
-  if (score >= 15) return 'var(--accent)';
+  if (score >= 76) return 'var(--hot-red)';
+  if (score >= 56) return 'var(--hot-orange)';
+  if (score >= 34) return 'var(--accent)';
   return 'var(--text-tertiary)';
 }
 
-function stageBadgeClass(stage) {
-  return styles[`badge_${stage}`] || styles.badgeDefault;
-}
+const TIER_LABELS = {
+  very_high: 'Very High',
+  high: 'High',
+  moderate: 'Moderate',
+  low: 'Low',
+};
 
-function confidenceBadgeClass(confidence) {
-  return styles[`conf_${confidence}`] || '';
+const TIER_BADGE_CLASS = {
+  very_high: styles.badge_trending,
+  high: styles.badge_accelerating,
+  moderate: styles.badge_emerging,
+  low: styles.badgeDefault,
+};
+
+const REC_LABELS = {
+  strong_buy: 'Strong Buy',
+  buy: 'Buy',
+  hold: 'Hold',
+  underperform: 'Underperform',
+  sell: 'Sell',
+  strong_sell: 'Strong Sell',
+};
+
+function TierBadge({ tier }) {
+  const label = TIER_LABELS[tier] || tier;
+  const cls = TIER_BADGE_CLASS[tier] || styles.badgeDefault;
+  return <span className={`${styles.badge} ${cls}`}>{label}</span>;
 }
 
 // ── Sub-components ────────────────────────────────────────────────────────────
@@ -76,23 +100,6 @@ function ScoreBar({ value }) {
   );
 }
 
-function StageBadge({ stage }) {
-  const labels = { emerging: 'Emerging', accelerating: 'Accelerating', trending: 'Trending', saturated: 'Saturated' };
-  return (
-    <span className={`${styles.badge} ${stageBadgeClass(stage)}`}>
-      {labels[stage] || stage}
-    </span>
-  );
-}
-
-function ConfidenceBadge({ confidence }) {
-  return (
-    <span className={`${styles.confBadge} ${confidenceBadgeClass(confidence)}`}>
-      {confidence}
-    </span>
-  );
-}
-
 function TopCard({ stock, onClick }) {
   if (!stock) return null;
   return (
@@ -101,9 +108,13 @@ function TopCard({ stock, onClick }) {
       <div className={styles.topCardName}>{stock.name}</div>
       <div className={styles.topCardMeta}>
         <span className={styles.topCardSector}>{stock.sector}</span>
-        <ConfidenceBadge confidence={stock.confidence} />
+        {stock.recommendationKey && (
+          <span className={styles.recChip}>
+            {REC_LABELS[stock.recommendationKey?.toLowerCase()] || stock.recommendationKey}
+          </span>
+        )}
       </div>
-      <ScoreBar value={stock.hotScore} />
+      <ScoreBar value={stock.score} />
     </button>
   );
 }
@@ -156,106 +167,65 @@ function DetailPanel({ symbol, onClose }) {
                 <div className={styles.detailSector}>{data.sector}</div>
               </div>
               <div className={styles.detailScoreBox}>
-                <span className={styles.detailScoreNum} style={{ color: scoreColor(data.hotScore) }}>
-                  {data.hotScore}
+                <span className={styles.detailScoreNum} style={{ color: scoreColor(data.score) }}>
+                  {data.score}
                 </span>
-                <span className={styles.detailScoreLabel}>Hot Score</span>
+                <span className={styles.detailScoreLabel}>Exp Score</span>
               </div>
             </div>
 
             <div className={styles.detailBadges}>
-              <StageBadge stage={data.trendStage} />
-              <ConfidenceBadge confidence={data.confidence} />
-              <span className={styles.detailDate}>Updated {fmtDate(data.computedAt)}</span>
+              <TierBadge tier={data.tier} />
+              <span className={styles.detailDate}>Updated {fmtDate(data.analyzedAt)}</span>
             </div>
 
-            {/* Score breakdown */}
+            {/* Analyst signals */}
             <div className={styles.detailSection}>
-              <div className={styles.detailSectionTitle}>Score Breakdown</div>
+              <div className={styles.detailSectionTitle}>Analyst Signals</div>
               <div className={styles.breakdownGrid}>
                 <div className={styles.breakdownItem}>
-                  <span className={styles.breakdownLabel}>Momentum</span>
-                  <span className={styles.breakdownValue}>{data.momentumScore}</span>
+                  <span className={styles.breakdownLabel}>Current Price</span>
+                  <span className={styles.breakdownValue}>{fmtPrice(data.price)}</span>
                 </div>
                 <div className={styles.breakdownItem}>
-                  <span className={styles.breakdownLabel}>Saturation Penalty</span>
-                  <span className={styles.breakdownValue} style={{ color: 'var(--neg)' }}>
-                    -{data.saturationIndex}
+                  <span className={styles.breakdownLabel}>Analyst Target</span>
+                  <span className={styles.breakdownValue}>{fmtPrice(data.analystTarget)}</span>
+                </div>
+                <div className={styles.breakdownItem}>
+                  <span className={styles.breakdownLabel}>Upside / Downside</span>
+                  <span
+                    className={styles.breakdownValue}
+                    style={{ color: data.upside != null ? (data.upside >= 0 ? 'var(--pos)' : 'var(--neg)') : undefined }}
+                  >
+                    {fmtPct(data.upside)}
                   </span>
                 </div>
                 <div className={styles.breakdownItem}>
-                  <span className={styles.breakdownLabel}>Net Hot Score</span>
-                  <span className={styles.breakdownValue} style={{ color: scoreColor(data.hotScore), fontWeight: 700 }}>
-                    {data.hotScore}
+                  <span className={styles.breakdownLabel}>Target Range</span>
+                  <span className={styles.breakdownValue}>
+                    {data.analystLow && data.analystHigh
+                      ? `${fmtPrice(data.analystLow)} – ${fmtPrice(data.analystHigh)}`
+                      : '—'}
                   </span>
                 </div>
-              </div>
-            </div>
-
-            {/* Contributing signals */}
-            {data.topContributors?.length > 0 && (
-              <div className={styles.detailSection}>
-                <div className={styles.detailSectionTitle}>Contributing Signals</div>
-                {data.topContributors.map((c) => (
-                  <div key={c.name} className={styles.contributorRow}>
-                    <div className={styles.contributorName}>{c.name}</div>
-                    <div className={styles.contributorBar}>
-                      <div
-                        className={styles.contributorFill}
-                        style={{ width: `${(c.contribution / 40) * 100}%` }}
-                      />
-                    </div>
-                    <div className={styles.contributorMeta}>
-                      <span className={styles.contributorValue}>{c.value}</span>
-                      <span className={styles.contributorPts}>{c.contribution} pts</span>
-                    </div>
+                <div className={styles.breakdownItem}>
+                  <span className={styles.breakdownLabel}>Recommendation</span>
+                  <span className={styles.breakdownValue}>
+                    {REC_LABELS[data.recommendationKey?.toLowerCase()] || data.recommendationKey || '—'}
+                  </span>
+                </div>
+                <div className={styles.breakdownItem}>
+                  <span className={styles.breakdownLabel}>P/E Ratio</span>
+                  <span className={styles.breakdownValue}>
+                    {data.peRatio != null ? Number(data.peRatio).toFixed(1) : '—'}
+                  </span>
+                </div>
+                {data.numberOfAnalysts != null && (
+                  <div className={styles.breakdownItem}>
+                    <span className={styles.breakdownLabel}>Analysts Covering</span>
+                    <span className={styles.breakdownValue}>{data.numberOfAnalysts}</span>
                   </div>
-                ))}
-              </div>
-            )}
-
-            {/* Raw signals */}
-            <div className={styles.detailSection}>
-              <div className={styles.detailSectionTitle}>Raw Signals (48h windows)</div>
-              <div className={styles.signalsGrid}>
-                <div className={styles.signalItem}>
-                  <span className={styles.signalLabel}>Recent Adds</span>
-                  <span className={styles.signalVal}>{data.signals?.recentAdds_48h ?? 0}</span>
-                </div>
-                <div className={styles.signalItem}>
-                  <span className={styles.signalLabel}>Prev Adds</span>
-                  <span className={styles.signalVal}>{data.signals?.prevAdds_48h ?? 0}</span>
-                </div>
-                <div className={styles.signalItem}>
-                  <span className={styles.signalLabel}>Add Growth</span>
-                  <span className={styles.signalVal}>
-                    {((data.signals?.addGrowthRate ?? 0) * 100).toFixed(0)}%
-                  </span>
-                </div>
-                <div className={styles.signalItem}>
-                  <span className={styles.signalLabel}>Total Watchers</span>
-                  <span className={styles.signalVal}>{data.signals?.totalActiveWatchers ?? 0}</span>
-                </div>
-                <div className={styles.signalItem}>
-                  <span className={styles.signalLabel}>Recent Interactions</span>
-                  <span className={styles.signalVal}>{data.signals?.recentInteractions_48h ?? 0}</span>
-                </div>
-                <div className={styles.signalItem}>
-                  <span className={styles.signalLabel}>Unique Users (48h)</span>
-                  <span className={styles.signalVal}>{data.signals?.uniqueUsers_48h ?? 0}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* AI Explanation */}
-            <div className={styles.detailSection}>
-              <div className={styles.detailSectionTitle}>AI Explanation</div>
-              <div className={styles.explanationBox}>
-                {(data.explanation || '').split('\n').map((line, i) => (
-                  <p key={i} className={line.startsWith('•') ? styles.explanationBullet : styles.explanationLine}>
-                    {line}
-                  </p>
-                ))}
+                )}
               </div>
             </div>
 
@@ -266,14 +236,14 @@ function DetailPanel({ symbol, onClose }) {
                 <ResponsiveContainer width="100%" height={100}>
                   <LineChart data={data.scoreHistory} margin={{ top: 4, right: 4, left: -28, bottom: 0 }}>
                     <CartesianGrid stroke="var(--chrome-dim)" strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="computedAt" hide />
+                    <XAxis dataKey="analyzedAt" hide />
                     <YAxis domain={[0, 100]} tick={{ fontSize: 9, fill: 'var(--text-tertiary)' }} tickLine={false} axisLine={false} />
                     <Tooltip
                       contentStyle={{ background: 'var(--surface-elevated)', border: '1px solid var(--chrome-dim)', borderRadius: 6, fontSize: 11 }}
-                      formatter={(v) => [v, 'Hot Score']}
+                      formatter={(v) => [v, 'Exp Score']}
                       labelFormatter={() => ''}
                     />
-                    <Line type="monotone" dataKey="hotScore" stroke={scoreColor(data.hotScore)} strokeWidth={2} dot={false} />
+                    <Line type="monotone" dataKey="score" stroke={scoreColor(data.score)} strokeWidth={2} dot={false} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -287,15 +257,18 @@ function DetailPanel({ symbol, onClose }) {
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 
-const STAGE_FILTERS = ['', 'emerging', 'accelerating', 'trending', 'saturated'];
-const CONFIDENCE_FILTERS = ['', 'low', 'medium', 'high'];
-const STAGE_LABELS = { '': 'All Stages', emerging: 'Emerging', accelerating: 'Accelerating', trending: 'Trending', saturated: 'Saturated' };
-const CONF_LABELS = { '': 'Any Confidence', low: 'Low', medium: 'Medium', high: 'High' };
+const LABEL_FILTERS = ['', 'VERY_HIGH', 'HIGH', 'MODERATE', 'LOW'];
+const LABEL_FILTER_NAMES = {
+  '': 'All Levels',
+  VERY_HIGH: 'Very High',
+  HIGH: 'High',
+  MODERATE: 'Moderate',
+  LOW: 'Low',
+};
 
 export default function AdminIntelligence() {
   const { user } = useAuth();
 
-  // Role guard — redirect non-admin/super_admin away silently
   if (!ALLOWED_ROLES.has(user?.role)) {
     return <Navigate to="/admin" replace />;
   }
@@ -311,9 +284,7 @@ export default function AdminIntelligence() {
   const [selectedSymbol, setSelectedSymbol] = useState(null);
   const [exporting, setExporting] = useState(false);
 
-  // Filters
-  const [stageFilter, setStageFilter] = useState('');
-  const [confidenceFilter, setConfidenceFilter] = useState('');
+  const [labelFilter, setLabelFilter] = useState('');
   const [minScore, setMinScore] = useState('');
   const [sectorFilter, setSectorFilter] = useState('');
   const [page, setPage] = useState(1);
@@ -332,8 +303,7 @@ export default function AdminIntelligence() {
     setTableLoading(true);
     try {
       const params = { page: pg, limit: 25 };
-      if (stageFilter) params.trendStage = stageFilter;
-      if (confidenceFilter) params.confidence = confidenceFilter;
+      if (labelFilter) params.label = labelFilter;
       if (minScore) params.minScore = minScore;
       if (sectorFilter) params.sector = sectorFilter;
 
@@ -345,7 +315,7 @@ export default function AdminIntelligence() {
     } finally {
       setTableLoading(false);
     }
-  }, [stageFilter, confidenceFilter, minScore, sectorFilter]);
+  }, [labelFilter, minScore, sectorFilter]);
 
   useEffect(() => {
     setLoading(true);
@@ -358,7 +328,7 @@ export default function AdminIntelligence() {
   useEffect(() => {
     setPage(1);
     loadStocks(1);
-  }, [stageFilter, confidenceFilter, minScore, sectorFilter]);
+  }, [labelFilter, minScore, sectorFilter]);
 
   const handlePageChange = (p) => {
     setPage(p);
@@ -382,7 +352,7 @@ export default function AdminIntelligence() {
     try {
       await downloadExport({
         format: 'csv',
-        ...(stageFilter ? { trendStage: stageFilter } : {}),
+        ...(labelFilter ? { label: labelFilter } : {}),
       });
     } catch (e) {
       setError(e.message);
@@ -391,10 +361,9 @@ export default function AdminIntelligence() {
     }
   };
 
-  // Counts from overview
-  const trendingCount = overview?.trending?.length ?? 0;
-  const acceleratingCount = overview?.accelerating?.length ?? 0;
-  const emergingCount = overview?.emerging?.length ?? 0;
+  const veryHighCount = overview?.veryHigh?.length ?? 0;
+  const highCount = overview?.high?.length ?? 0;
+  const moderateCount = overview?.moderate?.length ?? 0;
 
   if (error && !loading) {
     return <div className={styles.error}>{error}</div>;
@@ -406,11 +375,11 @@ export default function AdminIntelligence() {
       <div className={styles.pageHeader}>
         <div>
           <h1 className={styles.pageTitle}>
-            <span className={styles.flameIcon}>🔥</span>
+            <span className={styles.flameIcon}>📊</span>
             AI Market Intelligence
           </h1>
           <p className={styles.pageSub}>
-            Admin-only · Early hot stock detection · Updated {fmtDate(overview?.lastComputed)}
+            Admin-only · Analyst expectation scoring · Updated {fmtDate(overview?.lastComputed)}
           </p>
         </div>
         <div className={styles.headerActions}>
@@ -440,54 +409,54 @@ export default function AdminIntelligence() {
       </div>
 
       {loading ? (
-        <div className={styles.placeholder}>Loading AI intelligence data…</div>
+        <div className={styles.placeholder}>Loading intelligence data…</div>
       ) : (
         <>
           {/* ── Stat strip ─────────────────────────────────────── */}
           <div className={styles.statGrid}>
             <StatCard label="Stocks Tracked" value={overview?.totalTracked ?? 0} colorClass={styles.statBlue} />
-            <StatCard label="Trending" value={trendingCount} sub="hot score ≥ 70" colorClass={styles.statRed} />
-            <StatCard label="Accelerating" value={acceleratingCount} sub="hot score 45–69" colorClass={styles.statOrange} />
-            <StatCard label="Emerging" value={emergingCount} sub="hot score 15–44" colorClass={styles.statGreen} />
+            <StatCard label="Very High" value={veryHighCount} sub="exp score ≥ 76" colorClass={styles.statRed} />
+            <StatCard label="High" value={highCount} sub="exp score 56–75" colorClass={styles.statOrange} />
+            <StatCard label="Moderate" value={moderateCount} sub="exp score 34–55" colorClass={styles.statGreen} />
             <StatCard label="Last Computed" value={fmtDate(overview?.lastComputed)} />
           </div>
 
           {/* ── Top picks ─────────────────────────────────────── */}
           {overview && (
             <div className={styles.section}>
-              <div className={styles.sectionTitle}>Top Picks by Stage</div>
+              <div className={styles.sectionTitle}>Top Picks by Expectation Level</div>
               <div className={styles.topPicksGrid}>
                 <div className={styles.stageColumn}>
                   <div className={`${styles.stageHeader} ${styles.stageHeaderTrending}`}>
-                    Trending
+                    Very High
                   </div>
-                  {overview.trending.map((s) => (
+                  {overview.veryHigh.map((s) => (
                     <TopCard key={s.symbol} stock={s} onClick={setSelectedSymbol} />
                   ))}
-                  {overview.trending.length === 0 && (
-                    <p className={styles.stageEmpty}>No trending stocks yet</p>
+                  {overview.veryHigh.length === 0 && (
+                    <p className={styles.stageEmpty}>No very high stocks yet</p>
                   )}
                 </div>
                 <div className={styles.stageColumn}>
                   <div className={`${styles.stageHeader} ${styles.stageHeaderAccelerating}`}>
-                    Accelerating
+                    High
                   </div>
-                  {overview.accelerating.map((s) => (
+                  {overview.high.map((s) => (
                     <TopCard key={s.symbol} stock={s} onClick={setSelectedSymbol} />
                   ))}
-                  {overview.accelerating.length === 0 && (
-                    <p className={styles.stageEmpty}>No accelerating stocks yet</p>
+                  {overview.high.length === 0 && (
+                    <p className={styles.stageEmpty}>No high expectation stocks yet</p>
                   )}
                 </div>
                 <div className={styles.stageColumn}>
                   <div className={`${styles.stageHeader} ${styles.stageHeaderEmerging}`}>
-                    Emerging
+                    Moderate
                   </div>
-                  {overview.emerging.map((s) => (
+                  {overview.moderate.map((s) => (
                     <TopCard key={s.symbol} stock={s} onClick={setSelectedSymbol} />
                   ))}
-                  {overview.emerging.length === 0 && (
-                    <p className={styles.stageEmpty}>No emerging stocks yet</p>
+                  {overview.moderate.length === 0 && (
+                    <p className={styles.stageEmpty}>No moderate expectation stocks yet</p>
                   )}
                 </div>
               </div>
@@ -497,7 +466,7 @@ export default function AdminIntelligence() {
           {/* ── Sector heatmap ────────────────────────────────── */}
           {heatmap.length > 0 && (
             <div className={styles.section}>
-              <div className={styles.sectionTitle}>Sector Momentum Heatmap</div>
+              <div className={styles.sectionTitle}>Sector Expectation Heatmap</div>
               <div className={styles.chartCard}>
                 <ResponsiveContainer width="100%" height={Math.max(200, heatmap.length * 32)}>
                   <BarChart
@@ -528,18 +497,18 @@ export default function AdminIntelligence() {
                         borderRadius: 6,
                         fontSize: 12,
                       }}
-                      formatter={(v, name) => [v, name === 'avgHotScore' ? 'Avg Hot Score' : name]}
+                      formatter={(v, name) => [v, name === 'avgScore' ? 'Avg Exp Score' : name]}
                     />
-                    <Bar dataKey="avgHotScore" name="Avg Hot Score" radius={[0, 4, 4, 0]}>
+                    <Bar dataKey="avgScore" name="Avg Exp Score" radius={[0, 4, 4, 0]}>
                       {heatmap.map((entry, i) => (
                         <Cell
                           key={i}
                           fill={
-                            entry.avgHotScore >= 60
+                            entry.avgScore >= 60
                               ? 'var(--hot-red)'
-                              : entry.avgHotScore >= 40
+                              : entry.avgScore >= 40
                               ? 'var(--hot-orange)'
-                              : entry.avgHotScore >= 20
+                              : entry.avgScore >= 20
                               ? 'var(--accent)'
                               : 'var(--text-tertiary)'
                           }
@@ -556,26 +525,14 @@ export default function AdminIntelligence() {
           <div className={styles.section}>
             <div className={styles.filterBar}>
               <div className={styles.filterGroup}>
-                <label className={styles.filterLabel}>Stage</label>
+                <label className={styles.filterLabel}>Level</label>
                 <select
                   className={styles.filterSelect}
-                  value={stageFilter}
-                  onChange={(e) => setStageFilter(e.target.value)}
+                  value={labelFilter}
+                  onChange={(e) => setLabelFilter(e.target.value)}
                 >
-                  {STAGE_FILTERS.map((s) => (
-                    <option key={s} value={s}>{STAGE_LABELS[s]}</option>
-                  ))}
-                </select>
-              </div>
-              <div className={styles.filterGroup}>
-                <label className={styles.filterLabel}>Confidence</label>
-                <select
-                  className={styles.filterSelect}
-                  value={confidenceFilter}
-                  onChange={(e) => setConfidenceFilter(e.target.value)}
-                >
-                  {CONFIDENCE_FILTERS.map((c) => (
-                    <option key={c} value={c}>{CONF_LABELS[c]}</option>
+                  {LABEL_FILTERS.map((l) => (
+                    <option key={l} value={l}>{LABEL_FILTER_NAMES[l]}</option>
                   ))}
                 </select>
               </div>
@@ -601,12 +558,11 @@ export default function AdminIntelligence() {
                   onChange={(e) => setSectorFilter(e.target.value)}
                 />
               </div>
-              {(stageFilter || confidenceFilter || minScore || sectorFilter) && (
+              {(labelFilter || minScore || sectorFilter) && (
                 <button
                   className={styles.clearFilters}
                   onClick={() => {
-                    setStageFilter('');
-                    setConfidenceFilter('');
+                    setLabelFilter('');
                     setMinScore('');
                     setSectorFilter('');
                   }}
@@ -634,11 +590,11 @@ export default function AdminIntelligence() {
                       <th>Symbol</th>
                       <th>Name</th>
                       <th>Sector</th>
-                      <th>Hot Score</th>
-                      <th>Stage</th>
-                      <th>Confidence</th>
-                      <th>Watchers</th>
-                      <th>Adds 48h</th>
+                      <th>Exp Score</th>
+                      <th>Level</th>
+                      <th>Price</th>
+                      <th>Target</th>
+                      <th>Recommendation</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -655,12 +611,14 @@ export default function AdminIntelligence() {
                         <td className={styles.nameCell} title={s.name}>{s.name}</td>
                         <td className={styles.sectorCell}>{s.sector}</td>
                         <td className={styles.scoreCell}>
-                          <ScoreBar value={s.hotScore} />
+                          <ScoreBar value={s.score} />
                         </td>
-                        <td><StageBadge stage={s.trendStage} /></td>
-                        <td><ConfidenceBadge confidence={s.confidence} /></td>
-                        <td className={styles.numCell}>{s.signals?.totalActiveWatchers ?? 0}</td>
-                        <td className={styles.numCell}>{s.signals?.recentAdds_48h ?? 0}</td>
+                        <td><TierBadge tier={s.tier} /></td>
+                        <td className={styles.numCell}>{fmtPrice(s.price)}</td>
+                        <td className={styles.numCell}>{fmtPrice(s.analystTarget)}</td>
+                        <td className={styles.numCell}>
+                          {REC_LABELS[s.recommendationKey?.toLowerCase()] || s.recommendationKey || '—'}
+                        </td>
                       </tr>
                     ))}
                     {stocks.length === 0 && !tableLoading && (

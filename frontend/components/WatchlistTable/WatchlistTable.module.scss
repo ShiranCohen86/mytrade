@@ -2,7 +2,7 @@
 @use '../../styles/mixins' as *;
 
 // Column tracks — single desktop layout used at all widths (table scrolls horizontally on mobile)
-$cols-desktop: 20px 56px 1fr 140px 68px 48px 68px 92px 56px 60px 34px;
+$cols-desktop: 20px 56px 1fr 140px 68px 68px 48px 92px 56px 60px 34px;
 
 // ─── Horizontal scroll wrapper ────────────────────────────────────────────────
 
@@ -135,13 +135,18 @@ $cols-desktop: 20px 56px 1fr 140px 68px 48px 68px 92px 56px 60px 34px;
   padding: 1px 7px;
 }
 
-.sectorAvgRisk {
+.sectorAvgRisk,
+.sectorAvgExp {
   @include mono-value(10px);
   font-weight: 700;
   padding: 1px 7px;
   border-radius: $radius-pill;
 }
 
-.riskHigh { color: $neg;  background: $neg-bg; }
-.riskMid  { color: $warn; background: $warn-bg; }
-.riskLow  { color: $pos;  background: $pos-bg; }
+.riskHigh    { color: $neg;           background: $neg-bg; }
+.riskMid     { color: $warn;          background: $warn-bg; }
+.riskLow     { color: $pos;           background: $pos-bg; }
+.expVeryHigh { color: $neg;           background: $neg-bg; }
+.expHigh     { color: $warn;          background: $warn-bg; }
+.expMod      { color: $accent-text;   background: $accent-dim; }
+.expLow      { color: $text-tertiary; background: $surface-raised; }
