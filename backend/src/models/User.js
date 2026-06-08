@@ -29,6 +29,8 @@ const stockNoteSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const ROLES = ['super_admin', 'admin', 'support_agent', 'analyst', 'user'];
+
 const userSchema = new mongoose.Schema(
   {
     email: { type: String, unique: true, sparse: true, lowercase: true, trim: true },
@@ -37,6 +39,11 @@ const userSchema = new mongoose.Schema(
     displayName: { type: String, default: '' },
     avatar: { type: String, default: '' },
     onboardingDone: { type: Boolean, default: false },
+    role: { type: String, enum: ROLES, default: 'user', index: true },
+    isSuspended: { type: Boolean, default: false, index: true },
+    suspendedAt: { type: Date, default: null },
+    suspendedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+    suspendReason: { type: String, default: '' },
     resetToken: { type: String, select: false },
     resetTokenExpiry: { type: Date, select: false },
     watchlist: {
@@ -65,3 +72,4 @@ const userSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model('User', userSchema);
+module.exports.ROLES = ROLES;

@@ -184,3 +184,101 @@ export const deleteAccount = () =>
 
 export const searchStocks = (q) =>
   request(`${EXPRESS}/api/search?q=${encodeURIComponent(q)}`);
+
+// ─── Admin: Users ─────────────────────────────────────────────────────────────
+
+export const adminGetUsers = (params = {}) => {
+  const qs = new URLSearchParams(
+    Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== ''))
+  ).toString();
+  return request(`${EXPRESS}/admin/users${qs ? `?${qs}` : ''}`);
+};
+
+export const adminGetUser = (id) =>
+  request(`${EXPRESS}/admin/users/${id}`);
+
+export const adminSetRole = (id, role) =>
+  request(`${EXPRESS}/admin/users/${id}/role`, { method: 'PUT', body: JSON.stringify({ role }) });
+
+export const adminSuspendUser = (id, suspend, reason = '') =>
+  request(`${EXPRESS}/admin/users/${id}/suspend`, {
+    method: 'PUT',
+    body: JSON.stringify({ suspend, reason }),
+  });
+
+export const adminDeleteUser = (id) =>
+  request(`${EXPRESS}/admin/users/${id}`, { method: 'DELETE' });
+
+// ─── Admin: Audit Logs ────────────────────────────────────────────────────────
+
+export const adminGetAuditLogs = (params = {}) => {
+  const qs = new URLSearchParams(
+    Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== ''))
+  ).toString();
+  return request(`${EXPRESS}/admin/audit${qs ? `?${qs}` : ''}`);
+};
+
+export const adminGetAuditStats = (since) =>
+  request(`${EXPRESS}/admin/audit/stats${since ? `?since=${since}` : ''}`);
+
+export const adminExportAudit = (params = {}) => {
+  const qs = new URLSearchParams(
+    Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== ''))
+  ).toString();
+  return `${EXPRESS}/admin/audit/export${qs ? `?${qs}` : ''}`;
+};
+
+// ─── Admin: Analytics ─────────────────────────────────────────────────────────
+
+export const adminAnalyticsOverview = () =>
+  request(`${EXPRESS}/admin/analytics/overview`);
+
+export const adminAnalyticsSignups = (days = 30) =>
+  request(`${EXPRESS}/admin/analytics/signups?days=${days}`);
+
+export const adminAnalyticsActivity = (days = 30) =>
+  request(`${EXPRESS}/admin/analytics/activity?days=${days}`);
+
+export const adminAnalyticsWatchlists = () =>
+  request(`${EXPRESS}/admin/analytics/watchlists`);
+
+export const adminAnalyticsSecurity = () =>
+  request(`${EXPRESS}/admin/analytics/security`);
+
+// ─── Admin: Watchlists ────────────────────────────────────────────────────────
+
+export const adminGetWatchlists = (params = {}) => {
+  const qs = new URLSearchParams(
+    Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== ''))
+  ).toString();
+  return request(`${EXPRESS}/admin/watchlists${qs ? `?${qs}` : ''}`);
+};
+
+export const adminGetUserWatchlist = (userId) =>
+  request(`${EXPRESS}/admin/watchlists/${userId}`);
+
+export const adminRestoreWatchlistItem = (userId, symbol) =>
+  request(`${EXPRESS}/admin/watchlists/${userId}/restore/${symbol}`, { method: 'POST' });
+
+export const adminDisableWatchlistItem = (userId, symbol, reason = '') =>
+  request(`${EXPRESS}/admin/watchlists/${userId}/disable/${symbol}`, {
+    method: 'POST',
+    body: JSON.stringify({ reason }),
+  });
+
+// ─── Admin: Support ───────────────────────────────────────────────────────────
+
+export const adminImpersonate = (userId) =>
+  request(`${EXPRESS}/admin/support/impersonate/${userId}`, { method: 'POST' });
+
+export const adminGetUserActivity = (userId, limit = 100) =>
+  request(`${EXPRESS}/admin/support/users/${userId}/activity?limit=${limit}`);
+
+export const adminFlagUser = (userId, reason, severity = 'warning') =>
+  request(`${EXPRESS}/admin/support/users/${userId}/flag`, {
+    method: 'POST',
+    body: JSON.stringify({ reason, severity }),
+  });
+
+export const adminSearch = (q) =>
+  request(`${EXPRESS}/admin/support/search?q=${encodeURIComponent(q)}`);

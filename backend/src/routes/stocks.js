@@ -3,9 +3,11 @@ const router = express.Router();
 const stockService = require('../services/stockService');
 const newsService = require('../services/newsService');
 const { Stock, User } = require('../db');
+const WatchlistItem = require('../models/WatchlistItem');
 const provider = require('../providers/ProviderFactory');
 const auth = require('../middleware/auth');
 const logger = require('../utils/logger');
+const audit = require('../services/auditService');
 
 const MAX_WATCHLIST = 25;
 
@@ -101,6 +103,15 @@ router.post('/stocks', async (req, res) => {
       throw watchlistErr;
     }
 
+    // Soft-delete tracking: upsert WatchlistItem (re-enable if previously disabled)
+    WatchlistItem.findOneAndUpdate(
+      { userId: req.user.id, symbol: t },
+      { $set: { isDisabled: false, disabledAt: null, disabledBy: null, disableReason: '' }, $inc: { addCount: 1 } },
+      { upsert: true, new: true }
+    ).catch(() => {});
+
+    audit.logUser(req, 'watchlist.add', { symbol: t });
+
     res.status(201).json(stock);
   } catch (err) {
     logger.error('POST /stocks', { err: err.message });
@@ -124,6 +135,15 @@ router.delete('/stocks/:ticker', async (req, res) => {
     await User.updateOne({ _id: req.user.id }, { $pull: { watchlist: t } });
     const otherUsers = await User.countDocuments({ _id: { $ne: req.user.id }, watchlist: t });
     if (otherUsers === 0) await Stock.deleteOne({ ticker: t });
+
+    // Soft-delete tracking: mark as disabled instead of deleting
+    WatchlistItem.findOneAndUpdate(
+      { userId: req.user.id, symbol: t },
+      { $set: { isDisabled: true, disabledAt: new Date(), disabledBy: null, disableReason: '' } }
+    ).catch(() => {});
+
+    audit.logUser(req, 'watchlist.remove', { symbol: t });
+
     res.status(204).send();
   } catch (err) {
     logger.error('DELETE /stocks/:ticker', { err: err.message });

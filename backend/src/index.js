@@ -160,9 +160,25 @@ app.get('/api/market/movers', async (_req, res) => {
   }
 });
 
+// Admin rate limiter — tighter than API limiter; prevents bulk enumeration
+const adminLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Admin rate limit exceeded. Please wait.' },
+});
+
 // Routes
 app.use('/auth', require('./routes/auth'));
 app.use('/api', require('./routes/stocks'));
+
+// Admin routes — each sub-router enforces its own RBAC via adminAuth middleware
+app.use('/admin/users', adminLimiter, require('./routes/admin/users'));
+app.use('/admin/audit', adminLimiter, require('./routes/admin/audit'));
+app.use('/admin/analytics', adminLimiter, require('./routes/admin/analytics'));
+app.use('/admin/watchlists', adminLimiter, require('./routes/admin/watchlist'));
+app.use('/admin/support', adminLimiter, require('./routes/admin/support'));
 
 app.get('/health', async (_req, res) => {
   let dbOk = true;

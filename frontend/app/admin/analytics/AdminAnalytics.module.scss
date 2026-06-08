@@ -1,0 +1,80 @@
+@use '@/styles/variables' as *;
+
+.page { display: flex; flex-direction: column; gap: 20px; }
+
+.pageHeader { display: flex; align-items: center; justify-content: space-between; }
+.pageTitle  { font-size: $text-xl; font-weight: 700; color: var(--text-primary); margin: 0; }
+
+.dayTabs { display: flex; gap: 4px; }
+
+.dayTab {
+  height: 28px; padding: 0 10px; border-radius: $radius-sm;
+  border: 1px solid var(--chrome-dim); background: transparent;
+  color: var(--text-secondary); font-size: $text-xs; font-family: $font-ui; cursor: pointer;
+  transition: all $motion-fast;
+  &:hover { border-color: var(--accent); color: var(--accent); }
+}
+
+.dayTabActive { background: var(--accent-faint); border-color: var(--accent); color: var(--accent); }
+
+.section { display: flex; flex-direction: column; gap: 12px; }
+
+.sectionTitle {
+  font-size: $text-sm; font-weight: 600; color: var(--text-primary);
+  padding-bottom: 8px; border-bottom: 1px solid var(--chrome-dim);
+}
+
+.chartRow { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.chartCard {
+  background: var(--surface-panel); border: 1px solid var(--chrome-dim);
+  border-radius: $radius-md; padding: 16px;
+}
+
+.chartTitle {
+  font-size: $text-sm; font-weight: 500; color: var(--text-secondary);
+  margin-bottom: 14px;
+}
+
+.tableRow { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.tableCard {
+  background: var(--surface-panel); border: 1px solid var(--chrome-dim);
+  border-radius: $radius-md; overflow: hidden;
+}
+
+.tableTitle {
+  font-size: $text-sm; font-weight: 600; color: var(--text-primary);
+  padding: 12px 14px; border-bottom: 1px solid var(--chrome-dim);
+}
+
+.miniTable {
+  width: 100%; border-collapse: collapse; font-size: $text-sm;
+
+  th {
+    padding: 7px 14px; text-align: left;
+    font-size: $text-xs; font-weight: 600; color: var(--text-tertiary);
+    text-transform: uppercase; letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--chrome-dim);
+  }
+
+  td { padding: 8px 14px; color: var(--text-primary); border-bottom: 1px solid var(--chrome-dim); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface-hover); }
+}
+
+.monoCell  { font-family: $font-data; font-size: $text-xs; }
+.countCell { font-family: $font-data; font-weight: 700; color: var(--neg); }
+
+.empty { text-align: center; color: var(--text-tertiary); padding: 16px; }
+
+.placeholder, .error {
+  padding: 24px; text-align: center; font-size: $text-sm;
+}
+
+.placeholder { color: var(--text-tertiary); }
+
+.error {
+  color: var(--neg); background: var(--neg-bg);
+  border: 1px solid var(--neg); border-radius: $radius-md;
+}

@@ -1,0 +1,323 @@
+@use '@/styles/variables' as *;
+
+// ─── Shell ────────────────────────────────────────────────────────────────────
+
+.shell {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--surface-base);
+  font-family: $font-ui;
+  transition: grid-template-columns $motion-base;
+
+  &.collapsed {
+    grid-template-columns: 56px 1fr;
+  }
+}
+
+// ─── Sidebar ──────────────────────────────────────────────────────────────────
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  background: #0f1117;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  position: relative;
+  z-index: 10;
+}
+
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  height: 52px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.brandIcon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.brandText {
+  font-size: $text-sm;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+}
+
+.collapseBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: $radius-xs;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color $motion-fast, background $motion-fast;
+
+  &:hover {
+    color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.06);
+  }
+}
+
+// ─── Navigation ───────────────────────────────────────────────────────────────
+
+.nav {
+  flex: 1;
+  padding: 8px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: $radius-sm;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: $text-sm;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color $motion-fast, background $motion-fast;
+
+  &:hover {
+    color: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  &.navItemActive {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.navIcon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  opacity: 0.8;
+
+  .navItemActive & { opacity: 1; }
+}
+
+.navLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// ─── Sidebar footer ───────────────────────────────────────────────────────────
+
+.sidebarFooter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+
+.userMini {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.userAvatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $text-sm;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  flex-shrink: 0;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.userInfo {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.userName {
+  font-size: $text-xs;
+  color: rgba(255, 255, 255, 0.65);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.roleBadge {
+  font-size: $text-2xs;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 1px 5px;
+  border-radius: $radius-xs;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.45);
+  display: inline-block;
+  width: fit-content;
+}
+
+.roleSuperAdmin { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+.roleAdmin      { background: rgba(99, 102, 241, 0.2); color: #818cf8; }
+.roleSupport    { background: rgba(52, 211, 153, 0.2); color: #34d399; }
+.roleAnalyst    { background: rgba(56, 189, 248, 0.2); color: #38bdf8; }
+
+.logoutBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: $radius-xs;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color $motion-fast, background $motion-fast;
+
+  &:hover {
+    color: var(--neg);
+    background: rgba(255, 255, 255, 0.06);
+  }
+}
+
+// ─── Main area ────────────────────────────────────────────────────────────────
+
+.main {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+// ─── Top bar ──────────────────────────────────────────────────────────────────
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 20px;
+  height: 52px;
+  background: var(--surface-base);
+  border-bottom: 1px solid var(--chrome-dim);
+  flex-shrink: 0;
+}
+
+.searchForm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  max-width: 500px;
+  background: var(--surface-panel);
+  border: 1px solid var(--chrome-dim);
+  border-radius: $radius-sm;
+  padding: 0 10px;
+  height: 32px;
+  transition: border-color $motion-fast;
+
+  &:focus-within {
+    border-color: var(--accent);
+  }
+}
+
+.searchIcon {
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.searchInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: $text-sm;
+  font-family: $font-ui;
+  color: var(--text-primary);
+
+  &::placeholder { color: var(--text-tertiary); }
+}
+
+.searchKbd {
+  font-size: $text-2xs;
+  color: var(--text-disabled);
+  font-family: $font-ui;
+  border: 1px solid var(--chrome-dim);
+  border-radius: 3px;
+  padding: 1px 4px;
+}
+
+.topbarRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.appLink {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: $text-sm;
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 4px 8px;
+  border-radius: $radius-xs;
+  border: 1px solid var(--chrome-dim);
+  transition: color $motion-fast, border-color $motion-fast;
+
+  &:hover {
+    color: var(--text-primary);
+    border-color: var(--chrome-mid);
+  }
+}
+
+// ─── Content ──────────────────────────────────────────────────────────────────
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}

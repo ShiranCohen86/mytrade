@@ -1,0 +1,204 @@
+@use '@/styles/variables' as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.pageHeader {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.pageTitle {
+  font-size: $text-xl;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.pageSubtitle {
+  font-size: $text-sm;
+  color: var(--text-tertiary);
+}
+
+// ─── Stat grid ────────────────────────────────────────────────────────────────
+
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.statCard {
+  background: var(--surface-panel);
+  border: 1px solid var(--chrome-dim);
+  border-radius: $radius-md;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: border-color $motion-fast;
+
+  &:hover { border-color: var(--chrome-mid); }
+}
+
+.accent_blue  { border-left: 3px solid var(--accent); }
+.accent_green { border-left: 3px solid #34d399; }
+.accent_red   { border-left: 3px solid var(--neg); }
+.accent_orange{ border-left: 3px solid #fb923c; }
+
+.statLabel {
+  font-size: $text-xs;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.statValue {
+  font-size: $text-2xl;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: $font-data;
+  line-height: 1.1;
+}
+
+.statSub {
+  font-size: $text-xs;
+  color: var(--text-tertiary);
+}
+
+// ─── Chart row ────────────────────────────────────────────────────────────────
+
+.chartRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.chartCard {
+  background: var(--surface-panel);
+  border: 1px solid var(--chrome-dim);
+  border-radius: $radius-md;
+  padding: 16px;
+}
+
+.chartHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.chartTitle {
+  font-size: $text-sm;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.chartLink {
+  font-size: $text-xs;
+  color: var(--accent);
+  text-decoration: none;
+
+  &:hover { text-decoration: underline; }
+}
+
+// ─── Table card ───────────────────────────────────────────────────────────────
+
+.tableCard {
+  background: var(--surface-panel);
+  border: 1px solid var(--chrome-dim);
+  border-radius: $radius-md;
+  overflow: hidden;
+}
+
+.tableHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--chrome-dim);
+}
+
+.tableTitle {
+  font-size: $text-sm;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: $text-sm;
+
+  th {
+    padding: 8px 16px;
+    text-align: left;
+    font-size: $text-xs;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--chrome-dim);
+  }
+
+  td {
+    padding: 9px 16px;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--chrome-dim);
+
+    &:last-child { border-right: none; }
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  tr:hover td { background: var(--surface-hover); }
+}
+
+.monoCell {
+  font-family: $font-data;
+  font-size: $text-xs;
+  color: var(--text-secondary);
+}
+
+.timeCell {
+  font-size: $text-xs;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+// ─── Severity dots ────────────────────────────────────────────────────────────
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-disabled);
+
+  &.dot_info     { background: var(--accent); }
+  &.dot_warning  { background: #fb923c; }
+  &.dot_critical { background: var(--neg); }
+}
+
+// ─── States ───────────────────────────────────────────────────────────────────
+
+.placeholder, .empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: $text-sm;
+}
+
+.error {
+  padding: 16px;
+  color: var(--neg);
+  font-size: $text-sm;
+  background: var(--neg-bg);
+  border-radius: $radius-md;
+  border: 1px solid var(--neg);
+}

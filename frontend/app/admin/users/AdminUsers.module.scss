@@ -1,0 +1,253 @@
+@use '@/styles/variables' as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pageHeader {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.pageTitle {
+  font-size: $text-xl;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.pageCount {
+  font-size: $text-sm;
+  color: var(--text-tertiary);
+}
+
+// ─── Filters ──────────────────────────────────────────────────────────────────
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.searchWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-panel);
+  border: 1px solid var(--chrome-dim);
+  border-radius: $radius-sm;
+  padding: 0 10px;
+  height: 32px;
+  flex: 1;
+  min-width: 200px;
+  max-width: 340px;
+  transition: border-color $motion-fast;
+
+  &:focus-within { border-color: var(--accent); }
+}
+
+.searchIcon { color: var(--text-tertiary); }
+
+.searchInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: $text-sm;
+  font-family: $font-ui;
+  color: var(--text-primary);
+
+  &::placeholder { color: var(--text-tertiary); }
+}
+
+.select {
+  height: 32px;
+  background: var(--surface-panel);
+  border: 1px solid var(--chrome-dim);
+  border-radius: $radius-sm;
+  padding: 0 8px;
+  font-size: $text-sm;
+  color: var(--text-primary);
+  font-family: $font-ui;
+  cursor: pointer;
+  outline: none;
+
+  &:focus { border-color: var(--accent); }
+}
+
+.refreshBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: $radius-sm;
+  border: 1px solid var(--chrome-dim);
+  background: var(--surface-panel);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color $motion-fast, border-color $motion-fast;
+
+  &:hover { color: var(--accent); border-color: var(--accent); }
+}
+
+// ─── Table ────────────────────────────────────────────────────────────────────
+
+.tableWrap {
+  position: relative;
+  background: var(--surface-panel);
+  border: 1px solid var(--chrome-dim);
+  border-radius: $radius-md;
+  overflow: hidden;
+}
+
+.loadingOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--surface-panel), 0.7);
+  font-size: $text-sm;
+  color: var(--text-tertiary);
+  z-index: 2;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: $text-sm;
+
+  th {
+    padding: 9px 14px;
+    text-align: left;
+    font-size: $text-xs;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: var(--surface-panel);
+    border-bottom: 1px solid var(--chrome-dim);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 10px 14px;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--chrome-dim);
+    vertical-align: middle;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface-hover); }
+}
+
+.userCell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--surface-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $text-sm;
+  font-weight: 600;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  overflow: hidden;
+
+  img { width: 100%; height: 100%; object-fit: cover; }
+}
+
+.userName {
+  font-size: $text-sm;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.userEmail {
+  font-size: $text-xs;
+  color: var(--text-tertiary);
+}
+
+.roleBadge {
+  font-size: $text-2xs;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: $radius-xs;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.role_super_admin { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+.role_admin       { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
+.role_support_agent { background: rgba(52, 211, 153, 0.15); color: #34d399; }
+.role_analyst     { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+.role_user        { background: var(--surface-elevated); color: var(--text-tertiary); }
+
+.statusActive    { color: var(--pos); font-size: $text-xs; font-weight: 500; }
+.statusSuspended { color: var(--neg); font-size: $text-xs; font-weight: 500; }
+
+.monoCell  { font-family: $font-data; font-size: $text-xs; color: var(--text-secondary); }
+.timeCell  { font-size: $text-xs; color: var(--text-tertiary); white-space: nowrap; }
+.emptyCell { text-align: center; color: var(--text-tertiary); padding: 32px; }
+
+.viewLink {
+  font-size: $text-xs;
+  color: var(--accent);
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover { text-decoration: underline; }
+}
+
+// ─── Pagination ───────────────────────────────────────────────────────────────
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.pageBtn {
+  height: 30px;
+  padding: 0 12px;
+  border-radius: $radius-sm;
+  border: 1px solid var(--chrome-dim);
+  background: var(--surface-panel);
+  color: var(--text-secondary);
+  font-size: $text-sm;
+  font-family: $font-ui;
+  cursor: pointer;
+  transition: color $motion-fast, border-color $motion-fast;
+
+  &:hover:not(:disabled) { color: var(--accent); border-color: var(--accent); }
+  &:disabled { opacity: 0.4; cursor: default; }
+}
+
+.pageInfo {
+  font-size: $text-sm;
+  color: var(--text-tertiary);
+}
+
+.error {
+  padding: 12px 16px;
+  color: var(--neg);
+  background: var(--neg-bg);
+  border: 1px solid var(--neg);
+  border-radius: $radius-sm;
+  font-size: $text-sm;
+}

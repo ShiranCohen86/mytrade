@@ -1,0 +1,114 @@
+@use '@/styles/variables' as *;
+
+.page { display: flex; flex-direction: column; gap: 20px; }
+
+.pageHeader { display: flex; align-items: center; }
+.pageTitle  { font-size: $text-xl; font-weight: 700; color: var(--text-primary); margin: 0; }
+
+.section {
+  background: var(--surface-panel); border: 1px solid var(--chrome-dim);
+  border-radius: $radius-md; padding: 18px; display: flex; flex-direction: column; gap: 12px;
+}
+
+.sectionTitle { font-size: $text-sm; font-weight: 600; color: var(--text-primary); }
+.sectionDesc  { font-size: $text-sm; color: var(--text-tertiary); margin: 0; }
+
+.searchRow { display: flex; gap: 8px; }
+
+.input, .select {
+  height: 32px; background: var(--surface-base); border: 1px solid var(--chrome-dim);
+  border-radius: $radius-sm; padding: 0 10px; font-size: $text-sm; color: var(--text-primary);
+  font-family: $font-ui; outline: none; flex: 1;
+  &:focus { border-color: var(--accent); }
+}
+
+.select { flex: 0 0 auto; width: 120px; }
+
+.searchResults {
+  border: 1px solid var(--chrome-dim); border-radius: $radius-sm; overflow: hidden;
+}
+
+.resultGroup {}
+
+.resultGroupTitle {
+  font-size: $text-xs; font-weight: 600; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.06em;
+  padding: 8px 14px; background: var(--surface-base);
+  border-bottom: 1px solid var(--chrome-dim);
+}
+
+.resultRow {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 14px; border-bottom: 1px solid var(--chrome-dim);
+  &:last-child { border-bottom: none; }
+  &:hover { background: var(--surface-hover); }
+}
+
+.resultLink {
+  font-size: $text-sm; color: var(--accent); text-decoration: none; font-weight: 500;
+  &:hover { text-decoration: underline; }
+}
+
+.resultSub { font-size: $text-xs; color: var(--text-tertiary); }
+
+// ─── Tools grid ───────────────────────────────────────────────────────────────
+
+.toolsGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+
+.toolCard {
+  background: var(--surface-panel); border: 1px solid var(--chrome-dim);
+  border-radius: $radius-md; padding: 18px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+.toolTitle { font-size: $text-sm; font-weight: 600; color: var(--text-primary); }
+.toolDesc  { font-size: $text-sm; color: var(--text-secondary); margin: 0; line-height: 1.5; }
+
+.toolRow   { display: flex; gap: 8px; }
+.flagForm  { display: flex; flex-direction: column; gap: 8px; }
+
+// ─── Mini timeline ────────────────────────────────────────────────────────────
+
+.miniTimeline {
+  display: flex; flex-direction: column; gap: 4px;
+  max-height: 260px; overflow-y: auto;
+  border: 1px solid var(--chrome-dim); border-radius: $radius-sm; padding: 8px;
+}
+
+.miniItem {
+  display: flex; align-items: center; gap: 10px;
+  padding: 4px 6px; border-radius: $radius-xs;
+  &:hover { background: var(--surface-hover); }
+}
+
+.monoText  { font-family: $font-data; font-size: $text-xs; flex: 1; color: var(--text-primary); }
+.timeSmall { font-size: $text-xs; color: var(--text-tertiary); white-space: nowrap; }
+
+.moreHint { font-size: $text-xs; color: var(--text-tertiary); text-align: center; padding: 6px; }
+
+// ─── Buttons ──────────────────────────────────────────────────────────────────
+
+.btnPrimary, .btnDanger, .btnWarning {
+  height: 32px; padding: 0 14px; border-radius: $radius-sm; border: none;
+  font-size: $text-sm; font-family: $font-ui; font-weight: 500; cursor: pointer;
+  white-space: nowrap; flex-shrink: 0;
+  transition: opacity $motion-fast;
+  &:disabled { opacity: 0.5; cursor: default; }
+}
+
+.btnPrimary { background: var(--accent); color: #fff; }
+.btnDanger  { background: var(--neg); color: #fff; }
+.btnWarning { background: #f59e0b; color: #fff; }
+
+// ─── Severity badges ──────────────────────────────────────────────────────────
+
+.sevBadge {
+  font-size: $text-2xs; font-weight: 600; letter-spacing: 0.04em;
+  text-transform: uppercase; padding: 2px 6px; border-radius: $radius-xs;
+}
+
+.sev_info     { background: var(--accent-faint); color: var(--accent); }
+.sev_warning  { background: rgba(245,158,11,.15); color: #f59e0b; }
+.sev_critical { background: var(--neg-bg); color: var(--neg); }
+
+.empty { text-align: center; color: var(--text-tertiary); padding: 20px; font-size: $text-sm; }

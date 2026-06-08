@@ -7,6 +7,7 @@ const passport = require('../config/passport');
 const User = require('../models/User');
 const authMiddleware = require('../middleware/auth');
 const logger = require('../utils/logger');
+const audit = require('../services/auditService');
 
 const SALT_ROUNDS = 12;
 const ACCESS_TOKEN_TTL = '15m';
@@ -38,6 +39,8 @@ function safeUserResponse(user) {
     avatar: user.avatar,
     onboardingDone: user.onboardingDone,
     isGoogleAccount: Boolean(user.googleId),
+    role: user.role || 'user',
+    isSuspended: Boolean(user.isSuspended),
     createdAt: user.createdAt,
   };
 }
@@ -70,6 +73,13 @@ router.post('/register', async (req, res) => {
 
     const { accessToken, refreshToken } = issueTokens(user);
     setRefreshCookie(res, refreshToken);
+
+    audit.logUser(
+      { user: { id: user.id, email: user.email }, ip: req.ip, headers: req.headers, id: req.id },
+      'auth.register',
+      { email: user.email, displayName: user.displayName }
+    );
+
     res.status(201).json({ user: safeUserResponse(user), accessToken });
   } catch (err) {
     logger.error('POST /auth/register', { err: err.message });
@@ -81,11 +91,30 @@ router.post('/register', async (req, res) => {
 router.post('/login', (req, res, next) => {
   passport.authenticate('local', { session: false }, (err, user, info) => {
     if (err) return next(err);
-    if (!user) return res.status(401).json({ error: info?.message || 'Invalid credentials.' });
+    if (!user) {
+      audit.log({
+        actionType: 'auth.login_failed',
+        actor: { type: 'user', id: null, email: req.body?.email || '', role: 'user' },
+        userId: null,
+        metadata: { email: req.body?.email || '', reason: info?.message || 'Invalid credentials' },
+        severity: 'warning',
+        req,
+      });
+      return res.status(401).json({ error: info?.message || 'Invalid credentials.' });
+    }
 
     try {
       const { accessToken, refreshToken } = issueTokens(user);
       setRefreshCookie(res, refreshToken);
+
+      audit.log({
+        actionType: 'auth.login',
+        actor: { type: 'user', id: user.id, email: user.email, role: user.role || 'user' },
+        userId: user.id,
+        metadata: { email: user.email },
+        req,
+      });
+
       res.json({ user: safeUserResponse(user), accessToken });
     } catch (tokenErr) {
       logger.error('POST /auth/login token issue', { err: tokenErr.message });
@@ -95,7 +124,15 @@ router.post('/login', (req, res, next) => {
 });
 
 // POST /auth/logout
-router.post('/logout', (_req, res) => {
+router.post('/logout', (req, res) => {
+  if (req.user) {
+    audit.log({
+      actionType: 'auth.logout',
+      actor: { type: 'user', id: req.user.id, email: req.user.email, role: 'user' },
+      userId: req.user.id,
+      req,
+    });
+  }
   res.clearCookie(REFRESH_COOKIE, { path: '/auth/refresh' });
   res.json({ ok: true });
 });
