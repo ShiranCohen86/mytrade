@@ -16,6 +16,26 @@ import { PanelCard } from '@/components/PanelCard/PanelCard';
 import { fmtPrice, fmtBig } from '@/lib/format';
 import styles from './page.module.scss';
 
+function RangeBar({ label, low, high, current }) {
+  if (low == null || high == null || current == null) return null;
+  const pct = high > low ? Math.max(0, Math.min(100, ((current - low) / (high - low)) * 100)) : 50;
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'Inter, sans-serif', fontSize: 10, color: 'var(--text-disabled)' }}>
+        <span style={{ fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>{label}</span>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: 'var(--text-tertiary)', fontVariantNumeric: 'tabular-nums' }}>
+        <span style={{ minWidth: 52, textAlign: 'right' }}>${low.toFixed(2)}</span>
+        <div style={{ flex: 1, height: 6, background: 'var(--chrome-dim)', borderRadius: 3, position: 'relative' }}>
+          <div style={{ position: 'absolute', left: 0, top: 0, width: `${pct}%`, height: '100%', background: 'linear-gradient(90deg, var(--accent), var(--accent-secondary))', borderRadius: 3 }} />
+          <div style={{ position: 'absolute', top: -3, left: `calc(${pct}% - 5px)`, width: 10, height: 10, background: 'var(--text-primary)', border: '2px solid var(--surface-elevated)', borderRadius: '50%', boxShadow: 'var(--shadow-xs)' }} />
+        </div>
+        <span style={{ minWidth: 52 }}>${high.toFixed(2)}</span>
+      </div>
+    </div>
+  );
+}
+
 function ScoreTrendChart({ scoreHistory }) {
   const pts = (scoreHistory || []).slice(-20);
   if (pts.length < 3) return null;
@@ -180,6 +200,14 @@ export default function StockDetailClient({ ticker }) {
       />
 
       <StatsBar items={statItems} />
+
+      {/* Day range + 52-week range */}
+      {(cachedData?.dayLow != null || cachedData?.fiftyTwoWeekLow != null) && (
+        <div className={styles.rangeSection}>
+          <RangeBar label="Day Range" low={cachedData.dayLow} high={cachedData.dayHigh} current={cachedData.price} />
+          <RangeBar label="52-Week Range" low={cachedData.fiftyTwoWeekLow} high={cachedData.fiftyTwoWeekHigh} current={cachedData.price} />
+        </div>
+      )}
 
       {/* Market regime inline label */}
       <div className={styles.regimeRow}>

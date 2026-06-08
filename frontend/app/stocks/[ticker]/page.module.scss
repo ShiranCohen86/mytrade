@@ -48,6 +48,27 @@
   }
 }
 
+// ─── Range bars ──────────────────────────────────────────────────────────────
+
+.rangeSection {
+  display: flex;
+  gap: $space-6;
+  padding: $space-3 $space-6;
+  background: $surface-base;
+  border-bottom: 1px solid $chrome-dim;
+  flex-wrap: wrap;
+
+  & > * { flex: 1; min-width: 220px; }
+
+  @media (max-width: 640px) {
+    padding: $space-3 $space-4;
+    gap: $space-4;
+    flex-direction: column;
+
+    & > * { min-width: 0; }
+  }
+}
+
 // ─── Regime / meta row ───────────────────────────────────────────────────────
 
 .regimeRow {
