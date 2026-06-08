@@ -23,14 +23,14 @@ export default function SignupPage() {
   const { register, isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
 
-  if (!isLoading && isAuthenticated) return <Navigate to="/dashboard" replace />;
-
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  if (!isLoading && isAuthenticated) return <Navigate to="/dashboard" replace />;
 
   const strength = passwordStrength(password);
 

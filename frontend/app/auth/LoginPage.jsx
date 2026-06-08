@@ -12,14 +12,14 @@ export default function LoginPage() {
   const [searchParams] = useSearchParams();
   const from = location.state?.from || '/dashboard';
 
-  if (!isLoading && isAuthenticated) return <Navigate to="/dashboard" replace />;
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(
     searchParams.get('error') === 'google' ? 'Google sign-in failed. Please try again or use email.' : ''
   );
   const [loading, setLoading] = useState(false);
+
+  if (!isLoading && isAuthenticated) return <Navigate to="/dashboard" replace />;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
