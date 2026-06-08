@@ -63,15 +63,19 @@ router.get('/overview', adminAuth('logs.read'), requireIntelligenceRole, async (
   try {
     const baseSelect = 'ticker name sector analysis.expectationScore analysis.expectationLabel analysis.analyzedAt cachedData.price cachedData.analystTargetPrice cachedData.recommendationKey';
 
-    const [veryHigh, high, moderate, sectorBreakdown, lastDoc, totalTracked] = await Promise.all([
+    const [
+      veryHigh, high, moderate,
+      sectorBreakdown, lastDoc, totalTracked,
+      veryHighCount, highCount, moderateCount,
+    ] = await Promise.all([
       Stock.find({ 'analysis.expectationLabel': 'VERY_HIGH' })
-        .sort({ 'analysis.expectationScore': -1 }).limit(5).select(baseSelect).lean(),
+        .sort({ 'analysis.expectationScore': -1 }).limit(10).select(baseSelect).lean(),
       Stock.find({ 'analysis.expectationLabel': 'HIGH' })
-        .sort({ 'analysis.expectationScore': -1 }).limit(5).select(baseSelect).lean(),
+        .sort({ 'analysis.expectationScore': -1 }).limit(10).select(baseSelect).lean(),
       Stock.find({ 'analysis.expectationLabel': 'MODERATE' })
-        .sort({ 'analysis.expectationScore': -1 }).limit(5).select(baseSelect).lean(),
+        .sort({ 'analysis.expectationScore': -1 }).limit(10).select(baseSelect).lean(),
       Stock.aggregate([
-        { $match: { 'analysis.expectationScore': { $gt: 0 } } },
+        { $match: { 'analysis.expectationLabel': { $in: ['VERY_HIGH', 'HIGH', 'MODERATE'] } } },
         {
           $group: {
             _id: '$sector',
@@ -89,12 +93,16 @@ router.get('/overview', adminAuth('logs.read'), requireIntelligenceRole, async (
       Stock.findOne({ 'analysis.analyzedAt': { $exists: true } })
         .sort({ 'analysis.analyzedAt': -1 }).select('analysis.analyzedAt').lean(),
       Stock.countDocuments({ 'analysis.expectationScore': { $gt: 0 } }),
+      Stock.countDocuments({ 'analysis.expectationLabel': 'VERY_HIGH' }),
+      Stock.countDocuments({ 'analysis.expectationLabel': 'HIGH' }),
+      Stock.countDocuments({ 'analysis.expectationLabel': 'MODERATE' }),
     ]);
 
     res.json({
       veryHigh: veryHigh.map(mapStockToCard),
       high: high.map(mapStockToCard),
       moderate: moderate.map(mapStockToCard),
+      counts: { veryHigh: veryHighCount, high: highCount, moderate: moderateCount },
       sectorBreakdown: sectorBreakdown.map((s) => ({
         sector: s._id || 'Unknown',
         avgScore: Math.round(s.avgScore ?? 0),
@@ -117,7 +125,12 @@ router.get('/hot-stocks', adminAuth('logs.read'), requireIntelligenceRole, async
     const limit = Math.min(100, Math.max(10, parseInt(req.query.limit) || 25));
     const skip = (page - 1) * limit;
 
-    const filter = { 'analysis.expectationScore': { $gt: 0 } };
+    // Default: show VERY_HIGH, HIGH, MODERATE (exclude LOW noise).
+    // Explicit ?label=X overrides; ?all=true lifts the restriction entirely.
+    const filter = req.query.all === 'true'
+      ? { 'analysis.expectationScore': { $gt: 0 } }
+      : { 'analysis.expectationLabel': { $in: ['VERY_HIGH', 'HIGH', 'MODERATE'] } };
+
     if (req.query.label) filter['analysis.expectationLabel'] = req.query.label;
     if (req.query.sector) filter.sector = { $regex: req.query.sector, $options: 'i' };
     if (req.query.minScore) {
@@ -274,7 +287,7 @@ router.post('/refresh', adminAuth('audit.read'), requireIntelligenceRole, async 
 router.get('/export', adminAuth('logs.export'), requireIntelligenceRole, async (req, res) => {
   try {
     const format = req.query.format === 'csv' ? 'csv' : 'json';
-    const filter = { 'analysis.expectationScore': { $gt: 0 } };
+    const filter = { 'analysis.expectationLabel': { $in: ['VERY_HIGH', 'HIGH', 'MODERATE'] } };
     if (req.query.label) filter['analysis.expectationLabel'] = req.query.label;
 
     const items = await Stock.find(filter)

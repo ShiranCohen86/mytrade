@@ -236,6 +236,12 @@ async function start() {
       logger.error('Failed to load hot stock cron job', { err: cronErr.message });
     }
 
+    try {
+      require('./jobs/universeSync');
+    } catch (cronErr) {
+      logger.error('Failed to load universe sync cron job', { err: cronErr.message });
+    }
+
     server = app.listen(config.PORT, () => {
       logger.info(`Server running on port ${config.PORT}`, {
         storage: db.mode,

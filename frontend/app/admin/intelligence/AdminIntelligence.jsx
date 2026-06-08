@@ -257,13 +257,12 @@ function DetailPanel({ symbol, onClose }) {
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 
-const LABEL_FILTERS = ['', 'VERY_HIGH', 'HIGH', 'MODERATE', 'LOW'];
+const LABEL_FILTERS = ['', 'VERY_HIGH', 'HIGH', 'MODERATE'];
 const LABEL_FILTER_NAMES = {
-  '': 'All Levels',
-  VERY_HIGH: 'Very High',
-  HIGH: 'High',
-  MODERATE: 'Moderate',
-  LOW: 'Low',
+  '': 'All (≥ Moderate)',
+  VERY_HIGH: 'Very High only',
+  HIGH: 'High only',
+  MODERATE: 'Moderate only',
 };
 
 export default function AdminIntelligence() {
@@ -361,9 +360,9 @@ export default function AdminIntelligence() {
     }
   };
 
-  const veryHighCount = overview?.veryHigh?.length ?? 0;
-  const highCount = overview?.high?.length ?? 0;
-  const moderateCount = overview?.moderate?.length ?? 0;
+  const veryHighCount = overview?.counts?.veryHigh ?? 0;
+  const highCount = overview?.counts?.high ?? 0;
+  const moderateCount = overview?.counts?.moderate ?? 0;
 
   if (error && !loading) {
     return <div className={styles.error}>{error}</div>;
@@ -414,7 +413,7 @@ export default function AdminIntelligence() {
         <>
           {/* ── Stat strip ─────────────────────────────────────── */}
           <div className={styles.statGrid}>
-            <StatCard label="Stocks Tracked" value={overview?.totalTracked ?? 0} colorClass={styles.statBlue} />
+            <StatCard label="Universe Tracked" value={overview?.totalTracked ?? 0} sub="stocks analyzed" colorClass={styles.statBlue} />
             <StatCard label="Very High" value={veryHighCount} sub="exp score ≥ 76" colorClass={styles.statRed} />
             <StatCard label="High" value={highCount} sub="exp score 56–75" colorClass={styles.statOrange} />
             <StatCard label="Moderate" value={moderateCount} sub="exp score 34–55" colorClass={styles.statGreen} />
@@ -576,7 +575,7 @@ export default function AdminIntelligence() {
             <div className={styles.tableCard}>
               <div className={styles.tableHeader}>
                 <span className={styles.tableTitle}>
-                  All Scored Stocks
+                  High-Expectation Stocks
                   <span className={styles.tableCount}>{pagination.total}</span>
                 </span>
                 {tableLoading && <span className={styles.tableLoading}>Updating…</span>}
