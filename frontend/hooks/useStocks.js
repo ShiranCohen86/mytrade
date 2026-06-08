@@ -91,6 +91,15 @@ export function useStocks() {
     };
   }, []);
 
+  // Poll immediately when tab regains focus (prices may be stale after background)
+  useEffect(() => {
+    const handleVisible = () => {
+      if (document.visibilityState === 'visible') pollRef.current?.();
+    };
+    document.addEventListener('visibilitychange', handleVisible);
+    return () => document.removeEventListener('visibilitychange', handleVisible);
+  }, []);
+
   // React to browser-level online/offline events immediately
   useEffect(() => {
     const handleOffline = () => setIsConnected(false);
