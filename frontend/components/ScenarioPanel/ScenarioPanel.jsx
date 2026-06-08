@@ -32,7 +32,7 @@ export function ScenarioPanel({ scenarios, currentPrice, cachedData }) {
       </div>
 
       {items.map((item) => (
-        <div key={item.key} className={`${styles.row} ${item.colorClass}`}>
+        <div key={item.key} className={`${styles.row} ${item.colorClass}`} title={item.description || undefined}>
           <div className={styles.scenarioCell}>
             <span className={styles.icon}>{item.icon}</span>
             <span className={styles.scenarioLabel}>{item.label}</span>

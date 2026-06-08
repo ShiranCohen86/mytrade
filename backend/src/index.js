@@ -90,8 +90,15 @@ app.use('/auth/forgot-password', authLimiter);
 
 // Public market overview endpoint — must be registered BEFORE the stocks router
 // (stocks router has router.use(auth) which would block unauthenticated requests)
+let _overviewCache = null;
+let _overviewCacheAt = 0;
+const OVERVIEW_TTL_MS = 60 * 1000; // 1 minute — matches frontend poll interval
+
 app.get('/api/market/overview', async (_req, res) => {
   try {
+    if (_overviewCache && Date.now() - _overviewCacheAt < OVERVIEW_TTL_MS) {
+      return res.json(_overviewCache);
+    }
     const provider = require('./providers/ProviderFactory');
     const tickers = ['SPY', 'QQQ', 'DIA', 'VIX'];
     const quotes = await Promise.all(
@@ -104,9 +111,12 @@ app.get('/api/market/overview', async (_req, res) => {
         }
       })
     );
+    _overviewCache = quotes;
+    _overviewCacheAt = Date.now();
     res.json(quotes);
   } catch (err) {
     logger.error('GET /api/market/overview', { err: err.message });
+    if (_overviewCache) return res.json(_overviewCache); // serve stale on error
     res.status(500).json({ error: 'Failed to fetch market overview.' });
   }
 });

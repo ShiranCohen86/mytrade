@@ -105,7 +105,7 @@ export function StockRowDetail({
                 {data.percentMove > 0 ? '+' : ''}{data.percentMove?.toFixed(1)}%
               </span>
               {data.probability != null && (
-                <span className={styles.scenarioProb}>{(data.probability * 100).toFixed(0)}%</span>
+                <span className={styles.scenarioProb}>{data.probability}%</span>
               )}
             </div>
           ))}
