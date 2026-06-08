@@ -290,3 +290,163 @@
 .pos { color: $pos; }
 .neg { color: $neg; }
 .warn { color: $warn; }
+
+// ─── Quick Actions panel ──────────────────────────────────────────────────────
+
+.quickActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.qaGroup {
+  padding: $space-3 $space-4;
+  border-bottom: 1px solid $chrome-dim;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+
+  &:last-child { border-bottom: none; }
+}
+
+.qaLabel {
+  font-family: $font-ui;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $text-disabled;
+}
+
+.qaInfo {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  flex-wrap: wrap;
+}
+
+.qaInfoVal {
+  font-family: $font-data;
+  font-size: 13px;
+  font-weight: 600;
+  color: $text-primary;
+  font-variant-numeric: tabular-nums;
+}
+
+.qaPnl {
+  font-family: $font-data;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.qaPos { color: $pos; }
+.qaNeg { color: $neg; }
+
+.qaClear {
+  font-family: $font-ui;
+  font-size: 11px;
+  color: $text-disabled;
+  padding: 1px 6px;
+  border-radius: $radius-xs;
+  border: 1px solid $chrome-dim;
+  background: transparent;
+  cursor: pointer;
+  transition: color $motion-fast, border-color $motion-fast;
+  margin-left: auto;
+
+  &:hover { color: $neg; border-color: $neg; }
+}
+
+.qaForm {
+  display: flex;
+  gap: $space-2;
+  align-items: center;
+}
+
+.qaSelect {
+  height: 30px;
+  background: $surface-raised;
+  border: 1px solid $chrome-mid;
+  border-radius: $radius-sm;
+  color: $text-secondary;
+  font-family: $font-ui;
+  font-size: 12px;
+  padding: 0 $space-2;
+  cursor: pointer;
+}
+
+.qaInput {
+  flex: 1;
+  height: 30px;
+  background: $surface-raised;
+  border: 1px solid $chrome-mid;
+  border-radius: $radius-sm;
+  color: $text-primary;
+  font-family: $font-data;
+  font-size: 12px;
+  padding: 0 $space-2;
+  font-variant-numeric: tabular-nums;
+  min-width: 0;
+
+  &:focus {
+    outline: none;
+    border-color: $accent;
+    box-shadow: 0 0 0 2px $accent-faint;
+  }
+}
+
+.qaBtn {
+  height: 30px;
+  padding: 0 $space-3;
+  font-family: $font-ui;
+  font-size: 11px;
+  font-weight: 700;
+  color: $accent;
+  background: $accent-faint;
+  border: 1px solid $accent;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: background $motion-fast, box-shadow $motion-fast;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &:hover:not(:disabled) { background: $accent-glow; box-shadow: $shadow-glow; }
+  &:disabled { opacity: 0.4; pointer-events: none; }
+}
+
+.qaNoteWrap {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.qaTextarea {
+  width: 100%;
+  background: $surface-raised;
+  border: 1px solid $chrome-mid;
+  border-radius: $radius-sm;
+  color: $text-primary;
+  font-family: $font-ui;
+  font-size: 12px;
+  padding: $space-2;
+  resize: vertical;
+  min-height: 54px;
+  line-height: 1.5;
+
+  &:focus { outline: none; border-color: $accent; box-shadow: 0 0 0 2px $accent-faint; }
+  &::placeholder { color: $text-disabled; }
+}
+
+.qaNoteActions {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.qaCount {
+  font-family: $font-data;
+  font-size: 10px;
+  color: $text-disabled;
+  margin-right: auto;
+}

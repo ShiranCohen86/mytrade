@@ -1,5 +1,5 @@
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useStockAnalysis } from '@/hooks/useStockAnalysis';
 import { useStocks } from '@/hooks/useStocks';
@@ -82,9 +82,110 @@ function pctChange(historical, days) {
   return ((now - past) / past) * 100;
 }
 
+// ─── Quick Actions inline panel ───────────────────────────────────────────────
+
+function QuickActionsPanel({ ticker, portfolioEntry, priceAlert, note, currentPrice, onUpdateEntryPrice, onUpdateAlert, onUpdateNote }) {
+  const [entryInput, setEntryInput] = useState('');
+  const [alertInput, setAlertInput] = useState('');
+  const [alertDir, setAlertDir] = useState('above');
+  const [noteText, setNoteText] = useState(note?.text ?? '');
+  const [entryLoading, setEntryLoading] = useState(false);
+  const [alertLoading, setAlertLoading] = useState(false);
+  const [noteSaving, setNoteSaving] = useState(false);
+
+  const pnlPct = portfolioEntry && currentPrice
+    ? ((currentPrice - portfolioEntry.entryPrice) / portfolioEntry.entryPrice) * 100
+    : null;
+
+  return (
+    <div className={styles.quickActions}>
+      {/* Entry / P&L */}
+      <div className={styles.qaGroup}>
+        <span className={styles.qaLabel}>Entry / P&amp;L</span>
+        {portfolioEntry ? (
+          <div className={styles.qaInfo}>
+            <span className={styles.qaInfoVal}>@ {fmtPrice(portfolioEntry.entryPrice)}</span>
+            {pnlPct != null && (
+              <span className={`${styles.qaPnl} ${pnlPct >= 0 ? styles.qaPos : styles.qaNeg}`}>
+                {pnlPct >= 0 ? '+' : ''}{pnlPct.toFixed(2)}%
+              </span>
+            )}
+            <button className={styles.qaClear} onClick={() => onUpdateEntryPrice?.(ticker, null)} disabled={entryLoading}>clear</button>
+          </div>
+        ) : (
+          <form className={styles.qaForm} onSubmit={async (e) => {
+            e.preventDefault();
+            const p = parseFloat(entryInput);
+            if (!isFinite(p) || p <= 0) return;
+            setEntryLoading(true);
+            try { await onUpdateEntryPrice?.(ticker, p); setEntryInput(''); } finally { setEntryLoading(false); }
+          }}>
+            <input type="number" step="0.01" min="0.01" className={styles.qaInput} placeholder="Entry price" value={entryInput} onChange={(e) => setEntryInput(e.target.value)} disabled={entryLoading} />
+            <button type="submit" className={styles.qaBtn} disabled={entryLoading || !entryInput}>Set</button>
+          </form>
+        )}
+      </div>
+
+      {/* Price Alert */}
+      <div className={styles.qaGroup}>
+        <span className={styles.qaLabel}>Price Alert</span>
+        {priceAlert ? (
+          <div className={styles.qaInfo}>
+            <span className={styles.qaInfoVal}>{priceAlert.direction} {fmtPrice(priceAlert.targetPrice)}</span>
+            <button className={styles.qaClear} onClick={() => onUpdateAlert?.(ticker, null)} disabled={alertLoading}>clear</button>
+          </div>
+        ) : (
+          <form className={styles.qaForm} onSubmit={async (e) => {
+            e.preventDefault();
+            const p = parseFloat(alertInput);
+            if (!isFinite(p) || p <= 0) return;
+            setAlertLoading(true);
+            try { await onUpdateAlert?.(ticker, p, alertDir); setAlertInput(''); } finally { setAlertLoading(false); }
+          }}>
+            <select className={styles.qaSelect} value={alertDir} onChange={(e) => setAlertDir(e.target.value)} disabled={alertLoading}>
+              <option value="above">Above</option>
+              <option value="below">Below</option>
+            </select>
+            <input type="number" step="0.01" min="0.01" className={styles.qaInput} placeholder="Target" value={alertInput} onChange={(e) => setAlertInput(e.target.value)} disabled={alertLoading} />
+            <button type="submit" className={styles.qaBtn} disabled={alertLoading || !alertInput}>Set</button>
+          </form>
+        )}
+      </div>
+
+      {/* Notes */}
+      <div className={styles.qaGroup}>
+        <span className={styles.qaLabel}>Note</span>
+        <div className={styles.qaNoteWrap}>
+          <textarea
+            className={styles.qaTextarea}
+            value={noteText}
+            onChange={(e) => setNoteText(e.target.value)}
+            placeholder="Add a personal note…"
+            maxLength={1000}
+            rows={2}
+            disabled={noteSaving}
+          />
+          <div className={styles.qaNoteActions}>
+            <span className={styles.qaCount}>{noteText.length}/1000</span>
+            <button className={styles.qaBtn} onClick={async () => {
+              setNoteSaving(true);
+              try { await onUpdateNote?.(ticker, noteText.trim() || null); } finally { setNoteSaving(false); }
+            }} disabled={noteSaving}>Save</button>
+            {note?.text && (
+              <button className={styles.qaClear} onClick={() => { setNoteText(''); onUpdateNote?.(ticker, null); }} disabled={noteSaving}>Delete</button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 export default function StockDetailClient({ ticker }) {
   const { stock, isLoading, isRefreshing, error, refresh } = useStockAnalysis(ticker);
-  const { stocks: allStocks } = useStocks();
+  const { stocks: allStocks, portfolio, priceAlerts, notes, updateEntryPrice, updateAlert, updateNote } = useStocks();
 
   if (isLoading && !stock) {
     return (
@@ -110,6 +211,10 @@ export default function StockDetailClient({ ticker }) {
   const sectorPeers = allStocks
     .filter((s) => s.ticker !== ticker && s.sector === sector && s.sector && s.sector !== 'Unknown')
     .slice(0, 6);
+
+  const portfolioEntry = portfolio.find((p) => p.ticker === ticker) ?? null;
+  const priceAlert = priceAlerts.find((a) => a.ticker === ticker) ?? null;
+  const note = notes.find((n) => n.ticker === ticker) ?? null;
 
   const p7  = pctChange(hist, 7);
   const p30 = pctChange(hist, 30);
@@ -331,6 +436,18 @@ export default function StockDetailClient({ ticker }) {
               </div>
             </PanelCard>
           )}
+          <PanelCard title="Quick Actions">
+            <QuickActionsPanel
+              ticker={ticker}
+              portfolioEntry={portfolioEntry}
+              priceAlert={priceAlert}
+              note={note}
+              currentPrice={cachedData?.price}
+              onUpdateEntryPrice={updateEntryPrice}
+              onUpdateAlert={updateAlert}
+              onUpdateNote={updateNote}
+            />
+          </PanelCard>
         </div>
       </div>
     </div>
