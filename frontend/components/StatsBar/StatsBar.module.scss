@@ -10,11 +10,13 @@
   overflow-x: auto;
   flex-shrink: 0;
   gap: 0;
+  -webkit-overflow-scrolling: touch;
 
   scrollbar-width: none;
   &::-webkit-scrollbar { display: none; }
 
-  @media (max-width: 640px) { padding: 0 $space-4; }
+  @media (max-width: 640px) { padding: 0 $space-4; height: 44px; }
+  @media (max-width: 480px) { padding: 0 $space-3; height: 40px; }
 }
 
 .item {
@@ -52,4 +54,6 @@
   background: $chrome-mid;
   margin: 0 $space-4;
   flex-shrink: 0;
+
+  @media (max-width: 480px) { margin: 0 $space-3; }
 }

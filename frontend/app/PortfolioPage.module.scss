@@ -19,6 +19,18 @@
   border-bottom: 1px solid $chrome-dim;
   flex-shrink: 0;
   gap: $space-4;
+
+  @include below-sm {
+    padding: 0 $space-4;
+    height: 52px;
+    gap: $space-3;
+  }
+
+  @include below-xs {
+    padding: 0 $space-3;
+    height: 48px;
+    gap: $space-2;
+  }
 }
 
 .pageTitle {

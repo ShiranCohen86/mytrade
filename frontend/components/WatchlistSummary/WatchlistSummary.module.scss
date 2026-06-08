@@ -154,6 +154,20 @@
   .wrapper {
     padding: $space-4 $space-4;
     gap: $space-4;
+    position: relative;
+
+    // Fade hint on the right edge indicating more cards can be scrolled
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 40px;
+      background: linear-gradient(to right, transparent, $surface-base 85%);
+      pointer-events: none;
+      z-index: 1;
+    }
   }
 
   .grid {
@@ -164,6 +178,8 @@
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     gap: $space-2;
+    // Extra right padding so last card doesn't sit behind the fade
+    padding-right: $space-8;
     &::-webkit-scrollbar { display: none; }
   }
 

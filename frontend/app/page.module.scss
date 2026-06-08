@@ -46,6 +46,7 @@
   align-items: center;
   gap: $space-3;
   min-width: 0;
+  flex: 1;
 }
 
 .toolbarRight {
@@ -53,6 +54,22 @@
   align-items: center;
   gap: $space-2;
   flex-shrink: 0;
+
+  @media (max-width: 640px) {
+    flex-shrink: 1;
+    min-width: 0;
+  }
+}
+
+// ─── Responsive show/hide helpers ─────────────────────────────────────────────
+
+.desktopOnly {
+  @media (max-width: 640px) { display: none !important; }
+}
+
+.mobileOnly {
+  display: none !important;
+  @media (max-width: 640px) { display: inline-flex !important; }
 }
 
 .desktopActions {
@@ -71,6 +88,11 @@
   @media (max-width: 768px) {
     display: flex;
     align-items: center;
+
+    // analyzeBtn takes remaining space on mobile so it fills the row nicely
+    > .analyzeBtn {
+      flex: 1;
+    }
   }
 }
 

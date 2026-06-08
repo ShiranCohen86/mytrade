@@ -22,7 +22,12 @@
   flex-shrink: 0;
   gap: $space-4;
 
-  @include below-sm { padding: 0 $space-4; }
+  @include below-sm {
+    flex-wrap: wrap;
+    height: auto;
+    padding: $space-2 $space-4 $space-3;
+    gap: $space-2;
+  }
 }
 
 .pageTitle {
@@ -49,6 +54,15 @@
   align-items: center;
   gap: $space-1;
   margin-left: auto;
+
+  @include below-sm {
+    margin-left: 0;
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    &::-webkit-scrollbar { display: none; }
+  }
 }
 
 .sortPill {

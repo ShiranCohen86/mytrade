@@ -290,7 +290,7 @@ export default function DashboardPage() {
             )}
             {stocks.length > 0 && (
               <button
-                className={`${styles.toolBtn} ${styles.analyzeBtn} ${isAnalyzing ? styles.analyzeBtnActive : ''}`}
+                className={`${styles.toolBtn} ${styles.analyzeBtn} ${styles.desktopOnly} ${isAnalyzing ? styles.analyzeBtnActive : ''}`}
                 onClick={analyzeAll}
                 disabled={isAnalyzing}
                 title="Run full analysis on all stocks (A)"
@@ -306,9 +306,20 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Mobile-only row 2: overflow more menu */}
+        {/* Mobile-only row 2: analyze + more menu */}
         {stocks.length > 0 && (
           <div className={styles.mobileActionsRow}>
+            <button
+              className={`${styles.toolBtn} ${styles.analyzeBtn} ${styles.mobileOnly} ${isAnalyzing ? styles.analyzeBtnActive : ''}`}
+              onClick={analyzeAll}
+              disabled={isAnalyzing}
+            >
+              {isAnalyzing ? (
+                <><span className={styles.spinning}>⟳</span> Analyzing…</>
+              ) : (
+                '⟳ Analyze All'
+              )}
+            </button>
             <div ref={moreRef} className={styles.moreWrap}>
               <button
                 className={styles.toolBtn}

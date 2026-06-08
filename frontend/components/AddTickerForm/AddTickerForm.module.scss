@@ -195,3 +195,14 @@
   .input  { height: 40px; min-width: 100px; }
   .button { height: 40px; padding: 0 $space-4; }
 }
+
+@include below-xs {
+  .inputWrap { max-width: 160px; min-width: 80px; }
+  .input      { height: 38px; min-width: 80px; font-size: 12px; }
+  .button     { height: 38px; padding: 0 $space-3; font-size: 12px; }
+}
+
+@media (max-width: 360px) {
+  .inputWrap { max-width: 130px; }
+  .button     { padding: 0 $space-2; }
+}
