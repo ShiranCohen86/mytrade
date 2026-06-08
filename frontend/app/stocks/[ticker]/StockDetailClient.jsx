@@ -318,11 +318,17 @@ export default function StockDetailClient({ ticker }) {
       {/* Market regime inline label */}
       <div className={styles.regimeRow}>
         <MarketRegimeBadge regime={analysis.marketRegime} size="sm" />
-        {analysis.analyzedAt && (
-          <span className={styles.analyzedAt}>
-            Analyzed {new Date(analysis.analyzedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-          </span>
-        )}
+        {analysis.analyzedAt && (() => {
+          const ageDays = Math.floor((Date.now() - new Date(analysis.analyzedAt).getTime()) / 86_400_000);
+          const isStale = ageDays >= 7;
+          return (
+            <span className={`${styles.analyzedAt} ${isStale ? styles.analyzedAtStale : ''}`} title={isStale ? `Analysis is ${ageDays} days old — click Refresh to update` : undefined}>
+              {isStale && <span aria-hidden="true">⚠ </span>}
+              Analyzed {new Date(analysis.analyzedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+              {isStale && ` (${ageDays}d ago)`}
+            </span>
+          );
+        })()}
       </div>
 
       <div className={styles.detailGrid}>

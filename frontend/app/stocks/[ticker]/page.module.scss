@@ -93,6 +93,11 @@
   color: $text-disabled;
 }
 
+.analyzedAtStale {
+  color: $warn;
+  font-weight: 600;
+}
+
 // ─── 3-column detail grid ────────────────────────────────────────────────────
 
 .detailGrid {

@@ -136,6 +136,11 @@ function StockRowInner({
 
   const riskCls = scoreClass(analysis?.riskScore);
 
+  const analysisAgeDays = analysis?.analyzedAt
+    ? Math.floor((Date.now() - new Date(analysis.analyzedAt).getTime()) / 86_400_000)
+    : null;
+  const isStale = analysisAgeDays != null && analysisAgeDays >= 7;
+
   const handleKeyDown = (e) => {
     if (e.target !== e.currentTarget) return;
     if (e.key === 'Enter') navigate(`/stocks/${ticker}`);
@@ -240,7 +245,11 @@ function StockRowInner({
             <button
               className={`${styles.expandBtn} ${expanded ? styles.expandBtnOpen : ''}`}
               onClick={(e) => { e.stopPropagation(); setExpanded((v) => !v); }}
-              title={expanded ? 'Collapse' : 'Expand details'}
+              title={
+                isStale && !expanded
+                  ? `Analysis is ${analysisAgeDays}d old — expand to re-analyze`
+                  : expanded ? 'Collapse' : 'Expand details'
+              }
               aria-label={expanded ? 'Collapse row' : 'Expand row'}
             >
               ›
@@ -250,6 +259,9 @@ function StockRowInner({
                   title={[note?.text && 'Has note', priceAlert && 'Has price alert'].filter(Boolean).join(' · ')}
                   aria-hidden="true"
                 />
+              )}
+              {isStale && !expanded && !(note?.text || priceAlert) && (
+                <span className={styles.staleDot} title={`Analysis ${analysisAgeDays}d old`} aria-hidden="true" />
               )}
             </button>
           )}
