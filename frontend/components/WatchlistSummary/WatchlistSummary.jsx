@@ -28,7 +28,11 @@ export function WatchlistSummary({ stocks, portfolio = [] }) {
       return days >= 0 && days <= 7;
     }).length;
 
-    return { avgRisk, avgExp, sellNews, sectors, highRisk, earningsIn7, total: analyzed.length };
+    const bullish  = analyzed.filter((s) => s.analysis?.marketRegime === 'BULLISH').length;
+    const bearish  = analyzed.filter((s) => s.analysis?.marketRegime === 'BEARISH').length;
+    const volatile = analyzed.filter((s) => s.analysis?.marketRegime === 'VOLATILE').length;
+
+    return { avgRisk, avgExp, sellNews, sectors, highRisk, earningsIn7, total: analyzed.length, bullish, bearish, volatile };
   }, [stocks]);
 
   const pnlStats = useMemo(() => {
@@ -112,6 +116,41 @@ export function WatchlistSummary({ stocks, portfolio = [] }) {
             <span className={styles.label}>Sell-the-News</span>
             <span className={`${styles.value} ${styles.warn}`}>{stats.sellNews}</span>
             <span className={styles.sub}>at risk</span>
+          </div>
+        )}
+        {stats.total > 0 && (stats.bullish > 0 || stats.bearish > 0) && (
+          <div className={styles.card}>
+            <span className={styles.label}>Regime Mix</span>
+            <div className={styles.sentimentBar}>
+              {stats.bullish > 0 && (
+                <div
+                  className={styles.sentimentBull}
+                  style={{ width: `${(stats.bullish / stats.total) * 100}%` }}
+                  title={`${stats.bullish} Bullish`}
+                />
+              )}
+              {stats.volatile > 0 && (
+                <div
+                  className={styles.sentimentVol}
+                  style={{ width: `${(stats.volatile / stats.total) * 100}%` }}
+                  title={`${stats.volatile} Volatile`}
+                />
+              )}
+              {stats.bearish > 0 && (
+                <div
+                  className={styles.sentimentBear}
+                  style={{ width: `${(stats.bearish / stats.total) * 100}%` }}
+                  title={`${stats.bearish} Bearish`}
+                />
+              )}
+            </div>
+            <span className={styles.sub}>
+              {stats.bullish > 0 && <span className={styles.safe}>{stats.bullish} bull</span>}
+              {stats.bullish > 0 && (stats.volatile > 0 || stats.bearish > 0) && <span className={styles.muted}> · </span>}
+              {stats.volatile > 0 && <span className={styles.warn}>{stats.volatile} vol</span>}
+              {stats.volatile > 0 && stats.bearish > 0 && <span className={styles.muted}> · </span>}
+              {stats.bearish > 0 && <span className={styles.danger}>{stats.bearish} bear</span>}
+            </span>
           </div>
         )}
       </div>

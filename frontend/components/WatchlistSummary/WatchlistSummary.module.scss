@@ -135,6 +135,20 @@
   font-variant-numeric: tabular-nums;
 }
 
+.sentimentBar {
+  display: flex;
+  height: 6px;
+  border-radius: $radius-pill;
+  overflow: hidden;
+  width: 100%;
+  background: $chrome-dim;
+  margin: $space-2 0 $space-1;
+}
+
+.sentimentBull { background: $pos; transition: width $motion-base; }
+.sentimentVol  { background: $warn; transition: width $motion-base; }
+.sentimentBear { background: $neg; transition: width $motion-base; }
+
 @media (max-width: 640px) {
   .wrapper {
     padding: $space-4 $space-4;
