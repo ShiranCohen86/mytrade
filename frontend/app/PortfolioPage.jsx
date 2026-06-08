@@ -131,27 +131,36 @@ export default function PortfolioPage() {
       .map((entry) => {
         const stock = stocks.find((s) => s.ticker === entry.ticker);
         if (!stock?.cachedData?.historical?.length || !entry.entryPrice) return null;
-        return { entryPrice: entry.entryPrice, history: stock.cachedData.historical };
+        const cost = entry.entryPrice * (entry.shares ?? 1);
+        return { entryPrice: entry.entryPrice, cost, history: stock.cachedData.historical };
       })
       .filter(Boolean);
     if (!series.length) return [];
 
+    const totalCost = series.reduce((s, p) => s + p.cost, 0);
+    const useWeighted = series.every((p) => p.cost !== p.entryPrice); // shares are set on all positions
+
     const dateMap = new Map();
-    for (const { entryPrice, history } of series) {
+    for (const { entryPrice, cost, history } of series) {
+      const weight = useWeighted ? cost / totalCost : 1 / series.length;
       for (const { date, close } of history) {
         if (close == null || entryPrice <= 0) continue;
         const d = new Date(date).toISOString().split('T')[0];
-        if (!dateMap.has(d)) dateMap.set(d, []);
-        dateMap.get(d).push(((close / entryPrice) - 1) * 100);
+        if (!dateMap.has(d)) dateMap.set(d, { weightedSum: 0, totalWeight: 0 });
+        const entry = dateMap.get(d);
+        entry.weightedSum += ((close / entryPrice) - 1) * 100 * weight;
+        entry.totalWeight += weight;
       }
     }
-    const minCoverage = Math.max(1, Math.floor(series.length * 0.5));
+    const minCoverage = useWeighted ? 0.5 : Math.max(1, Math.floor(series.length * 0.5));
     return Array.from(dateMap.entries())
-      .filter(([, rs]) => rs.length >= minCoverage)
-      .map(([date, rs]) => ({ date, ret: +(rs.reduce((s, r) => s + r, 0) / rs.length).toFixed(2) }))
+      .filter(([, v]) => useWeighted ? v.totalWeight >= 0.5 : v.totalWeight * series.length >= minCoverage)
+      .map(([date, v]) => ({ date, ret: +(v.weightedSum / (useWeighted ? v.totalWeight : 1)).toFixed(2) }))
       .sort((a, b) => a.date.localeCompare(b.date))
       .slice(-60);
   }, [stocks, portfolio]);
+
+  const portfolioChartWeighted = portfolio.some((e) => e.shares != null);
 
   const [sortCol, setSortCol] = useState('pnlPct');
   const [sortDir, setSortDir] = useState('desc');
@@ -352,7 +361,7 @@ export default function PortfolioPage() {
         <div className={styles.chartSection}>
           <div className={styles.chartHeader}>
             <span className={styles.chartTitle}>Portfolio Performance</span>
-            <span className={styles.chartSubtitle}>Equal-weighted return vs. entry price · last {portfolioChartData.length}d</span>
+            <span className={styles.chartSubtitle}>{portfolioChartWeighted ? 'Share-weighted' : 'Equal-weighted'} return vs. entry price · last {portfolioChartData.length}d</span>
           </div>
           <div className={styles.chartWrap}>
             <ResponsiveContainer width="100%" height="100%">
