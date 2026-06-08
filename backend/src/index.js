@@ -63,9 +63,10 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 // Stricter limiter on expensive analysis endpoints
+// max = 30: covers a full 25-stock watchlist analyze-all with headroom (5 buffer)
 const analysisLimiter = rateLimit({
   windowMs: 60 * 1000,
-  max: 10,
+  max: 30,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Analysis rate limit reached. Please wait before refreshing again.' },
