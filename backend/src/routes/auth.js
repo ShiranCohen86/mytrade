@@ -267,7 +267,20 @@ router.get('/google/callback',
 // DELETE /auth/account
 router.delete('/account', authMiddleware, async (req, res) => {
   try {
+    const { Stock } = require('../db');
+    const user = await User.findById(req.user.id);
+    const watchlist = user?.watchlist || [];
+
     await User.findByIdAndDelete(req.user.id);
+
+    // Remove Stock documents for tickers no longer tracked by anyone
+    if (watchlist.length > 0) {
+      for (const ticker of watchlist) {
+        const remaining = await User.countDocuments({ watchlist: ticker });
+        if (remaining === 0) await Stock.deleteOne({ ticker });
+      }
+    }
+
     res.clearCookie(REFRESH_COOKIE, { path: '/auth/refresh' });
     res.json({ ok: true });
   } catch (err) {
