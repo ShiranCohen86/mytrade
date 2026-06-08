@@ -111,7 +111,7 @@ router.post('/stocks', async (req, res) => {
   }
 });
 
-// DELETE /api/stocks/:ticker — remove from watchlist AND delete cached Stock document
+// DELETE /api/stocks/:ticker — remove from watchlist; delete Stock doc only if no other user tracks it
 router.delete('/stocks/:ticker', async (req, res) => {
   try {
     const t = sanitizeTicker(req.params.ticker);
@@ -119,10 +119,9 @@ router.delete('/stocks/:ticker', async (req, res) => {
     if (!user.watchlist.includes(t)) {
       return res.status(404).json({ error: `${t} is not in your watchlist.` });
     }
-    await Promise.all([
-      User.updateOne({ _id: req.user.id }, { $pull: { watchlist: t } }),
-      Stock.deleteOne({ ticker: t }),
-    ]);
+    await User.updateOne({ _id: req.user.id }, { $pull: { watchlist: t } });
+    const otherUsers = await User.countDocuments({ _id: { $ne: req.user.id }, watchlist: t });
+    if (otherUsers === 0) await Stock.deleteOne({ ticker: t });
     res.status(204).send();
   } catch (err) {
     logger.error('DELETE /stocks/:ticker', { err: err.message });
