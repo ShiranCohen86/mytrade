@@ -58,7 +58,8 @@ function sectorScore(sector) {
 
 function earningsProximityScore(earningsDate) {
   if (!earningsDate) return 0;
-  const daysUntil = Math.max(0, (new Date(earningsDate) - Date.now()) / (1000 * 60 * 60 * 24));
+  const daysUntil = (new Date(earningsDate) - Date.now()) / (1000 * 60 * 60 * 24);
+  if (daysUntil < 0) return 0; // past earnings date — proximity risk is gone
   if (daysUntil <= 7) return 25;
   if (daysUntil <= 14) return 20;
   if (daysUntil <= 30) return 12;
