@@ -56,6 +56,7 @@ export default function DashboardPage() {
   const [riskFilter, setRiskFilter] = useState(null);
   const [earningsFilter, setEarningsFilter] = useState(null);
   const [staleFilter, setStaleFilter] = useState(false);
+  const [expectFilter, setExpectFilter] = useState(null); // 'high' | 'low' | null
   const [groupBySector, setGroupBySector] = useState(false);
   const importRef = useRef(null);
 
@@ -111,11 +112,17 @@ export default function DashboardPage() {
       const ageDays = Math.floor((Date.now() - new Date(s.analysis.analyzedAt).getTime()) / 86_400_000);
       return ageDays >= 7;
     });
+    if (expectFilter) result = result.filter((s) => {
+      const sc = s.analysis?.expectationScore;
+      if (sc == null) return false;
+      if (expectFilter === 'high') return sc >= 56;
+      return sc < 34;
+    });
     return result;
-  }, [sortedStocks, sectorFilter, riskFilter, earningsFilter, staleFilter]);
+  }, [sortedStocks, sectorFilter, riskFilter, earningsFilter, staleFilter, expectFilter]);
 
-  const hasActiveFilters = sectorFilter !== null || riskFilter !== null || earningsFilter !== null || staleFilter;
-  const clearFilters = useCallback(() => { setSectorFilter(null); setRiskFilter(null); setEarningsFilter(null); setStaleFilter(false); }, []);
+  const hasActiveFilters = sectorFilter !== null || riskFilter !== null || earningsFilter !== null || staleFilter || expectFilter !== null;
+  const clearFilters = useCallback(() => { setSectorFilter(null); setRiskFilter(null); setEarningsFilter(null); setStaleFilter(false); setExpectFilter(null); }, []);
 
   // Toast when analysis finishes
   useEffect(() => {
@@ -431,6 +438,21 @@ export default function DashboardPage() {
                 title="Show stocks with analysis older than 7 days"
               >
                 ⚠ Needs Update
+              </button>
+              <span className={styles.filterDivider} aria-hidden="true" />
+              <button
+                className={`${styles.filterPill} ${styles.filterPillHighExpect} ${expectFilter === 'high' ? styles.filterPillActive : ''}`}
+                onClick={() => setExpectFilter(expectFilter === 'high' ? null : 'high')}
+                title="Expectation score ≥ 56"
+              >
+                ↑ High Expect
+              </button>
+              <button
+                className={`${styles.filterPill} ${styles.filterPillLowExpect} ${expectFilter === 'low' ? styles.filterPillActive : ''}`}
+                onClick={() => setExpectFilter(expectFilter === 'low' ? null : 'low')}
+                title="Expectation score &lt; 34"
+              >
+                ↓ Low Expect
               </button>
               {sectors.length > 1 && <span className={styles.filterDivider} aria-hidden="true" />}
               {sectors.length > 1 && sectors.map((s) => (
