@@ -28,11 +28,11 @@ function ChartTooltip({ active, payload, label }) {
 
 function SectorTooltip({ active, payload }) {
   if (!active || !payload?.length) return null;
-  const { name, value } = payload[0].payload;
+  const { name, count } = payload[0].payload;
   return (
     <div style={{ background: 'var(--surface-elevated)', border: '1px solid var(--chrome-mid)', borderRadius: 8, padding: '8px 12px', fontSize: 12, boxShadow: '0 4px 16px rgba(0,0,0,0.3)' }}>
       <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: 2 }}>{name}</strong>
-      <span style={{ color: 'var(--text-secondary)' }}>{value} position{value !== 1 ? 's' : ''}</span>
+      <span style={{ color: 'var(--text-secondary)' }}>{count} position{count !== 1 ? 's' : ''}</span>
     </div>
   );
 }
@@ -109,10 +109,13 @@ export default function PortfolioPage() {
       const weight = sectorValueWeighted && r.shares != null && r.currentPrice != null
         ? r.shares * r.currentPrice
         : 1;
-      map.set(key, (map.get(key) || 0) + weight);
+      if (!map.has(key)) map.set(key, { weight: 0, count: 0 });
+      const entry = map.get(key);
+      entry.weight += weight;
+      entry.count += 1;
     }
     return Array.from(map.entries())
-      .map(([name, value]) => ({ name, value }))
+      .map(([name, { weight, count }]) => ({ name, value: weight, count }))
       .sort((a, b) => b.value - a.value);
   }, [rows, sectorValueWeighted]);
 
@@ -340,13 +343,18 @@ export default function PortfolioPage() {
                 </ResponsiveContainer>
               </div>
               <div className={styles.donutLegend}>
-                {sectorData.map((s, i) => (
-                  <div key={s.name} className={styles.legendItem}>
-                    <span className={styles.legendDot} style={{ background: SECTOR_COLORS[i % SECTOR_COLORS.length] }} />
-                    <span className={styles.legendName}>{s.name}</span>
-                    <span className={styles.legendCount}>{s.value}</span>
-                  </div>
-                ))}
+                {(() => {
+                  const total = sectorData.reduce((s, d) => s + d.value, 0);
+                  return sectorData.map((s, i) => (
+                    <div key={s.name} className={styles.legendItem}>
+                      <span className={styles.legendDot} style={{ background: SECTOR_COLORS[i % SECTOR_COLORS.length] }} />
+                      <span className={styles.legendName}>{s.name}</span>
+                      <span className={styles.legendCount}>
+                        {total > 0 ? `${((s.value / total) * 100).toFixed(0)}%` : `${s.count}`}
+                      </span>
+                    </div>
+                  ));
+                })()}
               </div>
             </div>
           </div>

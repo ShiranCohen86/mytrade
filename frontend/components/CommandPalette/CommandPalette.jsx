@@ -329,7 +329,7 @@ export function CommandPalette() {
                     <button
                       key={r.ticker}
                       className={`${styles.item} ${highlighted === idx ? styles.itemActive : ''}`}
-                      onClick={() => execute({ path: `/stocks/${r.ticker}` })}
+                      onClick={() => execute(allItems[idx])}
                       onMouseEnter={() => setHighlighted(idx)}
                     >
                       <span className={styles.itemTicker}>{r.ticker}</span>

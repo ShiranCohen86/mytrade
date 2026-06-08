@@ -387,11 +387,15 @@ export default function StockDetailClient({ ticker }) {
                       {employees >= 1000 ? `${(employees / 1000).toFixed(0)}k employees` : `${employees} employees`}
                     </span>
                   )}
-                  {website && (
-                    <a href={website} target="_blank" rel="noopener noreferrer" className={styles.aboutLink}>
-                      {new URL(website).hostname.replace('www.', '')} ↗
-                    </a>
-                  )}
+                  {website && (() => {
+                    let displayHost = website;
+                    try { displayHost = new URL(website).hostname.replace('www.', ''); } catch { /* use raw value */ }
+                    return (
+                      <a href={website} target="_blank" rel="noopener noreferrer" className={styles.aboutLink}>
+                        {displayHost} ↗
+                      </a>
+                    );
+                  })()}
                 </div>
               </div>
             </PanelCard>
