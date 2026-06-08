@@ -37,6 +37,7 @@ function safeUserResponse(user) {
     displayName: user.displayName,
     avatar: user.avatar,
     onboardingDone: user.onboardingDone,
+    isGoogleAccount: Boolean(user.googleId),
     createdAt: user.createdAt,
   };
 }

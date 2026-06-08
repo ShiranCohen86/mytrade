@@ -35,7 +35,7 @@ export default function SettingsPage() {
   const [deleteInput, setDeleteInput] = useState('');
   const [deleting, setDeleting] = useState(false);
 
-  const isGoogle = Boolean(user?.googleId);
+  const isGoogle = Boolean(user?.isGoogleAccount);
 
   const handleProfileSave = async (e) => {
     e.preventDefault();

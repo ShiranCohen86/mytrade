@@ -1,6 +1,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { getAnalysis, refreshStock, getQuote } from '@/lib/apiClient';
+import { isMarketActive } from '@/lib/marketHours';
 
 export function useStockAnalysis(ticker) {
   const [stock, setStock] = useState(null);
@@ -30,11 +31,12 @@ export function useStockAnalysis(ticker) {
     return () => controller.abort();
   }, [ticker]);
 
-  // B4: Live price polling — updates price/change only, every 5 seconds
+  // B4: Live price polling — updates price/change only, every 10 seconds during market hours
   useEffect(() => {
     if (!ticker) return;
     const interval = setInterval(async () => {
       if (document.visibilityState === 'hidden') return;
+      if (!isMarketActive()) return;
       try {
         const q = await getQuote(ticker);
         setStock((prev) =>
@@ -43,7 +45,7 @@ export function useStockAnalysis(ticker) {
             : prev
         );
       } catch { /* silent — polling failures don't need to surface */ }
-    }, 5000);
+    }, 10_000);
     return () => clearInterval(interval);
   }, [ticker]);
 
