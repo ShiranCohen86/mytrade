@@ -127,7 +127,7 @@ export function useStocks() {
     }
   }, []);
 
-  // analyzeAll uses Promise.allSettled so one failure doesn't cancel the rest.
+  // analyzeAll processes in batches of 5 to avoid overwhelming the backend.
   // Uses stocksRef so this callback is stable and not recreated on every price poll.
   const analyzeAll = useCallback(async () => {
     if (stocksRef.current.length === 0) return;
@@ -136,34 +136,38 @@ export function useStocks() {
     setAnalysisErrors(new Map());
 
     const tickersToRefresh = stocksRef.current.map((s) => s.ticker);
-    // B9: mark all as in-progress
     setAnalyzingTickers(new Set(tickersToRefresh));
 
+    const BATCH = 5;
+    const allResults = [];
+
     try {
-      const results = await Promise.allSettled(
-        tickersToRefresh.map(async (ticker) => {
-          try {
-            return await refreshStock(ticker);
-          } finally {
-            // B9: remove from in-progress set as each one finishes
-            setAnalyzingTickers((prev) => {
-              const next = new Set(prev);
-              next.delete(ticker);
-              return next;
-            });
-          }
-        })
-      );
+      for (let i = 0; i < tickersToRefresh.length; i += BATCH) {
+        const batch = tickersToRefresh.slice(i, i + BATCH);
+        const batchResults = await Promise.allSettled(
+          batch.map(async (ticker) => {
+            try {
+              return await refreshStock(ticker);
+            } finally {
+              setAnalyzingTickers((prev) => {
+                const next = new Set(prev);
+                next.delete(ticker);
+                return next;
+              });
+            }
+          })
+        );
+        allResults.push(...batchResults.map((r, j) => ({ result: r, ticker: batch[j] })));
+      }
 
       const updated = [];
       const newErrors = new Map();
 
-      results.forEach((r, i) => {
+      allResults.forEach(({ result: r, ticker }) => {
         if (r.status === 'fulfilled') {
           updated.push(r.value);
         } else {
-          // B10: store per-ticker error
-          newErrors.set(tickersToRefresh[i], r.reason?.message || 'Analysis failed');
+          newErrors.set(ticker, r.reason?.message || 'Analysis failed');
         }
       });
 
