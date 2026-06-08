@@ -86,13 +86,14 @@
   display: flex;
   flex-direction: column;
   gap: $space-1;
-  min-width: 130px;
+  min-width: 0;
   padding: $space-4 $space-5;
   background: $surface-raised;
   border: 1px solid $chrome-dim;
   border-radius: $radius-xl;
   box-shadow: $shadow-xs;
-  flex: 1;
+  flex: 1 1 130px;
+  overflow: hidden;
   transition: box-shadow $motion-fast, transform $motion-fast;
 
   &:hover {
@@ -112,12 +113,15 @@
 
 .summaryValue {
   font-family: $font-data;
-  font-size: 26px;
+  font-size: clamp(15px, 4vw, 26px);
   font-weight: 700;
   color: $text-primary;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
   line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .pos { color: $pos; }
@@ -143,8 +147,9 @@
   border: 1px solid $chrome-dim;
   border-radius: $radius-xl;
   box-shadow: $shadow-xs;
-  flex: 1;
-  min-width: 260px;
+  flex: 1 1 260px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .insightTitle {
@@ -481,15 +486,21 @@
   }
 
   .summaryCard {
-    min-width: 110px;
+    flex-basis: 110px;
     padding: $space-3 $space-4;
   }
-
-  .summaryValue { font-size: 22px; }
 }
 
 @include below-xs {
-  .summaryCard { min-width: 90px; }
+  .summary {
+    padding: $space-3 $space-3;
+    gap: $space-2;
+  }
+
+  .summaryCard {
+    flex-basis: 90px;
+    padding: $space-2 $space-3;
+  }
 }
 
 @include below-sm {
