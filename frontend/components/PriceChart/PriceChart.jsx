@@ -159,7 +159,7 @@ function RsiLine({ points, width: _w, height: _h }) {
   return <g>{segments}</g>;
 }
 
-export function PriceChart({ historical, ticker, entryPrice = null, alertPrice = null, alertDirection = null }) {
+export function PriceChart({ historical, ticker, entryPrice = null, alertPrice = null, alertDirection = null, fiftyTwoWeekHigh = null, fiftyTwoWeekLow = null }) {
   const [period, setPeriod] = useState('3M');
   const [mode, setMode] = useState('area');
   const [showSma50, setShowSma50] = useState(false);
@@ -203,6 +203,7 @@ export function PriceChart({ historical, ticker, entryPrice = null, alertPrice =
     ...prices,
     ...(entryPrice != null ? [entryPrice] : []),
     ...(alertPrice != null ? [alertPrice] : []),
+    // Don't include 52w high/low in domain — they can be far out of range
   ];
   const minP = Math.min(...allPricePoints);
   const maxP = Math.max(...allPricePoints);
@@ -386,6 +387,26 @@ export function PriceChart({ historical, ticker, entryPrice = null, alertPrice =
                 fill: 'var(--accent)',
                 fontFamily: 'Inter, sans-serif',
               }}
+            />
+          )}
+          {fiftyTwoWeekHigh != null && fiftyTwoWeekHigh <= maxP * 1.15 && fiftyTwoWeekHigh >= minP * 0.85 && (
+            <ReferenceLine
+              yAxisId="price"
+              y={fiftyTwoWeekHigh}
+              stroke="var(--text-disabled)"
+              strokeWidth={0.75}
+              strokeDasharray="2 4"
+              label={{ value: `52w H $${fiftyTwoWeekHigh.toFixed(0)}`, position: 'insideTopRight', fontSize: 9, fill: 'var(--text-disabled)', fontFamily: 'Inter, sans-serif' }}
+            />
+          )}
+          {fiftyTwoWeekLow != null && fiftyTwoWeekLow >= minP * 0.85 && fiftyTwoWeekLow <= maxP * 1.15 && (
+            <ReferenceLine
+              yAxisId="price"
+              y={fiftyTwoWeekLow}
+              stroke="var(--text-disabled)"
+              strokeWidth={0.75}
+              strokeDasharray="2 4"
+              label={{ value: `52w L $${fiftyTwoWeekLow.toFixed(0)}`, position: 'insideBottomRight', fontSize: 9, fill: 'var(--text-disabled)', fontFamily: 'Inter, sans-serif' }}
             />
           )}
         </ComposedChart>

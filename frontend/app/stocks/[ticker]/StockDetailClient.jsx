@@ -370,6 +370,8 @@ export default function StockDetailClient({ ticker }) {
                 entryPrice={portfolioEntry?.entryPrice ?? null}
                 alertPrice={priceAlert?.targetPrice ?? null}
                 alertDirection={priceAlert?.direction ?? null}
+                fiftyTwoWeekHigh={cachedData?.fiftyTwoWeekHigh ?? null}
+                fiftyTwoWeekLow={cachedData?.fiftyTwoWeekLow ?? null}
               />
           </PanelCard>
           {description && (
