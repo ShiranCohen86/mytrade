@@ -186,6 +186,13 @@ export default function PortfolioPage() {
     return priced.reduce((s, r) => s + r.cachedData.changePercent, 0) / priced.length;
   }, [rows]);
 
+  // Today's dollar P&L = sum of (change$ * shares) for all positions with shares
+  const portfolioTodayDollar = useMemo(() => {
+    const withShares = rows.filter((r) => r.shares != null && r.cachedData?.change != null);
+    if (!withShares.length) return null;
+    return withShares.reduce((s, r) => s + r.cachedData.change * r.shares, 0);
+  }, [rows]);
+
   const handleSort = useCallback((col) => {
     setSortCol((prev) => {
       if (prev === col) { setSortDir((d) => d === 'desc' ? 'asc' : 'desc'); return col; }
@@ -283,6 +290,14 @@ export default function PortfolioPage() {
               <span className={styles.summaryLabel}>Today (avg)</span>
               <span className={`${styles.summaryValue} ${portfolioTodayChange >= 0 ? styles.pos : styles.neg}`}>
                 {portfolioTodayChange >= 0 ? '+' : ''}{portfolioTodayChange.toFixed(2)}%
+              </span>
+            </div>
+          )}
+          {portfolioTodayDollar != null && (
+            <div className={styles.summaryCard}>
+              <span className={styles.summaryLabel}>Today ($)</span>
+              <span className={`${styles.summaryValue} ${portfolioTodayDollar >= 0 ? styles.pos : styles.neg}`}>
+                {portfolioTodayDollar >= 0 ? '+' : ''}{fmtPrice(Math.abs(portfolioTodayDollar))}
               </span>
             </div>
           )}
