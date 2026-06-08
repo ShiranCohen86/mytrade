@@ -161,8 +161,9 @@ export default function DashboardPage() {
   }, [add, toast]);
 
   const exportCSV = useCallback(() => {
+    const target = hasActiveFilters ? filteredStocks : stocks;
     const headers = ['Ticker', 'Name', 'Sector', 'Price', 'Change%', 'Risk Score', 'Risk Label', 'Expectation Score', 'Expectation Label', 'Market Regime', 'Earnings Date', 'Analyzed At'];
-    const rows = stocks.map((s) => [
+    const rows = target.map((s) => [
       s.ticker,
       `"${(s.name || '').replace(/"/g, '""')}"`,
       `"${(s.sector || '').replace(/"/g, '""')}"`,
@@ -184,8 +185,8 @@ export default function DashboardPage() {
     a.download = `mytrade-watchlist-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success(`Exported ${stocks.length} stock${stocks.length !== 1 ? 's' : ''} to CSV.`);
-  }, [stocks, toast]);
+    toast.success(`Exported ${target.length} stock${target.length !== 1 ? 's' : ''} to CSV.`);
+  }, [stocks, filteredStocks, hasActiveFilters, toast]);
 
   return (
     <div className={styles.page}>

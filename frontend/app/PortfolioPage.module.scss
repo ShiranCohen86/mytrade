@@ -216,6 +216,32 @@
   text-transform: uppercase;
 }
 
+.winLossRow {
+  display: flex;
+  align-items: baseline;
+  gap: $space-2;
+}
+
+.winLossNum {
+  font-family: $font-data;
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.winLossSep {
+  font-family: $font-data;
+  font-size: 24px;
+  font-weight: 400;
+  color: $text-disabled;
+  line-height: 1;
+}
+
+.winLossZero {
+  color: $text-disabled;
+}
+
 .warn { color: $warn; }
 
 // ─── Table ────────────────────────────────────────────────────────────────────

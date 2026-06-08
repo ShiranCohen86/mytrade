@@ -89,6 +89,14 @@ export default function PortfolioPage() {
     return analyzed.reduce((s, r) => s + r.riskScore, 0) / analyzed.length;
   }, [rows]);
 
+  const winLoss = useMemo(() => {
+    const priced = rows.filter((r) => r.pnlAbs != null);
+    if (!priced.length) return null;
+    const wins = priced.filter((r) => r.pnlAbs >= 0).length;
+    const losses = priced.length - wins;
+    return { wins, losses, total: priced.length };
+  }, [rows]);
+
   const exportCSV = useCallback(() => {
     const headers = ['Ticker', 'Name', 'Sector', 'Entry Price', 'Current Price', 'P&L $', 'Return %', 'Risk Score', 'Expectation Score'];
     const csvRows = rows.map((r) => [
@@ -197,6 +205,21 @@ export default function PortfolioPage() {
               </span>
               <span className={`${styles.insightSubLabel} ${avgRisk >= 70 ? styles.neg : avgRisk >= 40 ? styles.warn : styles.pos}`}>
                 {avgRisk >= 70 ? 'HIGH RISK' : avgRisk >= 40 ? 'MEDIUM RISK' : 'LOW RISK'}
+              </span>
+            </div>
+          )}
+
+          {/* Win / loss count */}
+          {winLoss && (
+            <div className={styles.insightCard}>
+              <span className={styles.insightTitle}>Positions</span>
+              <div className={styles.winLossRow}>
+                <span className={`${styles.winLossNum} ${styles.pos}`}>+{winLoss.wins}</span>
+                <span className={styles.winLossSep}>/</span>
+                <span className={`${styles.winLossNum} ${winLoss.losses > 0 ? styles.neg : styles.winLossZero}`}>−{winLoss.losses}</span>
+              </div>
+              <span className={styles.insightSubLabel} style={{ color: 'var(--text-disabled)' }}>
+                {winLoss.wins} profitable · {winLoss.losses} at loss
               </span>
             </div>
           )}
