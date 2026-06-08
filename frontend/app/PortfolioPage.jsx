@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useStocks } from '@/hooks/useStocks';
 import { fmtPrice } from '@/lib/format';
@@ -53,12 +53,38 @@ export default function PortfolioPage() {
     return { totalCost, totalValue, totalPnlAbs, totalPnlPct, count: withPrice.length };
   }, [rows]);
 
+  const exportCSV = useCallback(() => {
+    const headers = ['Ticker', 'Name', 'Sector', 'Entry Price', 'Current Price', 'P&L $', 'Return %', 'Risk Score', 'Expectation Score'];
+    const csvRows = rows.map((r) => [
+      r.ticker,
+      `"${(r.name || '').replace(/"/g, '""')}"`,
+      `"${(r.sector || '').replace(/"/g, '""')}"`,
+      r.entryPrice?.toFixed(2) ?? '',
+      r.currentPrice?.toFixed(2) ?? '',
+      r.pnlAbs?.toFixed(2) ?? '',
+      r.pnlPct?.toFixed(2) ?? '',
+      r.riskScore?.toFixed(0) ?? '',
+      r.expectationScore?.toFixed(0) ?? '',
+    ]);
+    const csv = [headers.join(','), ...csvRows.map((r) => r.join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `mytrade-portfolio-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [rows]);
+
   return (
     <div className={styles.page}>
       <div className={styles.toolbar}>
         <span className={styles.pageTitle}>Portfolio</span>
         {rows.length > 0 && (
-          <span className={styles.count}>{rows.length} position{rows.length !== 1 ? 's' : ''}</span>
+          <>
+            <span className={styles.count}>{rows.length} position{rows.length !== 1 ? 's' : ''}</span>
+            <button className={styles.exportBtn} onClick={exportCSV} title="Export to CSV">↓ CSV</button>
+          </>
         )}
       </div>
 
