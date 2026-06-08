@@ -139,6 +139,9 @@ export const deleteNote = (ticker) =>
 export const getMarketOverview = () =>
   request(`${EXPRESS}/api/market/overview`);
 
+export const getMarketMovers = () =>
+  request(`${EXPRESS}/api/market/movers`);
+
 // Auth endpoints
 export const authRegister = (email, password, displayName) =>
   request(`${EXPRESS}/auth/register`, {

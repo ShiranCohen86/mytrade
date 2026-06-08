@@ -111,6 +111,43 @@ app.get('/api/market/overview', async (_req, res) => {
   }
 });
 
+// Public top-movers endpoint — cached server-side for 5 minutes to limit Yahoo rate load
+let _moversCache = null;
+let _moversCacheAt = 0;
+const MOVERS_TTL_MS = 5 * 60 * 1000;
+
+app.get('/api/market/movers', async (_req, res) => {
+  try {
+    if (_moversCache && Date.now() - _moversCacheAt < MOVERS_TTL_MS) {
+      return res.json(_moversCache);
+    }
+    const { default: yf } = await import('yahoo-finance2');
+    const [gainers, losers] = await Promise.allSettled([
+      yf.dailyGainers({ count: 5, region: 'US' }),
+      yf.dailyLosers({ count: 5, region: 'US' }),
+    ]);
+    const pick = (r) => (r.status === 'fulfilled' ? (r.value.quotes || []) : []);
+    const fmt = (q) => ({
+      ticker: q.symbol,
+      name: q.shortName || q.longName || q.symbol,
+      price: q.regularMarketPrice ?? null,
+      change: q.regularMarketChange ?? null,
+      changePercent: q.regularMarketChangePercent ?? null,
+    });
+    const payload = {
+      gainers: pick(gainers).slice(0, 5).map(fmt),
+      losers: pick(losers).slice(0, 5).map(fmt),
+    };
+    _moversCache = payload;
+    _moversCacheAt = Date.now();
+    res.json(payload);
+  } catch (err) {
+    logger.error('GET /api/market/movers', { err: err.message });
+    if (_moversCache) return res.json(_moversCache); // serve stale on error
+    res.status(500).json({ error: 'Failed to fetch market movers.' });
+  }
+});
+
 // Routes
 app.use('/auth', require('./routes/auth'));
 app.use('/api', require('./routes/stocks'));
