@@ -32,8 +32,9 @@ export function WatchlistSummary({ stocks, portfolio = [] }) {
     const bearish  = analyzed.filter((s) => s.analysis?.marketRegime === 'BEARISH').length;
     const volatile = analyzed.filter((s) => s.analysis?.marketRegime === 'VOLATILE').length;
     const neutral  = analyzed.filter((s) => s.analysis?.marketRegime === 'NEUTRAL').length;
+    const regimeTotal = bullish + bearish + volatile + neutral;
 
-    return { avgRisk, avgExp, sellNews, sectors, highRisk, earningsIn7, total: analyzed.length, bullish, bearish, volatile, neutral };
+    return { avgRisk, avgExp, sellNews, sectors, highRisk, earningsIn7, total: analyzed.length, bullish, bearish, volatile, neutral, regimeTotal };
   }, [stocks]);
 
   const pnlStats = useMemo(() => {
@@ -137,35 +138,35 @@ export function WatchlistSummary({ stocks, portfolio = [] }) {
             <span className={styles.sub}>at risk</span>
           </div>
         )}
-        {stats.total > 0 && (stats.bullish > 0 || stats.bearish > 0 || stats.volatile > 0 || stats.neutral > 0) && (
+        {stats.regimeTotal > 0 && (
           <div className={styles.card}>
             <span className={styles.label}>Regime Mix</span>
             <div className={styles.sentimentBar}>
               {stats.bullish > 0 && (
                 <div
                   className={styles.sentimentBull}
-                  style={{ width: `${(stats.bullish / stats.total) * 100}%` }}
+                  style={{ width: `${(stats.bullish / stats.regimeTotal) * 100}%` }}
                   title={`${stats.bullish} Bullish`}
                 />
               )}
               {stats.volatile > 0 && (
                 <div
                   className={styles.sentimentVol}
-                  style={{ width: `${(stats.volatile / stats.total) * 100}%` }}
+                  style={{ width: `${(stats.volatile / stats.regimeTotal) * 100}%` }}
                   title={`${stats.volatile} Volatile`}
                 />
               )}
               {stats.neutral > 0 && (
                 <div
                   className={styles.sentimentNeutral}
-                  style={{ width: `${(stats.neutral / stats.total) * 100}%` }}
+                  style={{ width: `${(stats.neutral / stats.regimeTotal) * 100}%` }}
                   title={`${stats.neutral} Neutral`}
                 />
               )}
               {stats.bearish > 0 && (
                 <div
                   className={styles.sentimentBear}
-                  style={{ width: `${(stats.bearish / stats.total) * 100}%` }}
+                  style={{ width: `${(stats.bearish / stats.regimeTotal) * 100}%` }}
                   title={`${stats.bearish} Bearish`}
                 />
               )}
