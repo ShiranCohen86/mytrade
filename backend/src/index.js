@@ -180,6 +180,7 @@ app.use('/admin/audit', adminLimiter, require('./routes/admin/audit'));
 app.use('/admin/analytics', adminLimiter, require('./routes/admin/analytics'));
 app.use('/admin/watchlists', adminLimiter, require('./routes/admin/watchlist'));
 app.use('/admin/support', adminLimiter, require('./routes/admin/support'));
+app.use('/admin/intelligence', adminLimiter, require('./routes/admin/intelligence'));
 
 app.get('/health', async (_req, res) => {
   let dbOk = true;
@@ -227,6 +228,12 @@ async function start() {
       require('./jobs/cacheRefresh');
     } catch (cronErr) {
       logger.error('Failed to load cron job', { err: cronErr.message });
+    }
+
+    try {
+      require('./jobs/hotStockRefresh');
+    } catch (cronErr) {
+      logger.error('Failed to load hot stock cron job', { err: cronErr.message });
     }
 
     server = app.listen(config.PORT, () => {

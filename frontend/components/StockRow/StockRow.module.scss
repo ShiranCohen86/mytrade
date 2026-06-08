@@ -2,11 +2,11 @@
 @use '../../styles/mixins' as *;
 
 // ─── Column Grid ──────────────────────────────────────────────────────────────
-$cols-desktop: 20px 56px 1fr 104px 76px 68px 48px 76px 92px 56px 60px 34px;
-$cols-lg:      20px 56px 1fr 104px 76px 68px 48px 76px 92px 34px;
-$cols-md:      20px 56px 1fr 104px 76px 68px 48px 34px;
-$cols-sm:      56px 1fr 84px 68px 48px 34px;
-$cols-xs:      44px 1fr 68px 34px;
+$cols-desktop: 20px 56px 1fr 140px 68px 48px 68px 92px 56px 60px 34px;
+$cols-lg:      20px 56px 1fr 140px 68px 48px 68px 92px 34px;
+$cols-md:      20px 56px 1fr 140px 68px 48px 34px;
+$cols-sm:      56px 1fr 124px 48px 34px;
+$cols-xs:      44px 1fr 100px 34px;
 
 .rowWrapper {
   border-bottom: 1px solid $chrome-dim;
@@ -72,6 +72,7 @@ $cols-xs:      44px 1fr 68px 34px;
     grid-template-columns: $cols-xs;
     padding: 0 $space-2;
     .risk { display: none; }
+    .priceRow { gap: 3px; }
   }
 }
 
@@ -135,9 +136,16 @@ $cols-xs:      44px 1fr 68px 34px;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 1px;
+  gap: 2px;
   min-width: 0;
   justify-content: center;
+}
+
+.priceRow {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
 }
 
 .extPriceLine {
@@ -197,15 +205,15 @@ $cols-xs:      44px 1fr 68px 34px;
 .connOnline  { background: $pos; box-shadow: 0 0 4px var(--pos); }
 .connOffline { background: $neg; }
 
-// ─── Change % ────────────────────────────────────────────────────────────────
+// ─── Change % (inline inside price cell) ─────────────────────────────────────
 
 .change {
   @include mono-value(11px);
   font-weight: 700;
-  padding: 2px 7px;
+  padding: 1px 5px;
   border-radius: $radius-pill;
   white-space: nowrap;
-  text-align: right;
+  flex-shrink: 0;
 }
 
 // ─── P&L ─────────────────────────────────────────────────────────────────────
@@ -242,13 +250,11 @@ $cols-xs:      44px 1fr 68px 34px;
 .risk_medium { color: $warn; background: $warn-bg; }
 .risk_low    { color: $pos;  background: $pos-bg; }
 
-// ─── Expectation ─────────────────────────────────────────────────────────────
+// ─── Expectation Score ───────────────────────────────────────────────────────
 
 .expect {
-  font-size: 10px;
+  @include mono-value(12px);
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
   white-space: nowrap;
   text-align: center;
   padding: 2px 7px;
@@ -257,7 +263,7 @@ $cols-xs:      44px 1fr 68px 34px;
 
 .exp_high   { color: $neg;  background: $neg-bg; }
 .exp_medium { color: $warn; background: $warn-bg; }
-.exp_low    { color: $text-secondary; background: $surface-raised; }
+.exp_low    { color: $pos;  background: $pos-bg; }
 
 // ─── Market regime ───────────────────────────────────────────────────────────
 

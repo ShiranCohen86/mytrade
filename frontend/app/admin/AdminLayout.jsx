@@ -3,7 +3,10 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import styles from './AdminLayout.module.scss';
 
-const NAV = [
+// Roles that may access the AI intelligence feature
+const INTELLIGENCE_ROLES = new Set(['admin', 'super_admin']);
+
+const BASE_NAV = [
   {
     to: '/admin',
     end: true,
@@ -67,6 +70,19 @@ const NAV = [
   },
 ];
 
+// AI Intelligence nav entry — only rendered for admin / super_admin
+const INTELLIGENCE_NAV = {
+  to: '/admin/intelligence',
+  label: 'AI Intelligence',
+  adminOnly: true,
+  icon: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" />
+    </svg>
+  ),
+};
+
 const ROLE_BADGE_CLASS = {
   super_admin: styles.roleSuperAdmin,
   admin: styles.roleAdmin,
@@ -79,6 +95,11 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [searchVal, setSearchVal] = useState('');
+
+  // Build nav: base items + intelligence entry only for eligible roles
+  const NAV = INTELLIGENCE_ROLES.has(user?.role)
+    ? [...BASE_NAV, INTELLIGENCE_NAV]
+    : BASE_NAV;
 
   const handleLogout = useCallback(async () => {
     await logout();

@@ -1,0 +1,718 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+// ── Local color tokens (scoped to this module) ─────────────────────────────
+.page {
+  --hot-red:    #ef4444;
+  --hot-orange: #f97316;
+
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+}
+
+// ── Page header ────────────────────────────────────────────────────────────
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $space-4;
+  flex-wrap: wrap;
+}
+
+.pageTitle {
+  font-size: $text-2xl;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: $text-primary;
+  margin: 0 0 $space-1;
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.flameIcon { font-style: normal; line-height: 1; }
+
+.pageSub {
+  font-size: $text-xs;
+  color: $text-tertiary;
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.exportBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  height: 32px;
+  padding: 0 $space-3;
+  border-radius: $radius-md;
+  border: 1px solid $chrome-dim;
+  background: transparent;
+  color: $text-secondary;
+  font-size: $text-xs;
+  font-weight: 500;
+  font-family: $font-ui;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color $motion-fast, color $motion-fast, background $motion-fast;
+
+  &:hover { border-color: $accent; color: $accent; background: $accent-faint; }
+}
+
+.refreshBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  height: 32px;
+  padding: 0 $space-3;
+  border-radius: $radius-md;
+  border: none;
+  background: $accent;
+  color: #fff;
+  font-size: $text-xs;
+  font-weight: 600;
+  font-family: $font-ui;
+  cursor: pointer;
+  transition: opacity $motion-fast;
+
+  &:hover:not(:disabled) { opacity: 0.85; }
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+}
+
+.refreshBtnSpin svg {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// ── Stat grid ──────────────────────────────────────────────────────────────
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: $space-3;
+
+  @media (max-width: 1100px) { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 700px)  { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 420px)  { grid-template-columns: 1fr; }
+}
+
+.statCard {
+  background: $surface-panel;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-xl;
+  padding: $space-4 $space-5;
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+  box-shadow: $shadow-xs;
+  border-left: 3px solid $chrome-dim;
+}
+
+.statBlue   { border-left-color: $accent; }
+.statRed    { border-left-color: var(--hot-red); }
+.statOrange { border-left-color: var(--hot-orange); }
+.statGreen  { border-left-color: #22c55e; }
+
+.statLabel { font-size: $text-xs; color: $text-tertiary; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+.statValue { font-size: $text-xl; font-weight: 700; color: $text-primary; font-family: $font-data; }
+.statSub   { font-size: $text-xs; color: $text-tertiary; }
+
+// ── Sections ───────────────────────────────────────────────────────────────
+.section { display: flex; flex-direction: column; gap: $space-4; }
+
+.sectionTitle {
+  font-size: $text-md;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: $text-primary;
+  padding-bottom: $space-3;
+  border-bottom: 1px solid $chrome-dim;
+}
+
+// ── Top picks grid ─────────────────────────────────────────────────────────
+.topPicksGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-4;
+
+  @media (max-width: 900px)  { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 600px)  { grid-template-columns: 1fr; }
+}
+
+.stageColumn {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.stageHeader {
+  font-size: $text-xs;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: $space-2 $space-3;
+  border-radius: $radius-md;
+  margin-bottom: $space-1;
+}
+
+.stageHeaderTrending    { background: rgba(239, 68,  68,  0.12); color: var(--hot-red); }
+.stageHeaderAccelerating{ background: rgba(249, 115, 22,  0.12); color: var(--hot-orange); }
+.stageHeaderEmerging    { background: #{$accent-faint};           color: $accent; }
+
+.stageEmpty {
+  font-size: $text-xs;
+  color: $text-tertiary;
+  text-align: center;
+  padding: $space-5;
+}
+
+// ── Top card ───────────────────────────────────────────────────────────────
+.topCard {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+  padding: $space-3 $space-4;
+  background: $surface-panel;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-lg;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color $motion-fast, box-shadow $motion-fast, background $motion-fast;
+  width: 100%;
+
+  &:hover {
+    border-color: $accent;
+    background: $surface-hover;
+    box-shadow: $shadow-sm;
+  }
+}
+
+.topCardSymbol { font-size: $text-md; font-weight: 700; color: $text-primary; font-family: $font-data; }
+.topCardName   { font-size: $text-xs; color: $text-secondary; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.topCardMeta {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  margin-top: $space-1;
+}
+
+.topCardSector { font-size: $text-xs; color: $text-tertiary; }
+
+// ── Score bar ──────────────────────────────────────────────────────────────
+.scoreBarWrap {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.scoreBarTrack {
+  flex: 1;
+  height: 5px;
+  background: $chrome-dim;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.scoreBarFill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.scoreBarValue {
+  font-size: $text-xs;
+  font-weight: 700;
+  font-family: $font-data;
+  min-width: 24px;
+  text-align: right;
+}
+
+// ── Badges ─────────────────────────────────────────────────────────────────
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.badge_trending     { background: rgba(239, 68, 68, 0.15);  color: var(--hot-red);    border: 1px solid rgba(239, 68, 68, 0.3); }
+.badge_accelerating { background: rgba(249,115, 22, 0.15);  color: var(--hot-orange); border: 1px solid rgba(249,115, 22, 0.3); }
+.badge_emerging     { background: #{$accent-faint};          color: $accent;           border: 1px solid #{$accent}44; }
+.badge_saturated    { background: $surface-panel;            color: $text-tertiary;    border: 1px solid $chrome-dim; }
+.badgeDefault       { background: $surface-panel;            color: $text-secondary;   border: 1px solid $chrome-dim; }
+
+.confBadge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: $radius-sm;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.conf_high   { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+.conf_medium { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+.conf_low    { background: rgba(234, 179, 8, 0.15);  color: #ca8a04; }
+
+// ── Chart card ─────────────────────────────────────────────────────────────
+.chartCard {
+  background: $surface-panel;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-xl;
+  padding: $space-5;
+  box-shadow: $shadow-xs;
+  overflow-x: auto;
+}
+
+// ── Filter bar ─────────────────────────────────────────────────────────────
+.filterBar {
+  display: flex;
+  align-items: flex-end;
+  gap: $space-4;
+  flex-wrap: wrap;
+  padding: $space-4 $space-5;
+  background: $surface-panel;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-xl;
+
+  @media (max-width: 600px) { gap: $space-3; }
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.filterLabel {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $text-tertiary;
+}
+
+.filterSelect,
+.filterInput {
+  height: 32px;
+  padding: 0 $space-3;
+  border-radius: $radius-md;
+  border: 1px solid $chrome-dim;
+  background: $surface-elevated;
+  color: $text-primary;
+  font-size: $text-sm;
+  font-family: $font-ui;
+  outline: none;
+  min-width: 130px;
+
+  @media (max-width: 500px) { min-width: 100px; }
+
+  &:focus { border-color: $accent; box-shadow: 0 0 0 3px #{$accent}22; }
+}
+
+.filterInput { min-width: 90px; }
+
+.clearFilters {
+  height: 32px;
+  padding: 0 $space-3;
+  border-radius: $radius-md;
+  border: 1px solid $chrome-dim;
+  background: transparent;
+  color: $text-secondary;
+  font-size: $text-xs;
+  font-family: $font-ui;
+  cursor: pointer;
+  align-self: flex-end;
+  transition: border-color $motion-fast, color $motion-fast;
+
+  &:hover { border-color: $neg; color: $neg; }
+}
+
+// ── Table card ─────────────────────────────────────────────────────────────
+.tableCard {
+  background: $surface-panel;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-xl;
+  overflow: hidden;
+  box-shadow: $shadow-xs;
+}
+
+.tableHeader {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-4 $space-5;
+  border-bottom: 1px solid $chrome-dim;
+}
+
+.tableTitle {
+  font-size: $text-md;
+  font-weight: 600;
+  color: $text-primary;
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.tableCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: $chrome-dim;
+  color: $text-secondary;
+  font-size: $text-xs;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 1px 8px;
+  min-width: 24px;
+}
+
+.tableLoading { font-size: $text-xs; color: $text-tertiary; margin-left: auto; }
+
+.tableWrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: $text-sm;
+  min-width: 680px; // force horizontal scroll on small screens
+
+  th {
+    padding: $space-2 $space-4;
+    text-align: left;
+    @include section-label;
+    border-bottom: 1px solid $chrome-dim;
+    height: 34px;
+    white-space: nowrap;
+    background: $surface-panel;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  td {
+    padding: $space-2 $space-4;
+    color: $text-primary;
+    border-bottom: 1px solid $chrome-dim;
+    height: 44px;
+    vertical-align: middle;
+  }
+
+  tr:last-child td { border-bottom: none; }
+}
+
+.tableRow {
+  cursor: pointer;
+  transition: background $motion-fast;
+
+  &:hover td { background: $surface-hover; }
+}
+
+.rankCell   { @include mono-value($text-xs); color: $text-tertiary; width: 40px; }
+.symbolCell { @include mono-value($text-sm); font-weight: 700; color: $text-primary; }
+.nameCell   { color: $text-secondary; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sectorCell { color: $text-tertiary; font-size: $text-xs; white-space: nowrap; }
+.scoreCell  { min-width: 140px; }
+.numCell    { @include mono-value($text-sm); color: $text-secondary; text-align: right; }
+
+.tableEmpty {
+  text-align: center;
+  color: $text-tertiary;
+  padding: $space-8;
+  font-size: $text-sm;
+}
+
+// ── Pagination ─────────────────────────────────────────────────────────────
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-3;
+  padding: $space-4;
+  border-top: 1px solid $chrome-dim;
+}
+
+.pageBtn {
+  height: 30px;
+  padding: 0 $space-3;
+  border-radius: $radius-md;
+  border: 1px solid $chrome-dim;
+  background: transparent;
+  color: $text-secondary;
+  font-size: $text-sm;
+  cursor: pointer;
+  transition: border-color $motion-fast, color $motion-fast;
+
+  &:hover:not(:disabled) { border-color: $accent; color: $accent; }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
+.pageInfo { font-size: $text-xs; color: $text-tertiary; }
+
+// ── Detail panel overlay ───────────────────────────────────────────────────
+.detailOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  overflow: hidden;
+}
+
+.detailPanel {
+  position: relative;
+  width: 480px;
+  max-width: 100vw;
+  height: 100dvh;
+  overflow-y: auto;
+  background: $surface-panel;
+  border-left: 1px solid $chrome-dim;
+  padding: $space-6 $space-5;
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.2);
+  -webkit-overflow-scrolling: touch;
+
+  @media (max-width: 540px) {
+    width: 100vw;
+    border-left: none;
+    border-top: 1px solid $chrome-dim;
+    border-radius: $radius-xl $radius-xl 0 0;
+    padding: $space-5 $space-4;
+    height: 92dvh;
+    margin-top: 8dvh;
+  }
+}
+
+.detailClose {
+  position: absolute;
+  top: $space-4;
+  right: $space-4;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid $chrome-dim;
+  background: $surface-elevated;
+  color: $text-secondary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color $motion-fast, color $motion-fast;
+
+  &:hover { border-color: $neg; color: $neg; }
+}
+
+.detailHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $space-4;
+  padding-top: $space-4;
+}
+
+.detailSymbol { font-size: $text-2xl; font-weight: 800; color: $text-primary; font-family: $font-data; }
+.detailName   { font-size: $text-sm; color: $text-secondary; margin-top: $space-1; }
+.detailSector { font-size: $text-xs; color: $text-tertiary; margin-top: $space-1; }
+
+.detailScoreBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.detailScoreNum {
+  font-size: 3rem;
+  font-weight: 800;
+  font-family: $font-data;
+  line-height: 1;
+}
+
+.detailScoreLabel {
+  font-size: $text-xs;
+  color: $text-tertiary;
+  font-weight: 500;
+  margin-top: $space-1;
+}
+
+.detailBadges {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  flex-wrap: wrap;
+}
+
+.detailDate { font-size: $text-xs; color: $text-tertiary; margin-left: auto; }
+
+// ── Detail sections ────────────────────────────────────────────────────────
+.detailSection { display: flex; flex-direction: column; gap: $space-3; }
+
+.detailSectionTitle {
+  font-size: $text-xs;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: $text-tertiary;
+  padding-bottom: $space-2;
+  border-bottom: 1px solid $chrome-dim;
+}
+
+.breakdownGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-3;
+
+  @media (max-width: 400px) { grid-template-columns: 1fr; }
+}
+
+.breakdownItem {
+  background: $surface-elevated;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-lg;
+  padding: $space-3;
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.breakdownLabel { font-size: $text-xs; color: $text-tertiary; }
+.breakdownValue { font-size: $text-xl; font-weight: 700; font-family: $font-data; color: $text-primary; }
+
+// ── Contributor bars ───────────────────────────────────────────────────────
+.contributorRow {
+  display: grid;
+  grid-template-columns: 130px 1fr auto;
+  align-items: center;
+  gap: $space-3;
+
+  @media (max-width: 400px) { grid-template-columns: 1fr; }
+}
+
+.contributorName { font-size: $text-xs; color: $text-secondary; font-weight: 500; }
+
+.contributorBar {
+  height: 6px;
+  background: $chrome-dim;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.contributorFill {
+  height: 100%;
+  background: $accent;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.contributorMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+}
+
+.contributorValue { font-size: $text-xs; font-weight: 700; font-family: $font-data; color: $text-primary; }
+.contributorPts   { font-size: 10px; color: $text-tertiary; }
+
+// ── Signals grid ───────────────────────────────────────────────────────────
+.signalsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-2;
+
+  @media (max-width: 400px) { grid-template-columns: repeat(2, 1fr); }
+}
+
+.signalItem {
+  background: $surface-elevated;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-md;
+  padding: $space-2 $space-3;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.signalLabel { font-size: 10px; color: $text-tertiary; font-weight: 500; }
+.signalVal   { font-size: $text-sm; font-weight: 700; font-family: $font-data; color: $text-primary; }
+
+// ── Explanation box ────────────────────────────────────────────────────────
+.explanationBox {
+  background: $surface-elevated;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-lg;
+  padding: $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.explanationLine {
+  font-size: $text-sm;
+  color: $text-primary;
+  margin: 0;
+  line-height: 1.6;
+
+  &:empty { display: none; }
+}
+
+.explanationBullet {
+  font-size: $text-sm;
+  color: $text-secondary;
+  margin: 0;
+  padding-left: $space-2;
+  line-height: 1.7;
+}
+
+// ── Panel placeholders ─────────────────────────────────────────────────────
+.panelPlaceholder {
+  padding: $space-8;
+  text-align: center;
+  color: $text-tertiary;
+  font-size: $text-sm;
+}
+
+.panelError {
+  padding: $space-4;
+  color: $neg;
+  font-size: $text-sm;
+  background: $neg-bg;
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  border-radius: $radius-md;
+}
+
+// ── Page-level states ──────────────────────────────────────────────────────
+.placeholder {
+  padding: $space-8;
+  text-align: center;
+  font-size: $text-sm;
+  color: $text-tertiary;
+}
+
+.error {
+  padding: $space-5;
+  text-align: center;
+  font-size: $text-sm;
+  color: $neg;
+  background: $neg-bg;
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  border-radius: $radius-md;
+}

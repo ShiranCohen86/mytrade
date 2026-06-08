@@ -184,10 +184,15 @@ function StockRowInner({
         {/* Name */}
         <span className={styles.name}>{name || ticker}</span>
 
-        {/* Price */}
+        {/* Price + Change % */}
         <span className={styles.priceCell}>
-          <span className={`${styles.price} ${flash === 'up' ? styles.flashUp : flash === 'down' ? styles.flashDown : ''}`}>
-            {fmtPrice(cachedData?.price)}
+          <span className={styles.priceRow}>
+            <span className={`${styles.price} ${flash === 'up' ? styles.flashUp : flash === 'down' ? styles.flashDown : ''}`}>
+              {fmtPrice(cachedData?.price)}
+            </span>
+            <span className={`${styles.change} ${isPositive ? styles.pos : styles.neg}`}>
+              {isPositive ? '+' : ''}{change.toFixed(2)}%
+            </span>
           </span>
           {extPrice != null && (
             <span className={styles.extPriceLine}>
@@ -198,11 +203,6 @@ function StockRowInner({
               </span>
             </span>
           )}
-        </span>
-
-        {/* Change % */}
-        <span className={`${styles.change} ${isPositive ? styles.pos : styles.neg}`}>
-          {isPositive ? '+' : ''}{change.toFixed(2)}%
         </span>
 
         {/* P&L from entry price; fallback to return since added */}
@@ -221,12 +221,12 @@ function StockRowInner({
           {analysis?.riskScore ?? '—'}
         </span>
 
-        {/* Expectation */}
+        {/* Expectation Score */}
         <span
-          className={`${styles.expect} ${analysis?.expectationLabel ? styles[`exp_${scoreClass(analysis.expectationScore)}`] : ''}`}
+          className={`${styles.expect} ${analysis?.expectationScore != null ? styles[`exp_${scoreClass(analysis.expectationScore)}`] : ''}`}
           title="Expectation score: how much upside is already priced in. HIGH = market expects a lot → cautionary. LOW = little priced in → more room to run."
         >
-          {analysis?.expectationLabel?.replace('_', ' ') ?? '—'}
+          {analysis?.expectationScore != null ? analysis.expectationScore : '—'}
         </span>
 
         {/* Market regime */}

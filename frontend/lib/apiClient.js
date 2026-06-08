@@ -299,3 +299,31 @@ export const getTimeline = (params = {}) => {
 
 export const getTimelineInsights = (days = 30) =>
   requestWithRetry(`${EXPRESS}/api/timeline/insights?days=${days}`);
+
+// ─── Admin: AI Market Intelligence (admin / super_admin only) ─────────────────
+
+export const adminIntelligenceOverview = () =>
+  request(`${EXPRESS}/admin/intelligence/overview`);
+
+export const adminIntelligenceHotStocks = (params = {}) => {
+  const qs = new URLSearchParams(
+    Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== ''))
+  ).toString();
+  return request(`${EXPRESS}/admin/intelligence/hot-stocks${qs ? `?${qs}` : ''}`);
+};
+
+export const adminIntelligenceHotStockDetail = (symbol) =>
+  request(`${EXPRESS}/admin/intelligence/hot-stocks/${encodeURIComponent(symbol)}`);
+
+export const adminIntelligenceSectorHeatmap = () =>
+  request(`${EXPRESS}/admin/intelligence/sector-heatmap`);
+
+export const adminIntelligenceRefresh = () =>
+  request(`${EXPRESS}/admin/intelligence/refresh`, { method: 'POST' });
+
+export const adminIntelligenceExportUrl = (params = {}) => {
+  const qs = new URLSearchParams(
+    Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== ''))
+  ).toString();
+  return `${EXPRESS}/admin/intelligence/export${qs ? `?${qs}` : ''}`;
+};

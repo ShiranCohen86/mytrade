@@ -29,6 +29,7 @@ import AdminAuditLogs from '@/app/admin/audit/AdminAuditLogs';
 import AdminWatchlists from '@/app/admin/watchlists/AdminWatchlists';
 import AdminAnalytics from '@/app/admin/analytics/AdminAnalytics';
 import AdminSupport from '@/app/admin/support/AdminSupport';
+import AdminIntelligence from '@/app/admin/intelligence/AdminIntelligence';
 
 function DirectionSync() {
   const { i18n } = useTranslation();
@@ -98,6 +99,7 @@ export default function App() {
               <Route path="/admin/watchlists" element={<AdminWatchlists />} />
               <Route path="/admin/analytics" element={<AdminAnalytics />} />
               <Route path="/admin/support" element={<AdminSupport />} />
+              <Route path="/admin/intelligence" element={<AdminIntelligence />} />
             </Route>
           </Route>
 
