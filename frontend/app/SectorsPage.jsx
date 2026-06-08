@@ -50,8 +50,9 @@ export default function SectorsPage() {
         const bullish  = withRegime.filter((s) => s.analysis.marketRegime === 'BULLISH').length;
         const bearish  = withRegime.filter((s) => s.analysis.marketRegime === 'BEARISH').length;
         const volatile = withRegime.filter((s) => s.analysis.marketRegime === 'VOLATILE').length;
+        const neutral  = withRegime.filter((s) => s.analysis.marketRegime === 'NEUTRAL').length;
         const regimeTotal = withRegime.length;
-        return { name, items, avgRisk, avgExp, avgChange, bullish, bearish, volatile, regimeTotal };
+        return { name, items, avgRisk, avgExp, avgChange, bullish, bearish, volatile, neutral, regimeTotal };
       });
 
     switch (sortBy) {
@@ -102,7 +103,7 @@ export default function SectorsPage() {
         </div>
       ) : (
         <div className={styles.grid}>
-          {sectors.map(({ name, items, avgRisk, avgExp, avgChange, bullish, bearish, volatile, regimeTotal }) => (
+          {sectors.map(({ name, items, avgRisk, avgExp, avgChange, bullish, bearish, volatile, neutral, regimeTotal }) => (
             <div key={name} className={styles.card}>
               <div className={styles.cardHeader}>
                 <span className={styles.sectorName}>{name}</span>
@@ -141,10 +142,11 @@ export default function SectorsPage() {
                 />
               </div>
 
-              {regimeTotal > 0 && (bullish > 0 || bearish > 0 || volatile > 0) && (
+              {regimeTotal > 0 && (bullish > 0 || bearish > 0 || volatile > 0 || neutral > 0) && (
                 <div className={styles.regimeBar}>
                   {bullish > 0 && <div className={styles.regimeBull} style={{ width: `${(bullish / regimeTotal) * 100}%` }} title={`${bullish} Bullish`} />}
                   {volatile > 0 && <div className={styles.regimeVol} style={{ width: `${(volatile / regimeTotal) * 100}%` }} title={`${volatile} Volatile`} />}
+                  {neutral > 0 && <div className={styles.regimeNeutral} style={{ width: `${(neutral / regimeTotal) * 100}%` }} title={`${neutral} Neutral`} />}
                   {bearish > 0 && <div className={styles.regimeBear} style={{ width: `${(bearish / regimeTotal) * 100}%` }} title={`${bearish} Bearish`} />}
                 </div>
               )}

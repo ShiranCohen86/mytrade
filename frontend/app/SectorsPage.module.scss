@@ -182,9 +182,10 @@
   background: $chrome-dim;
 }
 
-.regimeBull { background: $pos; transition: width $motion-base; }
-.regimeVol  { background: $warn; transition: width $motion-base; }
-.regimeBear { background: $neg; transition: width $motion-base; }
+.regimeBull    { background: $pos; transition: width $motion-base; }
+.regimeVol     { background: $warn; transition: width $motion-base; }
+.regimeNeutral { background: $text-disabled; transition: width $motion-base; }
+.regimeBear    { background: $neg; transition: width $motion-base; }
 
 // ─── Stock rows inside card ───────────────────────────────────────────────────
 
