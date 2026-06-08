@@ -51,7 +51,7 @@
 
 .row {
   display: grid;
-  grid-template-columns: 60px 1fr auto;
+  grid-template-columns: 60px 1fr auto auto;
   align-items: center;
   gap: $space-2;
   padding: $space-2 $space-3;
@@ -91,3 +91,31 @@
 
 .pos .pct { color: $pos; }
 .neg .pct { color: $neg; }
+
+.addBtn {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: $radius-sm;
+  border: 1px solid $chrome-dim;
+  background: $surface-panel;
+  color: $accent;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background $motion-fast, border-color $motion-fast;
+  padding: 0;
+
+  &:hover:not(:disabled) {
+    background: $accent-faint;
+    border-color: $accent;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}

@@ -282,7 +282,7 @@ export default function DashboardPage() {
         /* Empty state */
         <>
         <WelcomeCard />
-        <TopMovers />
+        <TopMovers onAdd={handleAdd} />
         <div className={styles.empty}>
           <svg className={styles.emptyIcon} viewBox="0 0 64 48" width="64" height="48" fill="none" aria-hidden="true">
             <polyline points="4,40 18,24 28,32 40,14 52,20 60,10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.25"/>
