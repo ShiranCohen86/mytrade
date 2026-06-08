@@ -214,8 +214,18 @@ export default function StockDetailClient({ ticker }) {
     );
   }
 
-  const { cachedData, analysis, name, sector, scoreHistory, description, industry, employees, website } = stock;
+  const { cachedData, analysis, name, sector, scoreHistory, description, industry, employees, website, stockPriceAtAdd, spyPriceAtAdd } = stock;
   const hist = cachedData?.historical || [];
+
+  const sinceAddPct = stockPriceAtAdd != null && cachedData?.price != null
+    ? ((cachedData.price - stockPriceAtAdd) / stockPriceAtAdd) * 100
+    : null;
+  const spySinceAddPct = spyPriceAtAdd != null && cachedData?.spyPrice != null
+    ? ((cachedData.spyPrice - spyPriceAtAdd) / spyPriceAtAdd) * 100
+    : null;
+  const alphaSinceAdd = sinceAddPct != null && spySinceAddPct != null
+    ? sinceAddPct - spySinceAddPct
+    : null;
 
   const sectorPeers = allStocks
     .filter((s) => s.ticker !== ticker && s.sector === sector && s.sector && s.sector !== 'Unknown')
@@ -246,6 +256,16 @@ export default function StockDetailClient({ ticker }) {
     : null;
 
   const statItems = [
+    ...(sinceAddPct != null ? [{
+      label: 'Since Added',
+      value: `${sinceAddPct >= 0 ? '+' : ''}${sinceAddPct.toFixed(1)}%`,
+      highlight: sinceAddPct >= 0 ? 'pos' : 'neg',
+    }] : []),
+    ...(alphaSinceAdd != null ? [{
+      label: 'vs SPY',
+      value: `${alphaSinceAdd >= 0 ? '+' : ''}${alphaSinceAdd.toFixed(1)}%`,
+      highlight: alphaSinceAdd >= 0 ? 'pos' : 'neg',
+    }] : []),
     ...(p7 !== null  ? [{ label: '7d',  value: `${p7  >= 0 ? '+' : ''}${p7.toFixed(1)}%`,  highlight: p7  >= 0 ? 'pos' : 'neg' }] : []),
     ...(p30 !== null ? [{ label: '30d', value: `${p30 >= 0 ? '+' : ''}${p30.toFixed(1)}%`, highlight: p30 >= 0 ? 'pos' : 'neg' }] : []),
     ...(p60 !== null ? [{ label: '60d', value: `${p60 >= 0 ? '+' : ''}${p60.toFixed(1)}%`, highlight: p60 >= 0 ? 'pos' : 'neg' }] : []),
