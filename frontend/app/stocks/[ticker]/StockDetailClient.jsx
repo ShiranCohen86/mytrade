@@ -38,7 +38,7 @@ export default function StockDetailClient({ ticker }) {
     return (
       <div className={styles.errorState}>
         <p>{error || 'Stock not found'}</p>
-        <Link to="/" className={styles.backLink}>← Back to Watchlist</Link>
+        <Link to="/dashboard" className={styles.backLink}>← Back to Watchlist</Link>
       </div>
     );
   }

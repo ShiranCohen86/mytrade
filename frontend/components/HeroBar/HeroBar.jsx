@@ -9,7 +9,7 @@ export function HeroBar({ ticker, name, sector, price, change, changePercent, on
   return (
     <div className={styles.hero}>
       <div className={styles.left}>
-        <Link to="/" className={styles.backLink}>
+        <Link to="/dashboard" className={styles.backLink}>
           ← Watchlist
         </Link>
         <div className={styles.identity}>
