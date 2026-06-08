@@ -55,6 +55,7 @@ export default function DashboardPage() {
   const [moreOpen, setMoreOpen] = useState(false);
   const [moversOpen, setMoversOpen] = useState(false);
   const moreRef = useRef(null);
+  const hasAutoAnalyzed = useRef(false);
   const [sectorFilter, setSectorFilter] = useState(null);
   const [riskFilter, setRiskFilter] = useState(null);
   const [earningsFilter, setEarningsFilter] = useState(null);
@@ -72,18 +73,25 @@ export default function DashboardPage() {
     return () => { document.removeEventListener('mousedown', onOutside); document.removeEventListener('touchstart', onOutside); };
   }, [moreOpen]);
 
-  // Press "r" to reload; "a" to analyze all — when not typing in a field
+  useEffect(() => {
+    if (!isLoading && stocks.length > 0 && !hasAutoAnalyzed.current) {
+      hasAutoAnalyzed.current = true;
+      analyzeAll();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading, stocks.length]);
+
+  // Press "r" to reload — when not typing in a field
   useEffect(() => {
     const handler = (e) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       const active = document.activeElement;
       if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)) return;
       if (e.key === 'r' && !isLoading && !isAnalyzing) reload();
-      if (e.key === 'a' && !isAnalyzing && stocks.length > 0) analyzeAll();
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  }, [reload, analyzeAll, isLoading, isAnalyzing, stocks.length]);
+  }, [reload, isLoading, isAnalyzing]);
 
   useEffect(() => {
     try { localStorage.setItem('watchlist-sort', sortKey); } catch { /* storage unavailable */ }
@@ -288,84 +296,55 @@ export default function DashboardPage() {
                 </button>
               </div>
             )}
-            {stocks.length > 0 && (
-              <button
-                className={`${styles.toolBtn} ${styles.analyzeBtn} ${styles.desktopOnly} ${isAnalyzing ? styles.analyzeBtnActive : ''}`}
-                onClick={analyzeAll}
-                disabled={isAnalyzing}
-                title="Run full analysis on all stocks (A)"
-              >
-                {isAnalyzing ? (
-                  <><span className={styles.spinning}>⟳</span> Analyzing…</>
-                ) : (
-                  '⟳ Analyze All'
-                )}
-              </button>
-            )}
             <AddTickerForm onAdd={handleAdd} />
+            {stocks.length > 0 && (
+              <div ref={moreRef} className={`${styles.moreWrap} ${styles.mobileOnly}`}>
+                <button
+                  className={styles.toolBtn}
+                  onClick={() => setMoreOpen((v) => !v)}
+                  aria-label="More actions"
+                  aria-expanded={moreOpen}
+                >
+                  ⋯ More
+                </button>
+                {moreOpen && (
+                  <div className={styles.moreDropdown} role="menu">
+                    <button
+                      className={styles.moreItem}
+                      onClick={() => { setMoversOpen(true); setMoreOpen(false); }}
+                      role="menuitem"
+                    >
+                      ↑↓ Market Movers
+                    </button>
+                    <EarningsCalendar stocks={stocks} onTriggerClick={() => setMoreOpen(false)} />
+                    <button
+                      className={styles.moreItem}
+                      onClick={() => { exportCSV(); setMoreOpen(false); }}
+                      role="menuitem"
+                    >
+                      ↓ Export CSV
+                    </button>
+                    <button
+                      className={styles.moreItem}
+                      onClick={() => { importRef.current?.click(); setMoreOpen(false); }}
+                      role="menuitem"
+                    >
+                      ↑ Import CSV
+                    </button>
+                    <button
+                      className={styles.moreItem}
+                      onClick={() => { reload(); setMoreOpen(false); }}
+                      disabled={isLoading || isAnalyzing}
+                      role="menuitem"
+                    >
+                      ↺ Reload
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
-
-        {/* Mobile-only row 2: analyze + more menu */}
-        {stocks.length > 0 && (
-          <div className={styles.mobileActionsRow}>
-            <button
-              className={`${styles.toolBtn} ${styles.analyzeBtn} ${styles.mobileOnly} ${isAnalyzing ? styles.analyzeBtnActive : ''}`}
-              onClick={analyzeAll}
-              disabled={isAnalyzing}
-            >
-              {isAnalyzing ? (
-                <><span className={styles.spinning}>⟳</span> Analyzing…</>
-              ) : (
-                '⟳ Analyze All'
-              )}
-            </button>
-            <div ref={moreRef} className={styles.moreWrap}>
-              <button
-                className={styles.toolBtn}
-                onClick={() => setMoreOpen((v) => !v)}
-                aria-label="More actions"
-                aria-expanded={moreOpen}
-              >
-                ⋯ More
-              </button>
-              {moreOpen && (
-                <div className={styles.moreDropdown} role="menu">
-                  <button
-                    className={styles.moreItem}
-                    onClick={() => { setMoversOpen(true); setMoreOpen(false); }}
-                    role="menuitem"
-                  >
-                    ↑↓ Market Movers
-                  </button>
-                  <EarningsCalendar stocks={stocks} onTriggerClick={() => setMoreOpen(false)} />
-                  <button
-                    className={styles.moreItem}
-                    onClick={() => { exportCSV(); setMoreOpen(false); }}
-                    role="menuitem"
-                  >
-                    ↓ Export CSV
-                  </button>
-                  <button
-                    className={styles.moreItem}
-                    onClick={() => { importRef.current?.click(); setMoreOpen(false); }}
-                    role="menuitem"
-                  >
-                    ↑ Import CSV
-                  </button>
-                  <button
-                    className={styles.moreItem}
-                    onClick={() => { reload(); setMoreOpen(false); }}
-                    disabled={isLoading || isAnalyzing}
-                    role="menuitem"
-                  >
-                    ↺ Reload
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
       </div>
 
       {showError && (

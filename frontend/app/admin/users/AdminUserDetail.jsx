@@ -9,6 +9,8 @@ import {
   adminGetUserWatchlist,
 } from '@/lib/apiClient';
 import { useToast } from '@/components/Toast/ToastProvider';
+import TimelinePanel from './TimelinePanel';
+import InsightsPanel from './InsightsPanel';
 import styles from './AdminUserDetail.module.scss';
 
 const ROLES = ['user', 'analyst', 'support_agent', 'admin', 'super_admin'];
@@ -17,10 +19,6 @@ const ROLE_LABEL = { super_admin: 'Super Admin', admin: 'Admin', support_agent: 
 const fmtDate = (d) => d
   ? new Date(d).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })
   : '—';
-
-function SeverityBadge({ s }) {
-  return <span className={`${styles.sevBadge} ${styles[`sev_${s}`]}`}>{s}</span>;
-}
 
 export default function AdminUserDetail() {
   const { id } = useParams();
@@ -35,6 +33,7 @@ export default function AdminUserDetail() {
   const [suspendReason, setSuspendReason] = useState('');
   const [working, setWorking] = useState(false);
   const [watchlist, setWatchlist] = useState([]);
+  const [rightTab, setRightTab] = useState('timeline'); // 'timeline' | 'insights'
 
   const canSetRole = me?.role === 'super_admin';
   const canSuspend = ['super_admin', 'admin'].includes(me?.role);
@@ -87,7 +86,6 @@ export default function AdminUserDetail() {
     setWorking(true);
     try {
       const res = await adminImpersonate(id);
-      // Open app with impersonation token in new tab
       window.open(`/dashboard?impersonate_token=${res.token}`, '_blank');
       toast.warning(`Impersonating ${res.targetUser.email} for 15 min — action logged.`);
     } catch (e) {
@@ -98,10 +96,10 @@ export default function AdminUserDetail() {
   };
 
   if (loading) return <div className={styles.placeholder}>Loading user…</div>;
-  if (error) return <div className={styles.error}>{error}</div>;
-  if (!data) return null;
+  if (error)   return <div className={styles.error}>{error}</div>;
+  if (!data)   return null;
 
-  const { user, recentAudit } = data;
+  const { user } = data;
   const isSelf = me?.role && id === me?.id;
 
   return (
@@ -223,35 +221,30 @@ export default function AdminUserDetail() {
           </div>
         </div>
 
-        {/* ─── Right: Activity timeline ─────────────────────────── */}
+        {/* ─── Right: Intelligence Panel ────────────────────────── */}
         <div className={styles.right}>
-          <div className={styles.timelineCard}>
-            <div className={styles.timelineTitle}>Activity Timeline</div>
-            {recentAudit.length === 0
-              ? <p className={styles.empty}>No recorded activity.</p>
-              : (
-                <div className={styles.timeline}>
-                  {recentAudit.map((log) => (
-                    <div key={log.eventId} className={styles.timelineItem}>
-                      <div className={styles.timelineDot} data-sev={log.severity} />
-                      <div className={styles.timelineBody}>
-                        <div className={styles.timelineAction}>
-                          <span className={styles.monoText}>{log.actionType}</span>
-                          <SeverityBadge s={log.severity} />
-                        </div>
-                        <div className={styles.timelineTime}>{fmtDate(log.timestamp)}</div>
-                        {log.ip && <div className={styles.timelineMeta}>IP: {log.ip}</div>}
-                        {log.metadata && Object.keys(log.metadata).length > 0 && (
-                          <details className={styles.metaDetails}>
-                            <summary>Metadata</summary>
-                            <pre className={styles.metaPre}>{JSON.stringify(log.metadata, null, 2)}</pre>
-                          </details>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+          <div className={styles.intelligenceCard}>
+            {/* Tab bar */}
+            <div className={styles.tabBar}>
+              <button
+                className={`${styles.tab} ${rightTab === 'timeline' ? styles.tabActive : ''}`}
+                onClick={() => setRightTab('timeline')}
+              >
+                Activity Timeline
+              </button>
+              <button
+                className={`${styles.tab} ${rightTab === 'insights' ? styles.tabActive : ''}`}
+                onClick={() => setRightTab('insights')}
+              >
+                Behavioral Insights
+              </button>
+            </div>
+
+            {/* Panel body */}
+            <div className={styles.tabBody}>
+              {rightTab === 'timeline' && <TimelinePanel userId={id} />}
+              {rightTab === 'insights' && <InsightsPanel userId={id} />}
+            </div>
           </div>
         </div>
       </div>

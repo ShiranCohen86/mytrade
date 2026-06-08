@@ -69,7 +69,7 @@
 
 .mobileOnly {
   display: none !important;
-  @media (max-width: 640px) { display: inline-flex !important; }
+  @media (max-width: 768px) { display: inline-flex !important; }
 }
 
 .desktopActions {

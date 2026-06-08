@@ -8,6 +8,7 @@ const provider = require('../providers/ProviderFactory');
 const auth = require('../middleware/auth');
 const logger = require('../utils/logger');
 const audit = require('../services/auditService');
+const { getSector } = require('../services/sectorService');
 
 const MAX_WATCHLIST = 25;
 
@@ -42,6 +43,10 @@ router.get('/search', async (req, res) => {
   if (!q) return res.json([]);
   try {
     const results = await provider.search(q);
+    // Log search events for queries of meaningful length (avoids single-char noise)
+    if (q.length >= 2) {
+      audit.logUser(req, 'stock.searched', { query: q, resultCount: results.length });
+    }
     res.json(results);
   } catch {
     res.json([]);
@@ -110,7 +115,7 @@ router.post('/stocks', async (req, res) => {
       { upsert: true, new: true }
     ).catch(() => {});
 
-    audit.logUser(req, 'watchlist.add', { symbol: t });
+    audit.logUser(req, 'watchlist.add', { symbol: t, sector: getSector(t) });
 
     res.status(201).json(stock);
   } catch (err) {
@@ -142,7 +147,7 @@ router.delete('/stocks/:ticker', async (req, res) => {
       { $set: { isDisabled: true, disabledAt: new Date(), disabledBy: null, disableReason: '' } }
     ).catch(() => {});
 
-    audit.logUser(req, 'watchlist.remove', { symbol: t });
+    audit.logUser(req, 'watchlist.remove', { symbol: t, sector: getSector(t) });
 
     res.status(204).send();
   } catch (err) {
@@ -163,6 +168,13 @@ router.get('/stocks/:ticker/analysis', async (req, res) => {
     if (!stock) {
       return res.status(404).json({ error: `${t} not found. Add it to your watchlist first.` });
     }
+    // Fire-and-forget: log view event enriched with live price context
+    audit.logUser(req, 'stock.viewed', {
+      symbol:          t,
+      sector:          getSector(t),
+      price_at_event:  stock.currentPrice ?? stock.price ?? null,
+      price_change_24h: stock.changePercent ?? stock.dailyChangePercent ?? null,
+    });
     res.json(stock);
   } catch (err) {
     logger.error('GET /stocks/:ticker/analysis', { err: err.message });
@@ -272,6 +284,7 @@ router.put('/portfolio/:ticker', async (req, res) => {
       user.portfolio.push({ ticker: t, entryPrice, shares });
     }
     await user.save();
+    audit.logUser(req, 'portfolio.set', { symbol: t, sector: getSector(t), entryPrice, shares });
     res.json({ ticker: t, entryPrice, shares });
   } catch (err) {
     logger.error('PUT /portfolio/:ticker', { err: err.message });
@@ -285,6 +298,7 @@ router.delete('/portfolio/:ticker', async (req, res) => {
     const user = await getUser(req.user.id);
     user.portfolio = user.portfolio.filter((p) => p.ticker !== t);
     await user.save();
+    audit.logUser(req, 'portfolio.removed', { symbol: t, sector: getSector(t) });
     res.status(204).send();
   } catch (err) {
     logger.error('DELETE /portfolio/:ticker', { err: err.message });
@@ -324,6 +338,7 @@ router.put('/alerts/:ticker', async (req, res) => {
       user.priceAlerts.push({ ticker: t, targetPrice, direction });
     }
     await user.save();
+    audit.logUser(req, 'alert.set', { symbol: t, sector: getSector(t), targetPrice, direction });
     res.json({ ticker: t, targetPrice, direction });
   } catch (err) {
     logger.error('PUT /alerts/:ticker', { err: err.message });
@@ -337,6 +352,7 @@ router.delete('/alerts/:ticker', async (req, res) => {
     const user = await getUser(req.user.id);
     user.priceAlerts = user.priceAlerts.filter((a) => a.ticker !== t);
     await user.save();
+    audit.logUser(req, 'alert.removed', { symbol: t, sector: getSector(t) });
     res.status(204).send();
   } catch (err) {
     logger.error('DELETE /alerts/:ticker', { err: err.message });
@@ -392,6 +408,7 @@ router.put('/notes/:ticker', async (req, res) => {
       user.notes.push({ ticker: t, text });
     }
     await user.save();
+    audit.logUser(req, 'note.saved', { symbol: t, sector: getSector(t) });
     res.json({ ticker: t, text });
   } catch (err) {
     logger.error('PUT /notes/:ticker', { err: err.message });

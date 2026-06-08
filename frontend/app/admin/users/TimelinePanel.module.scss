@@ -1,0 +1,352 @@
+@use '@/styles/variables' as *;
+
+// ─── Panel shell ──────────────────────────────────────────────────────────────
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+// ─── Toolbar ─────────────────────────────────────────────────────────────────
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 0 12px;
+  flex-wrap: wrap;
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 160px;
+  height: 30px;
+  background: var(--surface-base);
+  border: 1px solid var(--chrome-dim);
+  border-radius: $radius-xs;
+  padding: 0 10px;
+  font-size: $text-sm;
+  color: var(--text-primary);
+  font-family: $font-ui;
+  outline: none;
+
+  &::placeholder { color: var(--text-tertiary); }
+  &:focus { border-color: var(--accent); }
+}
+
+.filterSelect {
+  height: 30px;
+  background: var(--surface-base);
+  border: 1px solid var(--chrome-dim);
+  border-radius: $radius-xs;
+  padding: 0 8px;
+  font-size: $text-sm;
+  color: var(--text-primary);
+  font-family: $font-ui;
+  outline: none;
+  cursor: pointer;
+
+  &:focus { border-color: var(--accent); }
+}
+
+.clearBtn {
+  height: 30px;
+  padding: 0 10px;
+  background: transparent;
+  border: 1px solid var(--chrome-dim);
+  border-radius: $radius-xs;
+  font-size: $text-sm;
+  color: var(--text-tertiary);
+  font-family: $font-ui;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color $motion-fast, border-color $motion-fast;
+
+  &:hover { color: var(--text-primary); border-color: var(--chrome-mid); }
+}
+
+// ─── Summary strip ────────────────────────────────────────────────────────────
+
+.strip {
+  display: flex;
+  gap: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--chrome-dim);
+  margin-bottom: 12px;
+}
+
+.stripItem {
+  font-size: $text-xs;
+  color: var(--text-tertiary);
+}
+
+// ─── Feed ─────────────────────────────────────────────────────────────────────
+
+.feed {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-height: 640px;
+  overflow-y: auto;
+  padding-right: 4px;
+
+  // Custom scrollbar
+  scrollbar-width: thin;
+  scrollbar-color: var(--chrome-dim) transparent;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: var(--chrome-dim); border-radius: 2px; }
+}
+
+// ─── Day group ────────────────────────────────────────────────────────────────
+
+.dayGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.dayLabel {
+  font-size: $text-2xs;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  padding: 0 0 8px 4px;
+  position: sticky;
+  top: 0;
+  background: var(--surface-panel);
+  z-index: 1;
+}
+
+.dayEvents {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+// ─── Event row ────────────────────────────────────────────────────────────────
+
+.eventRow {
+  display: flex;
+  gap: 10px;
+  position: relative;
+  padding-bottom: 2px;
+
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 13px;
+    top: 26px;
+    bottom: 0;
+    width: 1px;
+    background: var(--chrome-dim);
+  }
+}
+
+.eventRowOpen {
+  &:not(:last-child)::after {
+    background: var(--chrome-mid);
+  }
+}
+
+// ─── Dot column ──────────────────────────────────────────────────────────────
+
+.dotCol {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 3px;
+}
+
+.eventDot {
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  color: var(--dot-color, var(--accent));
+  background: var(--dot-bg, var(--accent-faint));
+  border: 1.5px solid var(--dot-color, var(--accent));
+  position: relative;
+  z-index: 1;
+}
+
+// ─── Event content ────────────────────────────────────────────────────────────
+
+.eventContent {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 10px;
+}
+
+.eventHeader {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 4px 0;
+  text-align: left;
+  font-family: $font-ui;
+  border-radius: $radius-xs;
+  transition: background $motion-fast;
+
+  &[aria-expanded="true"],
+  &:hover[style*="pointer"] {
+    background: var(--surface-hover);
+  }
+}
+
+.eventLabel {
+  font-size: $text-sm;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.eventTime {
+  font-size: $text-xs;
+  color: var(--text-tertiary);
+  font-family: $font-data;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.chevron {
+  font-size: 14px;
+  color: var(--text-tertiary);
+  transition: transform $motion-fast;
+  flex-shrink: 0;
+}
+
+.chevronOpen {
+  transform: rotate(90deg);
+}
+
+// ─── Badges ───────────────────────────────────────────────────────────────────
+
+.symbolBadge {
+  font-family: $font-data;
+  font-size: $text-2xs;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-faint);
+  border: 1px solid var(--accent-dim);
+  padding: 1px 5px;
+  border-radius: $radius-xs;
+  letter-spacing: 0.04em;
+}
+
+.sectorBadge {
+  font-size: $text-2xs;
+  font-weight: 600;
+  color: var(--sector-color, var(--text-tertiary));
+  background: color-mix(in srgb, var(--sector-color, var(--chrome-dim)) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--sector-color, var(--chrome-dim)) 35%, transparent);
+  padding: 1px 5px;
+  border-radius: $radius-xs;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+// ─── Expanded detail ─────────────────────────────────────────────────────────
+
+.eventDetail {
+  margin-top: 4px;
+  padding: 10px 12px;
+  background: var(--surface-base);
+  border-radius: $radius-sm;
+  border: 1px solid var(--chrome-dim);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.detailRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: $text-xs;
+}
+
+.detailKey {
+  color: var(--text-tertiary);
+  min-width: 100px;
+  flex-shrink: 0;
+}
+
+.detailVal {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.mono { font-family: $font-data; }
+
+.pos { color: var(--pos); }
+.neg { color: var(--neg); }
+
+.sevBadge {
+  font-size: $text-2xs;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 1px 5px;
+  border-radius: $radius-xs;
+}
+
+.sev_warning  { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+.sev_critical { background: var(--neg-bg); color: var(--neg); }
+
+.rawDetails {
+  margin-top: 4px;
+
+  summary {
+    font-size: $text-xs;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    user-select: none;
+
+    &:hover { color: var(--text-secondary); }
+  }
+}
+
+.rawPre {
+  font-family: $font-data;
+  font-size: $text-xs;
+  color: var(--text-secondary);
+  background: var(--surface-panel);
+  border-radius: $radius-xs;
+  padding: 6px 8px;
+  margin-top: 4px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+// ─── States ───────────────────────────────────────────────────────────────────
+
+.loading, .empty {
+  padding: 24px 0;
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: $text-sm;
+}
+
+.error {
+  padding: 10px 12px;
+  color: var(--neg);
+  background: var(--neg-bg);
+  border: 1px solid var(--neg);
+  border-radius: $radius-sm;
+  font-size: $text-sm;
+}

@@ -172,6 +172,7 @@ const adminLimiter = rateLimit({
 // Routes
 app.use('/auth', require('./routes/auth'));
 app.use('/api', require('./routes/stocks'));
+app.use('/api/timeline', require('./routes/timeline'));
 
 // Admin routes — each sub-router enforces its own RBAC via adminAuth middleware
 app.use('/admin/users', adminLimiter, require('./routes/admin/users'));
