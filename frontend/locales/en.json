@@ -165,11 +165,11 @@
   "table": {
     "ticker": "Ticker",
     "name": "Name",
-    "price": "Price",
+    "price": "Price / Chg%",
     "change": "Chg%",
     "pnl": "P&L / Since Add",
     "risk": "Risk",
-    "expect": "Expect",
+    "expect": "Exp Score",
     "regime": "Regime",
     "earnings": "Earnings",
     "trend": "Trend",

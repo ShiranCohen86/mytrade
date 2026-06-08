@@ -2,11 +2,11 @@
 @use '../../styles/mixins' as *;
 
 // Column tracks per breakpoint — must mirror StockRow.module.scss
-$cols-desktop: 20px 56px 1fr 104px 76px 68px 48px 76px 92px 56px 60px 34px;
-$cols-lg:      20px 56px 1fr 104px 76px 68px 48px 76px 92px 34px;
-$cols-md:      20px 56px 1fr 104px 76px 68px 48px 34px;
-$cols-sm:      56px 1fr 84px 68px 48px 34px;
-$cols-xs:      44px 1fr 68px 34px;
+$cols-desktop: 20px 56px 1fr 140px 68px 48px 68px 92px 56px 60px 34px;
+$cols-lg:      20px 56px 1fr 140px 68px 48px 68px 92px 34px;
+$cols-md:      20px 56px 1fr 140px 68px 48px 34px;
+$cols-sm:      56px 1fr 124px 48px 34px;
+$cols-xs:      44px 1fr 100px 34px;
 
 .table {
   display: flex;
@@ -53,6 +53,7 @@ $cols-xs:      44px 1fr 68px 34px;
     padding: 0 $space-2;
     .colRisk, .colName { display: none; }
   }
+
 }
 
 .th {
