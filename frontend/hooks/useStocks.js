@@ -26,6 +26,7 @@ export function useStocks() {
   const pollAbortRef = useRef(null);
 
   const load = useCallback(async () => {
+    setIsLoading(true);
     try {
       const [stocksResult, portResult, alertsResult, notesResult] = await Promise.allSettled([
         getStocks(), getPortfolio(), getAlerts(), getNotes(),
