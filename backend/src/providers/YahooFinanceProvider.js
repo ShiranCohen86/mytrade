@@ -61,6 +61,13 @@ class YahooFinanceProvider extends BaseProvider {
         fiftyTwoWeekHigh: q.fiftyTwoWeekHigh ?? null,
         fiftyTwoWeekLow: q.fiftyTwoWeekLow ?? null,
         dividendYield: q.trailingAnnualDividendYield ?? q.dividendYield ?? null,
+        marketState: q.marketState ?? null,
+        preMarketPrice: q.preMarketPrice ?? null,
+        preMarketChange: q.preMarketChange ?? null,
+        preMarketChangePercent: q.preMarketChangePercent ?? null,
+        postMarketPrice: q.postMarketPrice ?? null,
+        postMarketChange: q.postMarketChange ?? null,
+        postMarketChangePercent: q.postMarketChangePercent ?? null,
       };
     } catch (err) {
       this._markError();
@@ -146,6 +153,10 @@ class YahooFinanceProvider extends BaseProvider {
           industry: profile.industry || 'Unknown',
           peRatio: stats.forwardPE?.raw ?? stats.forwardPE ?? stats.trailingPE?.raw ?? stats.trailingPE ?? null,
           analystTargetPrice: financial.targetMeanPrice?.raw ?? financial.targetMeanPrice ?? null,
+          analystLowPrice: financial.targetLowPrice?.raw ?? financial.targetLowPrice ?? null,
+          analystHighPrice: financial.targetHighPrice?.raw ?? financial.targetHighPrice ?? null,
+          numberOfAnalysts: financial.numberOfAnalystOpinions?.raw ?? financial.numberOfAnalystOpinions ?? null,
+          recommendationKey: financial.recommendationKey ?? null,
           beta,
         },
         earnings: this._parseEarningsDate(summary),

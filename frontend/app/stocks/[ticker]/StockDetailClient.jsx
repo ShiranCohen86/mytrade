@@ -1,6 +1,7 @@
 
 import { Link } from 'react-router-dom';
 import { useStockAnalysis } from '@/hooks/useStockAnalysis';
+import { useStocks } from '@/hooks/useStocks';
 import { PriceChart } from '@/components/PriceChart/PriceChart';
 import { RiskGauge } from '@/components/RiskGauge/RiskGauge';
 import { ExpectationMeter } from '@/components/ExpectationMeter/ExpectationMeter';
@@ -24,6 +25,7 @@ function pctChange(historical, days) {
 
 export default function StockDetailClient({ ticker }) {
   const { stock, isLoading, isRefreshing, error, refresh } = useStockAnalysis(ticker);
+  const { stocks: allStocks } = useStocks();
 
   if (isLoading && !stock) {
     return (
@@ -45,6 +47,10 @@ export default function StockDetailClient({ ticker }) {
 
   const { cachedData, analysis, name, sector } = stock;
   const hist = cachedData?.historical || [];
+
+  const sectorPeers = allStocks
+    .filter((s) => s.ticker !== ticker && s.sector === sector && s.sector && s.sector !== 'Unknown')
+    .slice(0, 6);
 
   const p7  = pctChange(hist, 7);
   const p30 = pctChange(hist, 30);
@@ -97,7 +103,19 @@ export default function StockDetailClient({ ticker }) {
       ? (() => {
           const target = cachedData.analystTargetPrice;
           const upside = ((target - cachedData.price) / cachedData.price) * 100;
-          return [{ label: 'Analyst Target', value: `${fmtPrice(target)} (${upside >= 0 ? '+' : ''}${upside.toFixed(1)}%)`, highlight: upside >= 5 ? 'pos' : upside <= -5 ? 'neg' : undefined }];
+          const low = cachedData.analystLowPrice;
+          const high = cachedData.analystHighPrice;
+          const rangeStr = low && high ? ` (${fmtPrice(low)} – ${fmtPrice(high)})` : '';
+          return [{ label: 'Analyst Target', value: `${fmtPrice(target)}${rangeStr} · ${upside >= 0 ? '+' : ''}${upside.toFixed(1)}%`, highlight: upside >= 5 ? 'pos' : upside <= -5 ? 'neg' : undefined }];
+        })()
+      : []
+    ),
+    ...(cachedData?.recommendationKey && cachedData?.numberOfAnalysts
+      ? (() => {
+          const key = cachedData.recommendationKey;
+          const label = key === 'strong_buy' ? 'Strong Buy' : key === 'buy' ? 'Buy' : key === 'hold' ? 'Hold' : key === 'sell' ? 'Sell' : key === 'strong_sell' ? 'Strong Sell' : key;
+          const highlight = key === 'strong_buy' || key === 'buy' ? 'pos' : key === 'strong_sell' || key === 'sell' ? 'neg' : undefined;
+          return [{ label: `Analysts (${cachedData.numberOfAnalysts})`, value: label, highlight }];
         })()
       : []
     ),
@@ -179,11 +197,43 @@ export default function StockDetailClient({ ticker }) {
           </PanelCard>
         </div>
 
-        {/* Right column: Scenarios */}
+        {/* Right column: Scenarios + Peers */}
         <div className={styles.rightCol}>
           <PanelCard title="Earnings Scenarios">
             <ScenarioPanel scenarios={analysis.scenarios} currentPrice={cachedData.price} />
           </PanelCard>
+          {sectorPeers.length > 0 && (
+            <PanelCard title={`Sector Peers · ${sector}`}>
+              <div className={styles.peerList}>
+                {sectorPeers.map((peer) => {
+                  const pct = peer.cachedData?.changePercent;
+                  const isPos = pct != null && pct >= 0;
+                  const risk = peer.analysis?.riskScore;
+                  return (
+                    <Link key={peer.ticker} to={`/stocks/${peer.ticker}`} className={styles.peerRow}>
+                      <span className={styles.peerTicker}>{peer.ticker}</span>
+                      <span className={styles.peerName}>{peer.name || ''}</span>
+                      <span className={styles.peerMeta}>
+                        {peer.cachedData?.price != null && (
+                          <span className={styles.peerPrice}>{fmtPrice(peer.cachedData.price)}</span>
+                        )}
+                        {pct != null && (
+                          <span className={`${styles.peerChange} ${isPos ? styles.pos : styles.neg}`}>
+                            {isPos ? '+' : ''}{pct.toFixed(2)}%
+                          </span>
+                        )}
+                        {risk != null && (
+                          <span className={`${styles.peerRisk} ${risk >= 70 ? styles.neg : risk >= 40 ? styles.warn : styles.pos}`}>
+                            R{risk.toFixed(0)}
+                          </span>
+                        )}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </PanelCard>
+          )}
         </div>
       </div>
     </div>

@@ -137,3 +137,82 @@
   font-size: 11px;
   color: $text-tertiary;
 }
+
+// ─── Sector Peers ─────────────────────────────────────────────────────────────
+
+.peerList {
+  display: flex;
+  flex-direction: column;
+}
+
+.peerRow {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-4;
+  border-bottom: 1px solid $chrome-dim;
+  transition: background $motion-fast;
+  text-decoration: none;
+  min-height: 38px;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: $surface-hover; }
+}
+
+.peerTicker {
+  font-family: $font-data;
+  font-size: 12px;
+  font-weight: 800;
+  color: $accent-text;
+  min-width: 44px;
+  letter-spacing: 0.02em;
+}
+
+.peerName {
+  flex: 1;
+  font-family: $font-ui;
+  font-size: 11px;
+  color: $text-tertiary;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.peerMeta {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  flex-shrink: 0;
+}
+
+.peerPrice {
+  font-family: $font-data;
+  font-size: 12px;
+  color: $text-secondary;
+  font-variant-numeric: tabular-nums;
+}
+
+.peerChange {
+  font-family: $font-data;
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  min-width: 52px;
+  text-align: right;
+}
+
+.peerRisk {
+  font-family: $font-data;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: $radius-pill;
+  min-width: 32px;
+  text-align: center;
+  background: $surface-raised;
+}
+
+.pos { color: $pos; }
+.neg { color: $neg; }
+.warn { color: $warn; }
