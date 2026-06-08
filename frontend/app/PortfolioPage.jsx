@@ -1,6 +1,6 @@
 import { useMemo, useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, LineChart, Line, XAxis, YAxis, ReferenceLine, Area, AreaChart } from 'recharts';
 import { useStocks } from '@/hooks/useStocks';
 import { fmtPrice } from '@/lib/format';
 import styles from './PortfolioPage.module.scss';
@@ -10,6 +10,19 @@ const SECTOR_COLORS = [
   '#8b5cf6', '#06b6d4', '#f97316', '#ec4899',
   '#14b8a6', '#a855f7',
 ];
+
+function ChartTooltip({ active, payload, label }) {
+  if (!active || !payload?.length) return null;
+  const val = payload[0]?.value;
+  return (
+    <div style={{ background: 'var(--surface-elevated)', border: '1px solid var(--chrome-mid)', borderRadius: 8, padding: '6px 10px', fontSize: 12 }}>
+      <span style={{ color: 'var(--text-tertiary)', display: 'block', marginBottom: 2, fontSize: 11 }}>{label}</span>
+      <strong style={{ color: val >= 0 ? 'var(--pos)' : 'var(--neg)' }}>
+        {val >= 0 ? '+' : ''}{val?.toFixed(2)}%
+      </strong>
+    </div>
+  );
+}
 
 function SectorTooltip({ active, payload }) {
   if (!active || !payload?.length) return null;
@@ -96,6 +109,34 @@ export default function PortfolioPage() {
     const losses = priced.length - wins;
     return { wins, losses, total: priced.length };
   }, [rows]);
+
+  const portfolioChartData = useMemo(() => {
+    if (!portfolio.length || !stocks.length) return [];
+    const series = portfolio
+      .map((entry) => {
+        const stock = stocks.find((s) => s.ticker === entry.ticker);
+        if (!stock?.cachedData?.historical?.length || !entry.entryPrice) return null;
+        return { entryPrice: entry.entryPrice, history: stock.cachedData.historical };
+      })
+      .filter(Boolean);
+    if (!series.length) return [];
+
+    const dateMap = new Map();
+    for (const { entryPrice, history } of series) {
+      for (const { date, close } of history) {
+        if (close == null || entryPrice <= 0) continue;
+        const d = new Date(date).toISOString().split('T')[0];
+        if (!dateMap.has(d)) dateMap.set(d, []);
+        dateMap.get(d).push(((close / entryPrice) - 1) * 100);
+      }
+    }
+    const minCoverage = Math.max(1, Math.floor(series.length * 0.5));
+    return Array.from(dateMap.entries())
+      .filter(([, rs]) => rs.length >= minCoverage)
+      .map(([date, rs]) => ({ date, ret: +(rs.reduce((s, r) => s + r, 0) / rs.length).toFixed(2) }))
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .slice(-60);
+  }, [stocks, portfolio]);
 
   const [sortCol, setSortCol] = useState('pnlPct');
   const [sortDir, setSortDir] = useState('desc');
@@ -254,6 +295,40 @@ export default function PortfolioPage() {
               </span>
             </div>
           )}
+        </div>
+      )}
+
+      {portfolioChartData.length >= 5 && (
+        <div className={styles.chartSection}>
+          <div className={styles.chartHeader}>
+            <span className={styles.chartTitle}>Portfolio Performance</span>
+            <span className={styles.chartSubtitle}>Equal-weighted return vs. entry price · last {portfolioChartData.length}d</span>
+          </div>
+          <div className={styles.chartWrap}>
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={portfolioChartData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="portfolioGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={portfolioChartData[portfolioChartData.length - 1]?.ret >= 0 ? '#22c55e' : '#ef4444'} stopOpacity={0.25} />
+                    <stop offset="100%" stopColor={portfolioChartData[portfolioChartData.length - 1]?.ret >= 0 ? '#22c55e' : '#ef4444'} stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="date" hide />
+                <YAxis tickFormatter={(v) => `${v > 0 ? '+' : ''}${v}%`} tick={{ fontSize: 10, fill: 'var(--text-disabled)' }} tickLine={false} axisLine={false} />
+                <ReferenceLine y={0} stroke="var(--chrome-mid)" strokeDasharray="3 3" />
+                <Tooltip content={<ChartTooltip />} />
+                <Area
+                  type="monotone"
+                  dataKey="ret"
+                  stroke={portfolioChartData[portfolioChartData.length - 1]?.ret >= 0 ? '#22c55e' : '#ef4444'}
+                  strokeWidth={2}
+                  fill="url(#portfolioGrad)"
+                  dot={false}
+                  activeDot={{ r: 3 }}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       )}
 

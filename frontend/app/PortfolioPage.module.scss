@@ -244,6 +244,48 @@
 
 .warn { color: $warn; }
 
+// ─── Portfolio Performance Chart ──────────────────────────────────────────────
+
+.chartSection {
+  background: $surface-panel;
+  border-bottom: 1px solid $chrome-dim;
+  padding: $space-5 $space-6;
+
+  @media (max-width: 640px) {
+    padding: $space-4 $space-4;
+  }
+}
+
+.chartHeader {
+  display: flex;
+  align-items: baseline;
+  gap: $space-3;
+  margin-bottom: $space-4;
+  flex-wrap: wrap;
+}
+
+.chartTitle {
+  font-family: $font-ui;
+  font-size: 13px;
+  font-weight: 700;
+  color: $text-primary;
+  letter-spacing: -0.01em;
+}
+
+.chartSubtitle {
+  font-family: $font-ui;
+  font-size: 11px;
+  color: $text-disabled;
+}
+
+.chartWrap {
+  height: 140px;
+
+  @media (max-width: 640px) {
+    height: 110px;
+  }
+}
+
 // ─── Table ────────────────────────────────────────────────────────────────────
 
 .tableWrap {
