@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import styles from './AuthPage.module.scss';
 
@@ -20,8 +20,10 @@ function passwordStrength(pw) {
 }
 
 export default function SignupPage() {
-  const { register } = useAuth();
+  const { register, isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
+
+  if (!isLoading && isAuthenticated) return <Navigate to="/dashboard" replace />;
 
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');

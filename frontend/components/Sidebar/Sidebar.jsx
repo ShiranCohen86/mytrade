@@ -1,7 +1,8 @@
 
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { HelpModal } from '@/components/HelpModal/HelpModal';
 import { NAV_ITEMS } from '@/lib/navItems';
+import { useAuth } from '@/context/AuthContext';
 import styles from './Sidebar.module.scss';
 
 function NavSvgIcon({ label }) {
@@ -36,6 +37,14 @@ function SettingsIcon() {
 
 export function Sidebar({ isCollapsed, isMobileOpen = false, onClose }) {
   const { pathname } = useLocation();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    if (onClose) onClose();
+    await logout();
+    navigate('/login', { replace: true });
+  };
 
   const isActive = (href) => {
     if (href === '/dashboard') return pathname === '/dashboard' || pathname.startsWith('/stocks');
@@ -71,6 +80,26 @@ export function Sidebar({ isCollapsed, isMobileOpen = false, onClose }) {
       </nav>
 
       <div className={styles.bottom}>
+        {user && (!isCollapsed || isMobileOpen) && (
+          <div className={styles.userBlock}>
+            <div className={styles.userInfo}>
+              <span className={styles.userName}>{user.displayName || user.email?.split('@')[0]}</span>
+              <span className={styles.userEmail}>{user.email}</span>
+            </div>
+            <button
+              className={styles.signOutBtn}
+              onClick={handleLogout}
+              title="Sign out"
+              aria-label="Sign out"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+            </button>
+          </div>
+        )}
         <Link
           to="/settings"
           className={`${styles.settingsLink} ${pathname === '/settings' ? styles.settingsLinkActive : ''}`}

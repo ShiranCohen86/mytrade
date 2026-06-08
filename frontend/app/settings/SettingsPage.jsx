@@ -43,7 +43,7 @@ export default function SettingsPage() {
     if (!name) return;
     setNameSaving(true);
     try {
-      const updated = await updateProfile({ displayName: name });
+      const { user: updated } = await updateProfile({ displayName: name });
       updateUser(updated);
       toast.success('Profile updated.');
     } catch (err) {

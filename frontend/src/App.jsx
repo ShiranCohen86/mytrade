@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
-import { AuthProvider } from '@/context/AuthContext';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { ToastProvider } from '@/components/Toast/ToastProvider';
 import { PrivateRoute } from '@/components/PrivateRoute/PrivateRoute';
 import { AppShell } from '@/components/AppShell/AppShell';
@@ -19,6 +19,11 @@ import LandingPage from '@/app/LandingPage';
 function StockDetailRoute() {
   const { ticker } = useParams();
   return <StockDetailClient ticker={ticker.toUpperCase()} />;
+}
+
+function NotFound() {
+  const { isAuthenticated } = useAuth();
+  return <Navigate to={isAuthenticated ? '/dashboard' : '/'} replace />;
 }
 
 function AppLayout() {
@@ -54,8 +59,7 @@ export default function App() {
             </Route>
           </Route>
 
-          {/* Legacy redirect */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </AuthProvider>
       </ToastProvider>

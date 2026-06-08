@@ -9,3 +9,4 @@ build/
 Thumbs.db
 .claude/settings.local.json
 data/db.json
+tsconfig.tsbuildinfo

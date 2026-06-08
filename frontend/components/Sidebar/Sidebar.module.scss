@@ -181,6 +181,61 @@
   }
 }
 
+.userBlock {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-4;
+  margin-bottom: $space-1;
+  border-radius: $radius-md;
+  background: $surface-raised;
+  min-height: 48px;
+}
+
+.userInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.userName {
+  font-family: $font-ui;
+  font-size: 12px;
+  font-weight: 600;
+  color: $text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userEmail {
+  font-family: $font-ui;
+  font-size: 11px;
+  color: $text-disabled;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.signOutBtn {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: $radius-sm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $text-tertiary;
+  transition: background $motion-fast, color $motion-fast;
+
+  &:hover {
+    background: $neg-bg;
+    color: $neg;
+  }
+}
+
 .settingsLink {
   display: flex;
   align-items: center;

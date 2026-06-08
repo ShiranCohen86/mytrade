@@ -1,15 +1,17 @@
 import { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import styles from './AuthPage.module.scss';
 
 const EXPRESS = import.meta.env.VITE_EXPRESS_URL || '';
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login, isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from || '/dashboard';
+
+  if (!isLoading && isAuthenticated) return <Navigate to="/dashboard" replace />;
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
