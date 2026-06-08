@@ -1,16 +1,26 @@
 
+import { useState, useMemo } from 'react';
 import {
   ComposedChart,
   Area,
+  Bar,
   Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from 'recharts';
 import styles from './PriceChart.module.scss';
+
+const PERIODS = [
+  { label: '1W', days: 7 },
+  { label: '1M', days: 30 },
+  { label: '3M', days: 90 },
+  { label: '6M', days: 180 },
+  { label: '1Y', days: 365 },
+  { label: 'All', days: Infinity },
+];
 
 function computeSma(data, period) {
   return data.map((_, i) => {
@@ -20,9 +30,11 @@ function computeSma(data, period) {
   });
 }
 
-function formatDate(dateStr) {
+function formatDate(dateStr, rangeLen) {
   const d = new Date(dateStr);
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  if (rangeLen <= 30) return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  if (rangeLen <= 180) return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
 }
 
 function PriceTooltip({ active, payload }) {
@@ -49,33 +61,117 @@ function PriceTooltip({ active, payload }) {
   );
 }
 
+// Renders a full OHLC candlestick within the bounding box Recharts provides for wickRange
+function CandleShape({ x, y, width, height, payload }) {
+  if (!payload || height <= 0) return null;
+  const { open, close, high, low } = payload;
+  const priceRange = high - low || 0.001;
+  const isUp = close >= open;
+  const color = isUp ? 'var(--pos)' : 'var(--neg)';
+
+  // Pixel positions within this bar's bounding box (y = top = high, y+height = bottom = low)
+  const bodyTopPx = y + ((high - Math.max(open, close)) / priceRange) * height;
+  const bodyBotPx = y + ((high - Math.min(open, close)) / priceRange) * height;
+  const bodyH = Math.max(1, bodyBotPx - bodyTopPx);
+  const candleW = Math.max(3, Math.min(width * 0.75, 10));
+  const midX = x + width / 2;
+
+  return (
+    <g>
+      <line x1={midX} y1={y} x2={midX} y2={y + height} stroke={color} strokeWidth={1} opacity={0.55} />
+      <rect
+        x={midX - candleW / 2}
+        y={bodyTopPx}
+        width={candleW}
+        height={bodyH}
+        fill={color}
+        stroke={color}
+        strokeWidth={0.5}
+        opacity={0.85}
+      />
+    </g>
+  );
+}
+
 export function PriceChart({ historical, ticker }) {
+  const [period, setPeriod] = useState('3M');
+  const [mode, setMode] = useState('area');
+
+  const visible = useMemo(() => {
+    if (!historical?.length) return [];
+    const days = PERIODS.find((p) => p.label === period)?.days ?? Infinity;
+    return days === Infinity ? historical : historical.slice(-days);
+  }, [historical, period]);
+
+  const chartData = useMemo(() => {
+    const sma20 = computeSma(visible, 20);
+    return visible.map((p, i) => {
+      const o = parseFloat((p.open ?? p.close).toFixed(2));
+      const h = parseFloat((p.high ?? p.close).toFixed(2));
+      const l = parseFloat((p.low ?? p.close).toFixed(2));
+      const c = parseFloat(p.close.toFixed(2));
+      return {
+        date: formatDate(p.date, visible.length),
+        fullDate: new Date(p.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }),
+        price: c,
+        sma20: sma20[i],
+        open: o, close: c, high: h, low: l,
+        wickRange: [l, h],
+      };
+    });
+  }, [visible]);
+
   if (!historical || historical.length === 0) {
     return <div className={styles.empty}>No price data available</div>;
   }
 
-  const sma20 = computeSma(historical, 20);
-
-  const chartData = historical.map((p, i) => ({
-    date: formatDate(p.date),
-    fullDate: new Date(p.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }),
-    price: parseFloat(p.close.toFixed(2)),
-    sma20: sma20[i],
-    open: parseFloat(p.open?.toFixed(2) ?? p.close.toFixed(2)),
-    high: parseFloat(p.high?.toFixed(2) ?? p.close.toFixed(2)),
-    low: parseFloat(p.low?.toFixed(2) ?? p.close.toFixed(2)),
-  }));
-
-  const prices = historical.map((p) => p.close);
+  const prices = visible.flatMap((p) => [p.high ?? p.close, p.low ?? p.close]).filter(Boolean);
   const minP = Math.min(...prices);
   const maxP = Math.max(...prices);
   const padding = (maxP - minP) * 0.05;
+  const tickInterval = Math.max(0, Math.floor(chartData.length / 5) - 1);
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <span className={styles.title}>{ticker} — Price History</span>
-        <span className={styles.subtitle}>{historical.length}-day chart</span>
+        <div className={styles.titleRow}>
+          <span className={styles.title}>{ticker} — Price History</span>
+          <button
+            className={`${styles.modeBtn} ${mode === 'candle' ? styles.modeBtnActive : ''}`}
+            onClick={() => setMode((m) => m === 'area' ? 'candle' : 'area')}
+            title="Toggle candlestick / area chart"
+          >
+            {mode === 'candle' ? (
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <rect x="3" y="4" width="3" height="6" fill="currentColor" rx="0.5" />
+                <rect x="4" y="1" width="1" height="3" fill="currentColor" />
+                <rect x="4" y="10" width="1" height="3" fill="currentColor" />
+                <rect x="9" y="3" width="3" height="5" fill="currentColor" rx="0.5" />
+                <rect x="10" y="1" width="1" height="2" fill="currentColor" />
+                <rect x="10" y="8" width="1" height="3" fill="currentColor" />
+              </svg>
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                <polyline points="1,12 4,8 7,5 10,7 13,2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            )}
+          </button>
+        </div>
+        <div className={styles.periodRow}>
+          {PERIODS.map(({ label }) => {
+            const disabled = label !== 'All' && historical.length < PERIODS.find((p) => p.label === label).days;
+            return (
+              <button
+                key={label}
+                className={`${styles.periodBtn} ${period === label ? styles.periodBtnActive : ''}`}
+                onClick={() => setPeriod(label)}
+                disabled={disabled}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
       </div>
       <ResponsiveContainer width="100%" height={320}>
         <ComposedChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
@@ -91,7 +187,7 @@ export function PriceChart({ historical, ticker }) {
             tick={{ fontSize: 10, fill: 'var(--text-disabled)', fontFamily: 'Inter, sans-serif' }}
             axisLine={{ stroke: 'var(--chrome-dim)' }}
             tickLine={false}
-            interval={Math.floor(chartData.length / 6)}
+            interval={tickInterval}
           />
           <YAxis
             domain={[minP - padding, maxP + padding]}
@@ -102,21 +198,24 @@ export function PriceChart({ historical, ticker }) {
             width={55}
           />
           <Tooltip content={<PriceTooltip />} />
-          <Legend
-            formatter={(v) => v === 'price' ? 'Close' : 'SMA 20'}
-            iconType="line"
-            iconSize={10}
-            wrapperStyle={{ fontSize: '10px', fontFamily: 'Inter, sans-serif', color: 'var(--text-tertiary)' }}
-          />
-          <Area
-            type="monotone"
-            dataKey="price"
-            stroke="var(--accent)"
-            strokeWidth={1.5}
-            fill="url(#priceGrad)"
-            dot={false}
-            isAnimationActive={false}
-          />
+          {mode === 'area' ? (
+            <Area
+              type="monotone"
+              dataKey="price"
+              stroke="var(--accent)"
+              strokeWidth={1.5}
+              fill="url(#priceGrad)"
+              dot={false}
+              isAnimationActive={false}
+            />
+          ) : (
+            <Bar
+              dataKey="wickRange"
+              shape={<CandleShape />}
+              isAnimationActive={false}
+              maxBarSize={12}
+            />
+          )}
           <Line
             type="monotone"
             dataKey="sma20"

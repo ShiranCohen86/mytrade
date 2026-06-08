@@ -55,6 +55,7 @@ export default function DashboardPage() {
   const [sectorFilter, setSectorFilter] = useState(null);
   const [riskFilter, setRiskFilter] = useState(null);
   const [earningsFilter, setEarningsFilter] = useState(null);
+  const importRef = useRef(null);
 
   useEffect(() => {
     if (!moreOpen) return;
@@ -190,6 +191,37 @@ export default function DashboardPage() {
     toast.success(`Exported ${target.length} stock${target.length !== 1 ? 's' : ''} to CSV.`);
   }, [stocks, filteredStocks, hasActiveFilters, toast]);
 
+  const handleImportFile = useCallback(async (e) => {
+    const file = e.target.files?.[0];
+    if (!importRef.current) return;
+    importRef.current.value = '';
+    if (!file) return;
+    const text = await file.text();
+    const lines = text.split(/\r?\n/).filter(Boolean);
+    if (!lines.length) { toast.error('CSV file is empty.'); return; }
+    // Auto-detect ticker column: look for header row with "ticker" (case-insensitive)
+    const header = lines[0].split(',').map((h) => h.trim().replace(/^"|"$/g, '').toLowerCase());
+    const tickerIdx = header.indexOf('ticker');
+    const dataLines = tickerIdx >= 0 ? lines.slice(1) : lines;
+    const existing = new Set(stocks.map((s) => s.ticker));
+    const tickers = [...new Set(
+      dataLines
+        .map((l) => {
+          const col = tickerIdx >= 0 ? l.split(',')[tickerIdx] : l.split(',')[0];
+          return (col || '').trim().replace(/^"|"$/g, '').toUpperCase();
+        })
+        .filter((t) => /^[A-Z]{1,5}$/.test(t) && !existing.has(t))
+    )];
+    if (!tickers.length) { toast.warning('No new valid tickers found in CSV.'); return; }
+    toast.info(`Importing ${tickers.length} ticker${tickers.length !== 1 ? 's' : ''}…`);
+    let added = 0;
+    for (const t of tickers) {
+      try { await add(t); added++; } catch { /* skip invalid */ }
+    }
+    if (added > 0) toast.success(`Added ${added} ticker${added !== 1 ? 's' : ''} from CSV.`);
+    else toast.error('No tickers could be added.');
+  }, [stocks, add, toast]);
+
   return (
     <div className={styles.page}>
       <MarketOverview />
@@ -216,6 +248,9 @@ export default function DashboardPage() {
                 <EarningsCalendar stocks={stocks} />
                 <button className={styles.toolBtn} onClick={exportCSV} title="Export to CSV">
                   ↓ CSV
+                </button>
+                <button className={styles.toolBtn} onClick={() => importRef.current?.click()} title="Import tickers from CSV">
+                  ↑ Import
                 </button>
                 <button
                   className={styles.toolBtn}
@@ -273,6 +308,13 @@ export default function DashboardPage() {
                     role="menuitem"
                   >
                     ↓ Export CSV
+                  </button>
+                  <button
+                    className={styles.moreItem}
+                    onClick={() => { importRef.current?.click(); setMoreOpen(false); }}
+                    role="menuitem"
+                  >
+                    ↑ Import CSV
                   </button>
                   <button
                     className={styles.moreItem}
@@ -425,6 +467,15 @@ export default function DashboardPage() {
           </div>
         </BottomSheet>
       )}
+
+      {/* Hidden file input for CSV import */}
+      <input
+        ref={importRef}
+        type="file"
+        accept=".csv,text/csv"
+        style={{ display: 'none' }}
+        onChange={handleImportFile}
+      />
     </div>
   );
 }
