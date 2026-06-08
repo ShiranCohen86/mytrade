@@ -229,6 +229,11 @@ $cols-xs:      44px 1fr 76px 60px 34px;
   text-align: right;
 }
 
+.sinceAdd {
+  opacity: 0.65;
+  font-style: italic;
+}
+
 // ─── Semantic colors ─────────────────────────────────────────────────────────
 
 .pos { color: $pos; background: $pos-bg; }

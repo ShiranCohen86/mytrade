@@ -81,7 +81,7 @@ function StockRowInner({
     return () => mq.removeEventListener('change', handler);
   }, []);
 
-  const { ticker, name, cachedData, analysis } = stock;
+  const { ticker, name, cachedData, analysis, stockPriceAtAdd } = stock;
 
   // Price flash on live update
   useEffect(() => {
@@ -129,6 +129,10 @@ function StockRowInner({
   const extLabel = marketStatus === 'pre' ? 'PRE' : 'AH';
   const pnlPct = entryPrice && currentPrice ? ((currentPrice - entryPrice) / entryPrice) * 100 : null;
   const pnlAbs = pnlPct != null && shares != null ? (currentPrice - entryPrice) * shares : null;
+  // Fallback: show return since added when no portfolio entry is set
+  const sinceAddPct = pnlPct === null && stockPriceAtAdd != null && currentPrice != null
+    ? ((currentPrice - stockPriceAtAdd) / stockPriceAtAdd) * 100
+    : null;
 
   const alertTriggered = priceAlert && currentPrice !== null && (
     priceAlert.direction === 'above'
@@ -197,10 +201,14 @@ function StockRowInner({
           {isPositive ? '+' : ''}{change.toFixed(2)}%
         </span>
 
-        {/* P&L badge (if entry set) */}
+        {/* P&L from entry price; fallback to return since added */}
         {pnlPct !== null ? (
-          <span className={`${styles.pnl} ${pnlPct >= 0 ? styles.pos : styles.neg}`}>
+          <span className={`${styles.pnl} ${pnlPct >= 0 ? styles.pos : styles.neg}`} title="Return from entry price">
             {pnlPct >= 0 ? '+' : ''}{pnlPct.toFixed(1)}%
+          </span>
+        ) : sinceAddPct !== null ? (
+          <span className={`${styles.pnl} ${styles.sinceAdd} ${sinceAddPct >= 0 ? styles.pos : styles.neg}`} title="Return since added to watchlist">
+            {sinceAddPct >= 0 ? '+' : ''}{sinceAddPct.toFixed(1)}%
           </span>
         ) : <span className={styles.pnl} />}
 
