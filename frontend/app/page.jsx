@@ -219,6 +219,13 @@ export default function DashboardPage() {
         </div>
       )}
 
+      {isConnected === false && !showError && (
+        <div className={styles.offlinePill} role="status" aria-live="polite">
+          <span className={styles.offlineDot} />
+          No connection — prices may be stale
+        </div>
+      )}
+
       {/* Loading state */}
       {isLoading && stocks.length === 0 ? (
         <div className={styles.loadingState}>
@@ -253,7 +260,6 @@ export default function DashboardPage() {
           <SummaryStrip stocks={stocks} />
           <WatchlistTable
             stocks={sortedStocks}
-            isConnected={isConnected}
             analyzingTickers={analyzingTickers}
             analysisErrors={analysisErrors}
             portfolio={portfolio}

@@ -20,7 +20,7 @@ const COLUMNS = [
 ];
 
 export function WatchlistTable({
-  stocks, isConnected, analyzingTickers, analysisErrors,
+  stocks, analyzingTickers, analysisErrors,
   portfolio, priceAlerts, notes,
   sortKey, onSortChange,
   onRemove, onUpdateEntryPrice, onUpdateAlert, onUpdateNote, onReorder, onAnalyzeTicker,
@@ -86,7 +86,6 @@ export function WatchlistTable({
             <StockRow
               stock={stock}
               onRemove={onRemove}
-              isConnected={isConnected}
               isAnalyzing={analyzingTickers.has(stock.ticker)}
               analysisError={analysisErrors.get(stock.ticker) ?? null}
               portfolioEntry={portfolio.find((p) => p.ticker === stock.ticker) ?? null}

@@ -60,7 +60,7 @@ function EarningsRing({ daysToEarnings }) {
 }
 
 function StockRowInner({
-  stock, onRemove, isConnected = null, isAnalyzing = false, analysisError = null,
+  stock, onRemove, isAnalyzing = false, analysisError = null,
   portfolioEntry = null, priceAlert = null, note = null,
   onUpdateEntryPrice, onUpdateAlert, onUpdateNote, onAnalyzeTicker,
   isDragging = false, onDragStart, onDragOver, onDragEnd, isDropTarget = false,

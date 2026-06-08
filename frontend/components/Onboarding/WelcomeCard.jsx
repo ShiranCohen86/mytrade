@@ -23,7 +23,10 @@ export function WelcomeCard() {
   return (
     <div className={styles.card} role="region" aria-label="Welcome">
       <div className={styles.header}>
-        <span className={styles.emoji}>📈</span>
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={styles.icon} aria-hidden="true">
+          <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+          <polyline points="16 7 22 7 22 13" />
+        </svg>
         <div>
           <h2 className={styles.title}>Welcome to MyTrade</h2>
           <p className={styles.subtitle}>Your personal stock intelligence dashboard</p>
