@@ -21,6 +21,9 @@
   border-bottom: 1px solid $chrome-dim;
   flex-shrink: 0;
   gap: $space-4;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 
   @include below-sm {
     flex-wrap: wrap;
@@ -181,7 +184,7 @@
 
 .barFill {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+  background: $accent;
   transition: width $motion-base;
 }
 

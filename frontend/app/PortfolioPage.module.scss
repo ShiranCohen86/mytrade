@@ -19,6 +19,9 @@
   border-bottom: 1px solid $chrome-dim;
   flex-shrink: 0;
   gap: $space-4;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 
   @include below-sm {
     padding: 0 $space-4;

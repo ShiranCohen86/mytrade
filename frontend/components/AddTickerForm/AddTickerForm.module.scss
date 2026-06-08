@@ -48,7 +48,7 @@
 }
 
 .button {
-  background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+  background: $accent;
   color: #fff;
   border: none;
   border-radius: $radius-md;
@@ -58,21 +58,20 @@
   font-size: 13px;
   font-weight: 600;
   letter-spacing: -0.01em;
-  transition: filter $motion-fast, transform $motion-fast, box-shadow $motion-fast;
+  transition: background $motion-fast, transform $motion-fast, box-shadow $motion-fast;
   white-space: nowrap;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(91, 95, 227, 0.25);
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
 
   &:hover:not(:disabled) {
-    filter: brightness(1.08);
+    background: $accent-hover;
     transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(91, 95, 227, 0.38);
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.32);
   }
 
   &:active:not(:disabled) {
     transform: translateY(0);
-    box-shadow: 0 1px 4px rgba(91, 95, 227, 0.20);
-    filter: brightness(0.96);
+    box-shadow: 0 1px 4px rgba(79, 70, 229, 0.18);
   }
 
   &:disabled {

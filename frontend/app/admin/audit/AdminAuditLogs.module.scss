@@ -1,9 +1,10 @@
 @use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
 
 .page {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: $space-5;
 }
 
 .pageHeader {
@@ -13,64 +14,63 @@
 }
 
 .pageTitle {
-  font-size: $text-xl;
+  font-size: $text-2xl;
   font-weight: 700;
-  color: var(--text-primary);
+  letter-spacing: -0.03em;
+  color: $text-primary;
   margin: 0;
 }
 
 .headerActions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: $space-2;
 }
 
 .exportBtn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  height: 30px;
-  padding: 0 12px;
-  border-radius: $radius-sm;
-  border: 1px solid var(--chrome-dim);
-  background: var(--surface-panel);
-  color: var(--text-secondary);
+  gap: $space-1;
+  height: 32px;
+  padding: 0 $space-4;
+  border-radius: $radius-md;
+  border: 1px solid $chrome-dim;
+  background: $surface-panel;
+  color: $text-secondary;
   font-size: $text-sm;
+  font-weight: 500;
   text-decoration: none;
-  transition: color $motion-fast, border-color $motion-fast;
+  transition: color $motion-fast, border-color $motion-fast, background $motion-fast;
 
-  &:hover { color: var(--pos); border-color: var(--pos); }
+  &:hover { color: $pos; border-color: $pos; background: $pos-bg; }
 }
 
 // ─── Stats row ────────────────────────────────────────────────────────────────
 
 .statsRow {
   display: flex;
-  gap: 8px;
+  gap: $space-2;
   flex-wrap: wrap;
 }
 
 .statPill {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
+  gap: $space-2;
+  padding: $space-1 $space-3;
   border-radius: $radius-pill;
-  border: 1px solid var(--chrome-dim);
-  background: var(--surface-panel);
+  border: 1px solid $chrome-dim;
+  background: $surface-panel;
 }
 
 .statPillCount {
-  font-size: $text-sm;
+  @include mono-value($text-sm);
   font-weight: 700;
-  font-family: $font-data;
+  color: $text-primary;
 }
 
 .statPillLabel {
-  font-size: $text-xs;
-  color: var(--text-tertiary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  @include section-label;
 }
 
 // ─── Filters ──────────────────────────────────────────────────────────────────
@@ -78,51 +78,53 @@
 .filters {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: $space-2;
   flex-wrap: wrap;
 }
 
 .input, .select, .dateInput {
-  height: 30px;
-  background: var(--surface-panel);
-  border: 1px solid var(--chrome-dim);
-  border-radius: $radius-sm;
-  padding: 0 8px;
+  height: 34px;
+  background: $surface-raised;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-md;
+  padding: 0 $space-3;
   font-size: $text-sm;
-  color: var(--text-primary);
+  color: $text-primary;
   font-family: $font-ui;
   outline: none;
+  transition: border-color $motion-fast;
 
-  &:focus { border-color: var(--accent); }
+  &:focus { border-color: $accent; box-shadow: $shadow-glow; }
 }
 
 .input    { min-width: 180px; }
 .select   { min-width: 130px; }
-.dateInput { width: 130px; }
+.dateInput { width: 136px; }
 
 .clearBtn {
-  height: 30px;
-  padding: 0 12px;
-  border-radius: $radius-sm;
-  border: 1px solid var(--chrome-dim);
+  height: 34px;
+  padding: 0 $space-4;
+  border-radius: $radius-md;
+  border: 1px solid $chrome-dim;
   background: transparent;
-  color: var(--text-secondary);
+  color: $text-secondary;
   font-size: $text-sm;
   font-family: $font-ui;
   cursor: pointer;
-  transition: color $motion-fast, border-color $motion-fast;
+  transition: color $motion-fast, border-color $motion-fast, background $motion-fast;
 
-  &:hover { color: var(--neg); border-color: var(--neg); }
+  &:hover { color: $neg; border-color: $neg; background: $neg-bg; }
 }
 
 // ─── Table ────────────────────────────────────────────────────────────────────
 
 .tableWrap {
   position: relative;
-  background: var(--surface-panel);
-  border: 1px solid var(--chrome-dim);
-  border-radius: $radius-md;
+  background: $surface-panel;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-xl;
   overflow: hidden;
+  box-shadow: $shadow-xs;
 }
 
 .loadingOverlay {
@@ -131,9 +133,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.04);
   font-size: $text-sm;
-  color: var(--text-tertiary);
+  color: $text-tertiary;
   z-index: 2;
 }
 
@@ -143,23 +145,21 @@
   font-size: $text-sm;
 
   th {
-    padding: 9px 14px;
+    padding: $space-2 $space-4;
     text-align: left;
-    font-size: $text-xs;
-    font-weight: 600;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    background: var(--surface-panel);
-    border-bottom: 1px solid var(--chrome-dim);
+    @include section-label;
+    background: $surface-panel;
+    border-bottom: 1px solid $chrome-dim;
     white-space: nowrap;
+    height: 36px;
   }
 
   td {
-    padding: 9px 14px;
-    color: var(--text-primary);
-    border-bottom: 1px solid var(--chrome-dim);
+    padding: $space-2 $space-4;
+    color: $text-primary;
+    border-bottom: 1px solid $chrome-dim;
     vertical-align: middle;
+    height: 42px;
   }
 
   tr:last-child td { border-bottom: none; }
@@ -167,25 +167,24 @@
 
 .logRow {
   cursor: pointer;
-
-  &:hover td { background: var(--surface-hover); }
+  &:hover td { background: $surface-hover; }
 }
 
-.monoCell  { font-family: $font-data; font-size: $text-xs; color: var(--text-primary); }
-.ipCell    { font-family: $font-data; font-size: $text-xs; color: var(--text-tertiary); }
-.timeCell  { font-size: $text-xs; color: var(--text-tertiary); white-space: nowrap; }
-.expandCell { font-size: $text-xs; color: var(--text-tertiary); text-align: right; }
-.emptyCell { text-align: center; color: var(--text-tertiary); padding: 32px; }
+.monoCell  { @include mono-value($text-xs); color: $text-primary; }
+.ipCell    { @include mono-value($text-xs); color: $text-tertiary; }
+.timeCell  { font-size: $text-xs; color: $text-tertiary; white-space: nowrap; }
+.expandCell { font-size: $text-xs; color: $text-tertiary; text-align: right; }
+.emptyCell { text-align: center; color: $text-tertiary; padding: $space-8; }
 
 .actorCell {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: $space-2;
 }
 
 .actorEmail {
   font-size: $text-xs;
-  color: var(--text-secondary);
+  color: $text-secondary;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -195,14 +194,14 @@
 // ─── Detail row ───────────────────────────────────────────────────────────────
 
 .detailRow td {
-  background: var(--surface-base) !important;
-  padding: 12px 16px;
+  background: $surface-base !important;
+  padding: $space-4;
 }
 
 .detailGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 10px;
+  gap: $space-3;
 }
 
 .detailItem {
@@ -211,22 +210,17 @@
   gap: 3px;
 
   span:first-child {
-    font-size: $text-xs;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    @include section-label;
   }
 
   code {
     font-family: $font-data;
     font-size: $text-xs;
-    color: var(--text-primary);
+    color: $text-primary;
     word-break: break-all;
   }
 
-  &.full {
-    grid-column: 1 / -1;
-  }
+  &.full { grid-column: 1 / -1; }
 }
 
 .ua { font-size: 10px; }
@@ -234,47 +228,49 @@
 .metaPre {
   font-family: $font-data;
   font-size: $text-xs;
-  color: var(--text-secondary);
-  background: var(--surface-panel);
-  border-radius: $radius-xs;
-  padding: 6px 8px;
+  color: $text-secondary;
+  background: $surface-raised;
+  border-radius: $radius-sm;
+  padding: $space-2 $space-3;
   margin: 0;
   overflow-x: auto;
   white-space: pre-wrap;
-  border: 1px solid var(--chrome-dim);
+  border: 1px solid $chrome-dim;
 }
 
 // ─── Severity badges ──────────────────────────────────────────────────────────
 
 .sevBadge {
   font-size: $text-2xs;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  padding: 2px 6px;
+  padding: 2px 7px;
   border-radius: $radius-xs;
   white-space: nowrap;
+  border: 1px solid transparent;
 }
 
-.sev_info     { background: var(--accent-faint); color: var(--accent); }
-.sev_warning  { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
-.sev_critical { background: var(--neg-bg); color: var(--neg); }
+.sev_info     { background: $accent-faint; color: $accent; border-color: rgba(79, 70, 229, 0.20); }
+.sev_warning  { background: $warn-bg; color: $warn; border-color: rgba(217, 119, 6, 0.25); }
+.sev_critical { background: $neg-bg; color: $neg; border-color: rgba(220, 38, 38, 0.25); }
 
 // ─── Actor badges ─────────────────────────────────────────────────────────────
 
 .actorBadge {
   font-size: $text-2xs;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  padding: 1px 5px;
+  padding: 1px 6px;
   border-radius: $radius-xs;
   flex-shrink: 0;
+  border: 1px solid transparent;
 }
 
-.actor_user   { background: var(--surface-elevated); color: var(--text-secondary); }
-.actor_admin  { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
-.actor_system { background: rgba(156, 163, 175, 0.15); color: #9ca3af; }
+.actor_user   { background: $surface-raised; color: $text-secondary; border-color: $chrome-dim; }
+.actor_admin  { background: $accent-faint;   color: $accent;         border-color: rgba(79, 70, 229, 0.25); }
+.actor_system { background: $surface-raised; color: $text-tertiary;  border-color: $chrome-dim; }
 
 // ─── Pagination ───────────────────────────────────────────────────────────────
 
@@ -282,35 +278,36 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: $space-4;
 }
 
 .pageBtn {
-  height: 30px;
-  padding: 0 12px;
-  border-radius: $radius-sm;
-  border: 1px solid var(--chrome-dim);
-  background: var(--surface-panel);
-  color: var(--text-secondary);
+  height: 32px;
+  padding: 0 $space-4;
+  border-radius: $radius-md;
+  border: 1px solid $chrome-dim;
+  background: $surface-panel;
+  color: $text-secondary;
   font-size: $text-sm;
   font-family: $font-ui;
+  font-weight: 500;
   cursor: pointer;
-  transition: color $motion-fast, border-color $motion-fast;
+  transition: color $motion-fast, border-color $motion-fast, background $motion-fast;
 
-  &:hover:not(:disabled) { color: var(--accent); border-color: var(--accent); }
-  &:disabled { opacity: 0.4; cursor: default; }
+  &:hover:not(:disabled) { color: $accent; border-color: $accent; background: $accent-faint; }
+  &:disabled { opacity: 0.35; cursor: default; }
 }
 
 .pageInfo {
   font-size: $text-sm;
-  color: var(--text-tertiary);
+  color: $text-tertiary;
 }
 
 .error {
-  padding: 12px 16px;
-  color: var(--neg);
-  background: var(--neg-bg);
-  border: 1px solid var(--neg);
-  border-radius: $radius-sm;
+  padding: $space-4;
+  color: $neg;
+  background: $neg-bg;
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  border-radius: $radius-md;
   font-size: $text-sm;
 }

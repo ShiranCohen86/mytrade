@@ -1,68 +1,62 @@
 @use '@/styles/variables' as *;
-
-// ─── Panel shell ──────────────────────────────────────────────────────────────
+@use '@/styles/mixins' as *;
 
 .panel {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: $space-4;
 }
-
-// ─── Period picker ────────────────────────────────────────────────────────────
 
 .periodRow {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: $space-1;
 }
 
 .periodBtn {
   height: 26px;
-  padding: 0 10px;
-  border-radius: $radius-xs;
-  border: 1px solid var(--chrome-dim);
+  padding: 0 $space-3;
+  border-radius: $radius-sm;
+  border: 1px solid $chrome-dim;
   background: transparent;
   font-size: $text-xs;
   font-weight: 500;
-  color: var(--text-tertiary);
+  color: $text-tertiary;
   font-family: $font-ui;
   cursor: pointer;
-  transition: all $motion-fast;
+  transition: color $motion-fast, border-color $motion-fast, background $motion-fast;
 
-  &:hover { color: var(--text-primary); border-color: var(--chrome-mid); }
+  &:hover { color: $text-primary; border-color: $chrome-mid; background: $surface-raised; }
 }
 
 .periodBtnActive {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: $accent;
+  border-color: $accent;
   color: #fff;
+  font-weight: 600;
 
-  &:hover { opacity: 0.9; color: #fff; border-color: var(--accent); }
+  &:hover { opacity: 0.88; color: #fff; }
 }
 
 .periodNote {
   font-size: $text-xs;
-  color: var(--text-tertiary);
-  margin-left: 4px;
+  color: $text-tertiary;
+  margin-left: $space-1;
 }
-
-// ─── Stat cards ───────────────────────────────────────────────────────────────
 
 .statRow {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  gap: $space-2;
 
-  @media (max-width: $bp-md) {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  @media (max-width: $bp-md) { grid-template-columns: repeat(2, 1fr); }
 }
 
 .statCard {
-  background: var(--surface-base);
-  border: 1px solid var(--chrome-dim);
-  border-radius: $radius-sm;
-  padding: 10px 12px;
+  background: $surface-raised;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-lg;
+  padding: $space-3 $space-4;
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -71,83 +65,65 @@
 }
 
 .statValue {
-  font-size: $text-2xl;
-  font-weight: 700;
-  color: var(--text-primary);
-  font-family: $font-data;
+  @include mono-value(22px);
+  font-weight: 800;
+  color: $text-primary;
+  letter-spacing: -0.04em;
   line-height: 1;
 }
 
-.statLabel {
-  font-size: $text-xs;
-  color: var(--text-tertiary);
-  font-weight: 500;
-}
+.statLabel { @include section-label; }
 
 .statSub {
   font-size: $text-xs;
-  color: var(--text-tertiary);
+  color: $text-tertiary;
   opacity: 0.7;
 }
 
 .riskBadge {
   font-size: $text-sm;
   font-weight: 700;
-  color: var(--risk-color, var(--text-primary));
+  color: var(--risk-color, $text-primary);
   line-height: 1.3;
 }
-
-// ─── Two-column grid ──────────────────────────────────────────────────────────
 
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: $space-3;
 
-  @media (max-width: $bp-lg) {
-    grid-template-columns: 1fr;
-  }
+  @media (max-width: $bp-lg) { grid-template-columns: 1fr; }
 }
-
-// ─── Section ─────────────────────────────────────────────────────────────────
 
 .section {
-  background: var(--surface-base);
-  border: 1px solid var(--chrome-dim);
-  border-radius: $radius-sm;
-  padding: 12px;
+  background: $surface-raised;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-lg;
+  padding: $space-3;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: $space-3;
 }
 
-.sectionTitle {
-  font-size: $text-xs;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-tertiary);
-}
+.sectionTitle { @include section-label; }
 
 .sectionEmpty {
   font-size: $text-xs;
-  color: var(--text-tertiary);
-  padding: 8px 0;
+  color: $text-tertiary;
+  padding: $space-2 0;
 }
-
-// ─── Sector distribution ─────────────────────────────────────────────────────
 
 .sectorList {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: $space-2;
 }
 
 .sectorRow {
   display: grid;
   grid-template-columns: 90px 1fr 36px 32px;
   align-items: center;
-  gap: 8px;
+  gap: $space-2;
 }
 
 .sectorName {
@@ -159,75 +135,67 @@
 }
 
 .sectorBarWrap {
-  height: 6px;
-  background: var(--chrome-dim);
-  border-radius: 3px;
+  height: 5px;
+  background: $chrome-dim;
+  border-radius: $radius-pill;
   overflow: hidden;
 }
 
 .sectorBarFill {
   height: 100%;
-  border-radius: 3px;
-  transition: width 0.4s ease;
+  border-radius: $radius-pill;
+  transition: width $motion-base;
 }
 
 .sectorPct {
-  font-size: $text-2xs;
-  color: var(--text-tertiary);
+  @include mono-value($text-2xs);
+  color: $text-tertiary;
   text-align: right;
-  font-family: $font-data;
 }
 
 .sectorCount {
-  font-size: $text-2xs;
-  color: var(--text-tertiary);
+  @include mono-value($text-2xs);
+  color: $text-tertiary;
   text-align: right;
-  font-family: $font-data;
 }
-
-// ─── Symbol list ─────────────────────────────────────────────────────────────
 
 .symbolList {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .symbolHeader {
   display: grid;
   grid-template-columns: 20px 52px 1fr 36px 48px;
-  gap: 6px;
-  font-size: $text-2xs;
-  color: var(--text-tertiary);
-  padding-bottom: 4px;
-  border-bottom: 1px solid var(--chrome-dim);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  gap: $space-2;
+  @include section-label;
+  padding-bottom: $space-1;
+  border-bottom: 1px solid $chrome-dim;
 }
 
 .symbolRow {
   display: grid;
   grid-template-columns: 20px 52px 1fr 36px 48px;
   align-items: center;
-  gap: 6px;
+  gap: $space-2;
   padding: 3px 0;
   border-radius: $radius-xs;
+  transition: background $motion-fast;
 
-  &:hover { background: var(--surface-hover); }
+  &:hover { background: $surface-hover; }
 }
 
 .symbolRank {
-  font-size: $text-2xs;
-  color: var(--text-tertiary);
-  font-family: $font-data;
+  @include mono-value($text-2xs);
+  color: $text-tertiary;
   text-align: center;
 }
 
 .symbolTicker {
-  font-family: $font-data;
-  font-size: $text-xs;
+  @include mono-value($text-xs);
   font-weight: 700;
-  color: var(--accent);
+  color: $accent;
 }
 
 .symbolSector {
@@ -239,65 +207,54 @@
 }
 
 .symbolCount {
-  font-size: $text-2xs;
-  color: var(--text-secondary);
-  font-family: $font-data;
+  @include mono-value($text-2xs);
+  color: $text-secondary;
   text-align: right;
 }
 
 .symbolLast {
   font-size: $text-2xs;
-  color: var(--text-tertiary);
+  color: $text-tertiary;
   text-align: right;
 }
 
-// ─── Chart wrapper ────────────────────────────────────────────────────────────
-
-.chartWrap {
-  // Ensures recharts fills container without overflow
-  width: 100%;
-  min-height: 0;
-}
-
-// ─── Recharts custom tooltip ─────────────────────────────────────────────────
+.chartWrap { width: 100%; min-height: 0; }
 
 .tooltip {
-  background: var(--surface-elevated);
-  border: 1px solid var(--chrome-mid);
-  border-radius: $radius-sm;
-  padding: 6px 10px;
+  background: $surface-elevated;
+  border: 1px solid $chrome-mid;
+  border-radius: $radius-md;
+  padding: $space-2 $space-3;
   font-family: $font-ui;
-  box-shadow: var(--shadow-sm);
+  box-shadow: $shadow-sm;
 }
 
 .tooltipLabel {
   font-size: $text-xs;
-  color: var(--text-tertiary);
+  color: $text-tertiary;
   margin-bottom: 3px;
 }
 
 .tooltipRow {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: $space-3;
   font-size: $text-xs;
-  color: var(--text-primary);
+  color: $text-primary;
 }
 
-// ─── States ───────────────────────────────────────────────────────────────────
-
 .loading, .empty {
-  padding: 24px 0;
+  padding: $space-6 0;
   text-align: center;
-  color: var(--text-tertiary);
+  color: $text-tertiary;
   font-size: $text-sm;
 }
 
 .error {
-  padding: 10px 12px;
-  color: var(--neg);
-  background: var(--neg-bg);
-  border: 1px solid var(--neg);
-  border-radius: $radius-sm;
+  padding: $space-3;
+  color: $neg;
+  background: $neg-bg;
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  border-radius: $radius-md;
   font-size: $text-sm;
 }

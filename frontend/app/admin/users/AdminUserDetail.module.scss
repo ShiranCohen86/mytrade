@@ -1,29 +1,36 @@
 @use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
 
 .page {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: $space-5;
 }
 
 .pageHeader {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: $space-3;
 }
 
 .back {
   font-size: $text-sm;
-  color: var(--text-tertiary);
+  font-weight: 500;
+  color: $text-tertiary;
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  transition: color $motion-fast;
 
-  &:hover { color: var(--text-primary); }
+  &:hover { color: $text-primary; }
 }
 
 .pageTitle {
-  font-size: $text-xl;
+  font-size: $text-2xl;
   font-weight: 700;
-  color: var(--text-primary);
+  letter-spacing: -0.03em;
+  color: $text-primary;
   margin: 0;
 }
 
@@ -32,41 +39,47 @@
 .layout {
   display: grid;
   grid-template-columns: 300px 1fr;
-  gap: 16px;
+  gap: $space-5;
   align-items: start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .left, .right {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: $space-4;
 }
 
 // ─── Profile card ─────────────────────────────────────────────────────────────
 
 .profileCard {
-  background: var(--surface-panel);
-  border: 1px solid var(--chrome-dim);
-  border-radius: $radius-md;
-  padding: 20px;
+  background: $surface-panel;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-xl;
+  padding: $space-6;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 8px;
+  gap: $space-2;
+  box-shadow: $shadow-xs;
 }
 
 .profileAvatar {
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: var(--surface-elevated);
+  background: $accent-faint;
+  border: 2px solid rgba(79, 70, 229, 0.20);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: $text-2xl;
   font-weight: 700;
-  color: var(--text-secondary);
+  color: $accent;
   overflow: hidden;
 
   img { width: 100%; height: 100%; object-fit: cover; }
@@ -75,33 +88,35 @@
 .profileName {
   font-size: $text-md;
   font-weight: 600;
-  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  color: $text-primary;
 }
 
 .profileEmail {
   font-size: $text-xs;
-  color: var(--text-tertiary);
+  color: $text-tertiary;
 }
 
 .suspendedBanner {
-  font-size: $text-xs;
+  font-size: $text-2xs;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--neg);
-  background: var(--neg-bg);
-  border: 1px solid var(--neg);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: $neg;
+  background: $neg-bg;
+  border: 1px solid rgba(220, 38, 38, 0.25);
   padding: 3px 10px;
-  border-radius: $radius-xs;
+  border-radius: $radius-pill;
 }
 
 .profileMeta {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  border-top: 1px solid var(--chrome-dim);
-  margin-top: 8px;
-  padding-top: 12px;
+  gap: $space-2;
+  border-top: 1px solid $chrome-dim;
+  margin-top: $space-2;
+  padding-top: $space-3;
   text-align: left;
 }
 
@@ -109,12 +124,12 @@
   display: flex;
   justify-content: space-between;
   font-size: $text-xs;
-  color: var(--text-tertiary);
-  gap: 8px;
+  color: $text-tertiary;
+  gap: $space-2;
 }
 
 .metaVal {
-  color: var(--text-primary);
+  color: $text-primary;
   font-weight: 500;
   text-align: right;
 }
@@ -122,98 +137,101 @@
 // ─── Action card ──────────────────────────────────────────────────────────────
 
 .actionCard {
-  background: var(--surface-panel);
-  border: 1px solid var(--chrome-dim);
-  border-radius: $radius-md;
-  padding: 16px;
+  background: $surface-panel;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-xl;
+  padding: $space-5;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: $space-4;
+  box-shadow: $shadow-xs;
 }
 
 .actionTitle {
-  font-size: $text-sm;
+  font-size: $text-md;
   font-weight: 600;
-  color: var(--text-primary);
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--chrome-dim);
+  letter-spacing: -0.01em;
+  color: $text-primary;
+  padding-bottom: $space-3;
+  border-bottom: 1px solid $chrome-dim;
 }
 
 .actionRow {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: $space-2;
 }
 
 .actionLabel {
-  font-size: $text-xs;
-  color: var(--text-tertiary);
-  font-weight: 500;
+  @include section-label;
 }
 
 .actionGroup {
   display: flex;
-  gap: 8px;
+  gap: $space-2;
 }
 
 .select, .input {
-  height: 30px;
-  background: var(--surface-base);
-  border: 1px solid var(--chrome-dim);
-  border-radius: $radius-xs;
-  padding: 0 8px;
+  height: 32px;
+  background: $surface-raised;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-md;
+  padding: 0 $space-3;
   font-size: $text-sm;
-  color: var(--text-primary);
+  color: $text-primary;
   font-family: $font-ui;
   outline: none;
   flex: 1;
+  transition: border-color $motion-fast;
 
-  &:focus { border-color: var(--accent); }
+  &:focus { border-color: $accent; box-shadow: $shadow-glow; }
 }
 
 .btnPrimary, .btnDanger, .btnSuccess, .btnWarning {
-  height: 30px;
-  padding: 0 12px;
-  border-radius: $radius-xs;
+  height: 32px;
+  padding: 0 $space-4;
+  border-radius: $radius-md;
   border: none;
   font-size: $text-sm;
   font-family: $font-ui;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: opacity $motion-fast;
+  transition: opacity $motion-fast, transform $motion-fast, box-shadow $motion-fast;
   white-space: nowrap;
 
-  &:disabled { opacity: 0.5; cursor: default; }
+  &:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+  &:active:not(:disabled) { transform: translateY(0); }
+  &:disabled { opacity: 0.4; cursor: default; }
 }
 
-.btnPrimary  { background: var(--accent); color: #fff; }
-.btnDanger   { background: var(--neg); color: #fff; }
-.btnSuccess  { background: var(--pos); color: #fff; }
-.btnWarning  { background: #f59e0b; color: #fff; }
+.btnPrimary { background: $accent;  color: #fff; box-shadow: 0 1px 4px rgba(79, 70, 229, 0.25); }
+.btnDanger  { background: $neg;     color: #fff; box-shadow: 0 1px 4px rgba(220, 38, 38, 0.25); }
+.btnSuccess { background: $pos;     color: #fff; box-shadow: 0 1px 4px rgba(5, 150, 105, 0.25); }
+.btnWarning { background: $warn;    color: #fff; box-shadow: 0 1px 4px rgba(217, 119, 6, 0.25); }
 
 // ─── Watchlist ────────────────────────────────────────────────────────────────
 
 .wlList {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .wlRow {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 5px 8px;
-  border-radius: $radius-xs;
+  gap: $space-3;
+  padding: $space-2 $space-2;
+  border-radius: $radius-sm;
+  transition: background $motion-fast;
 
-  &:hover { background: var(--surface-hover); }
+  &:hover { background: $surface-hover; }
 }
 
 .wlSymbol {
-  font-family: $font-data;
-  font-size: $text-sm;
-  font-weight: 600;
-  color: var(--text-primary);
+  @include mono-value($text-sm);
+  font-weight: 700;
+  color: $text-primary;
   min-width: 60px;
 }
 
@@ -223,80 +241,81 @@
   flex: 1;
 }
 
-.wlActive   { color: var(--pos); }
-.wlDisabled { color: var(--text-tertiary); }
+.wlActive   { color: $pos; }
+.wlDisabled { color: $text-tertiary; }
 
 .wlDate {
   font-size: $text-xs;
-  color: var(--text-tertiary);
+  color: $text-tertiary;
   white-space: nowrap;
 }
 
-// ─── Intelligence card (replaces basic timeline card) ─────────────────────────
+// ─── Intelligence card ────────────────────────────────────────────────────────
 
 .intelligenceCard {
-  background: var(--surface-panel);
-  border: 1px solid var(--chrome-dim);
-  border-radius: $radius-md;
+  background: $surface-panel;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-xl;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  box-shadow: $shadow-xs;
 }
 
 // ─── Tab bar ─────────────────────────────────────────────────────────────────
 
 .tabBar {
   display: flex;
-  border-bottom: 1px solid var(--chrome-dim);
-  background: var(--surface-base);
-  padding: 0 4px;
+  border-bottom: 1px solid $chrome-dim;
+  background: $surface-raised;
+  padding: 0 $space-2;
   gap: 2px;
 }
 
 .tab {
   height: 40px;
-  padding: 0 14px;
+  padding: 0 $space-4;
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
   font-size: $text-sm;
   font-weight: 500;
-  color: var(--text-tertiary);
+  color: $text-tertiary;
   font-family: $font-ui;
   cursor: pointer;
   transition: color $motion-fast, border-color $motion-fast;
   white-space: nowrap;
   margin-bottom: -1px;
 
-  &:hover { color: var(--text-primary); }
+  &:hover { color: $text-primary; }
 }
 
 .tabActive {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
+  color: $accent;
+  border-bottom-color: $accent;
+  font-weight: 600;
 }
 
 .tabBody {
-  padding: 16px;
+  padding: $space-5;
   flex: 1;
   min-height: 0;
 }
 
-
 // ─── States ───────────────────────────────────────────────────────────────────
 
 .placeholder, .empty {
-  padding: 24px;
+  padding: $space-8;
   text-align: center;
-  color: var(--text-tertiary);
+  color: $text-tertiary;
   font-size: $text-sm;
 }
 
 .error {
-  padding: 12px 16px;
-  color: var(--neg);
-  background: var(--neg-bg);
-  border: 1px solid var(--neg);
-  border-radius: $radius-sm;
+  padding: $space-4;
+  color: $neg;
+  background: $neg-bg;
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  border-radius: $radius-md;
   font-size: $text-sm;
 }

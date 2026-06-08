@@ -1,80 +1,139 @@
 @use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
 
-.page { display: flex; flex-direction: column; gap: 20px; }
+.page { display: flex; flex-direction: column; gap: $space-5; }
 
 .pageHeader { display: flex; align-items: center; justify-content: space-between; }
-.pageTitle  { font-size: $text-xl; font-weight: 700; color: var(--text-primary); margin: 0; }
 
-.dayTabs { display: flex; gap: 4px; }
+.pageTitle {
+  font-size: $text-2xl;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: $text-primary;
+  margin: 0;
+}
+
+.dayTabs { display: flex; gap: $space-1; }
 
 .dayTab {
-  height: 28px; padding: 0 10px; border-radius: $radius-sm;
-  border: 1px solid var(--chrome-dim); background: transparent;
-  color: var(--text-secondary); font-size: $text-xs; font-family: $font-ui; cursor: pointer;
-  transition: all $motion-fast;
-  &:hover { border-color: var(--accent); color: var(--accent); }
+  height: 30px;
+  padding: 0 $space-3;
+  border-radius: $radius-md;
+  border: 1px solid $chrome-dim;
+  background: transparent;
+  color: $text-secondary;
+  font-size: $text-xs;
+  font-weight: 500;
+  font-family: $font-ui;
+  cursor: pointer;
+  transition: background $motion-fast, border-color $motion-fast, color $motion-fast;
+
+  &:hover { border-color: $accent; color: $accent; background: $accent-faint; }
 }
 
-.dayTabActive { background: var(--accent-faint); border-color: var(--accent); color: var(--accent); }
+.dayTabActive { background: $accent-faint; border-color: $accent; color: $accent; font-weight: 600; }
 
-.section { display: flex; flex-direction: column; gap: 12px; }
+.section { display: flex; flex-direction: column; gap: $space-4; }
 
 .sectionTitle {
-  font-size: $text-sm; font-weight: 600; color: var(--text-primary);
-  padding-bottom: 8px; border-bottom: 1px solid var(--chrome-dim);
+  font-size: $text-md;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: $text-primary;
+  padding-bottom: $space-3;
+  border-bottom: 1px solid $chrome-dim;
 }
 
-.chartRow { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.chartRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-4;
+
+  @media (max-width: 900px) { grid-template-columns: 1fr; }
+}
 
 .chartCard {
-  background: var(--surface-panel); border: 1px solid var(--chrome-dim);
-  border-radius: $radius-md; padding: 16px;
+  background: $surface-panel;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-xl;
+  padding: $space-5;
+  box-shadow: $shadow-xs;
 }
 
 .chartTitle {
-  font-size: $text-sm; font-weight: 500; color: var(--text-secondary);
-  margin-bottom: 14px;
+  font-size: $text-sm;
+  font-weight: 500;
+  color: $text-secondary;
+  margin-bottom: $space-4;
 }
 
-.tableRow { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.tableRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-4;
+
+  @media (max-width: 900px) { grid-template-columns: 1fr; }
+}
 
 .tableCard {
-  background: var(--surface-panel); border: 1px solid var(--chrome-dim);
-  border-radius: $radius-md; overflow: hidden;
+  background: $surface-panel;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-xl;
+  overflow: hidden;
+  box-shadow: $shadow-xs;
 }
 
 .tableTitle {
-  font-size: $text-sm; font-weight: 600; color: var(--text-primary);
-  padding: 12px 14px; border-bottom: 1px solid var(--chrome-dim);
+  font-size: $text-md;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: $text-primary;
+  padding: $space-4 $space-5;
+  border-bottom: 1px solid $chrome-dim;
 }
 
 .miniTable {
-  width: 100%; border-collapse: collapse; font-size: $text-sm;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: $text-sm;
 
   th {
-    padding: 7px 14px; text-align: left;
-    font-size: $text-xs; font-weight: 600; color: var(--text-tertiary);
-    text-transform: uppercase; letter-spacing: 0.05em;
-    border-bottom: 1px solid var(--chrome-dim);
+    padding: $space-2 $space-4;
+    text-align: left;
+    @include section-label;
+    border-bottom: 1px solid $chrome-dim;
+    height: 34px;
   }
 
-  td { padding: 8px 14px; color: var(--text-primary); border-bottom: 1px solid var(--chrome-dim); }
+  td {
+    padding: $space-2 $space-4;
+    color: $text-primary;
+    border-bottom: 1px solid $chrome-dim;
+    height: 38px;
+  }
+
   tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--surface-hover); }
+  tr:hover td { background: $surface-hover; }
 }
 
-.monoCell  { font-family: $font-data; font-size: $text-xs; }
-.countCell { font-family: $font-data; font-weight: 700; color: var(--neg); }
+.monoCell  { @include mono-value($text-xs); color: $text-secondary; }
+.countCell { @include mono-value($text-sm); font-weight: 700; color: $neg; }
 
-.empty { text-align: center; color: var(--text-tertiary); padding: 16px; }
+.empty { text-align: center; color: $text-tertiary; padding: $space-5; }
 
-.placeholder, .error {
-  padding: 24px; text-align: center; font-size: $text-sm;
+.placeholder {
+  padding: $space-8;
+  text-align: center;
+  font-size: $text-sm;
+  color: $text-tertiary;
 }
-
-.placeholder { color: var(--text-tertiary); }
 
 .error {
-  color: var(--neg); background: var(--neg-bg);
-  border: 1px solid var(--neg); border-radius: $radius-md;
+  padding: $space-5;
+  text-align: center;
+  font-size: $text-sm;
+  color: $neg;
+  background: $neg-bg;
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  border-radius: $radius-md;
 }

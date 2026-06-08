@@ -1,74 +1,79 @@
 @use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
 
 .page {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: $space-5;
 }
 
 .pageHeader {
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  gap: $space-3;
 }
 
 .pageTitle {
-  font-size: $text-xl;
+  font-size: $text-2xl;
   font-weight: 700;
-  color: var(--text-primary);
+  letter-spacing: -0.03em;
+  color: $text-primary;
   margin: 0;
 }
 
 .pageSubtitle {
   font-size: $text-sm;
-  color: var(--text-tertiary);
+  color: $text-tertiary;
 }
 
 // ─── Stat grid ────────────────────────────────────────────────────────────────
 
 .statGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: $space-4;
 }
 
 .statCard {
-  background: var(--surface-panel);
-  border: 1px solid var(--chrome-dim);
-  border-radius: $radius-md;
-  padding: 14px 16px;
+  background: $surface-panel;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-xl;
+  padding: $space-4 $space-5;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  transition: border-color $motion-fast;
+  gap: $space-1;
+  transition: border-color $motion-fast, box-shadow $motion-fast, transform $motion-fast;
+  position: relative;
+  overflow: hidden;
 
-  &:hover { border-color: var(--chrome-mid); }
+  &:hover {
+    border-color: $chrome-mid;
+    box-shadow: $shadow-sm;
+    transform: translateY(-1px);
+  }
 }
 
-.accent_blue  { border-left: 3px solid var(--accent); }
-.accent_green { border-left: 3px solid #34d399; }
-.accent_red   { border-left: 3px solid var(--neg); }
-.accent_orange{ border-left: 3px solid #fb923c; }
+.accent_blue  { border-left: 3px solid $accent; }
+.accent_green { border-left: 3px solid $pos; }
+.accent_red   { border-left: 3px solid $neg; }
+.accent_orange{ border-left: 3px solid $warn; }
 
 .statLabel {
-  font-size: $text-xs;
-  color: var(--text-tertiary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 600;
+  @include section-label;
 }
 
 .statValue {
-  font-size: $text-2xl;
-  font-weight: 700;
-  color: var(--text-primary);
-  font-family: $font-data;
+  @include mono-value(26px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
   line-height: 1.1;
+  color: $text-primary;
 }
 
 .statSub {
   font-size: $text-xs;
-  color: var(--text-tertiary);
+  color: $text-tertiary;
+  margin-top: 2px;
 }
 
 // ─── Chart row ────────────────────────────────────────────────────────────────
@@ -76,58 +81,66 @@
 .chartRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: $space-4;
+
+  @media (max-width: 900px) { grid-template-columns: 1fr; }
 }
 
 .chartCard {
-  background: var(--surface-panel);
-  border: 1px solid var(--chrome-dim);
-  border-radius: $radius-md;
-  padding: 16px;
+  background: $surface-panel;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-xl;
+  padding: $space-5;
+  box-shadow: $shadow-xs;
 }
 
 .chartHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 14px;
+  margin-bottom: $space-4;
 }
 
 .chartTitle {
-  font-size: $text-sm;
+  font-size: $text-md;
   font-weight: 600;
-  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  color: $text-primary;
 }
 
 .chartLink {
   font-size: $text-xs;
-  color: var(--accent);
+  font-weight: 500;
+  color: $accent;
   text-decoration: none;
+  transition: opacity $motion-fast;
 
-  &:hover { text-decoration: underline; }
+  &:hover { opacity: 0.75; text-decoration: underline; }
 }
 
 // ─── Table card ───────────────────────────────────────────────────────────────
 
 .tableCard {
-  background: var(--surface-panel);
-  border: 1px solid var(--chrome-dim);
-  border-radius: $radius-md;
+  background: $surface-panel;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-xl;
   overflow: hidden;
+  box-shadow: $shadow-xs;
 }
 
 .tableHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--chrome-dim);
+  padding: $space-4 $space-5;
+  border-bottom: 1px solid $chrome-dim;
 }
 
 .tableTitle {
-  font-size: $text-sm;
+  font-size: $text-md;
   font-weight: 600;
-  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  color: $text-primary;
 }
 
 .table {
@@ -136,38 +149,34 @@
   font-size: $text-sm;
 
   th {
-    padding: 8px 16px;
+    padding: $space-2 $space-4;
     text-align: left;
-    font-size: $text-xs;
-    font-weight: 600;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border-bottom: 1px solid var(--chrome-dim);
+    @include section-label;
+    border-bottom: 1px solid $chrome-dim;
+    height: 36px;
   }
 
   td {
-    padding: 9px 16px;
-    color: var(--text-primary);
-    border-bottom: 1px solid var(--chrome-dim);
+    padding: $space-2 $space-4;
+    color: $text-primary;
+    border-bottom: 1px solid $chrome-dim;
+    height: 40px;
 
     &:last-child { border-right: none; }
   }
 
   tr:last-child td { border-bottom: none; }
-
-  tr:hover td { background: var(--surface-hover); }
+  tr:hover td { background: $surface-hover; }
 }
 
 .monoCell {
-  font-family: $font-data;
-  font-size: $text-xs;
-  color: var(--text-secondary);
+  @include mono-value($text-xs);
+  color: $text-secondary;
 }
 
 .timeCell {
   font-size: $text-xs;
-  color: var(--text-tertiary);
+  color: $text-tertiary;
   white-space: nowrap;
 }
 
@@ -175,30 +184,30 @@
 
 .dot {
   display: inline-block;
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: var(--text-disabled);
+  background: $text-disabled;
 
-  &.dot_info     { background: var(--accent); }
-  &.dot_warning  { background: #fb923c; }
-  &.dot_critical { background: var(--neg); }
+  &.dot_info     { background: $accent; box-shadow: 0 0 4px rgba(79, 70, 229, 0.5); }
+  &.dot_warning  { background: $warn; }
+  &.dot_critical { background: $neg; box-shadow: 0 0 4px rgba(220, 38, 38, 0.5); }
 }
 
 // ─── States ───────────────────────────────────────────────────────────────────
 
 .placeholder, .empty {
-  padding: 24px;
+  padding: $space-8;
   text-align: center;
-  color: var(--text-tertiary);
+  color: $text-tertiary;
   font-size: $text-sm;
 }
 
 .error {
-  padding: 16px;
-  color: var(--neg);
+  padding: $space-4;
+  color: $neg;
   font-size: $text-sm;
-  background: var(--neg-bg);
+  background: $neg-bg;
   border-radius: $radius-md;
-  border: 1px solid var(--neg);
+  border: 1px solid rgba(220, 38, 38, 0.25);
 }

@@ -202,21 +202,20 @@
   font-size: 14px;
   font-weight: 600;
   color: #fff;
-  background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+  background: $accent;
   border-radius: $radius-lg;
-  transition: filter $motion-fast, transform $motion-fast, box-shadow $motion-fast;
-  box-shadow: 0 2px 8px rgba(91, 95, 227, 0.25);
+  transition: background $motion-fast, transform $motion-fast, box-shadow $motion-fast;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.28);
 
   &:hover {
-    filter: brightness(1.08);
+    background: $accent-hover;
     transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(91, 95, 227, 0.38);
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.36);
   }
 
   &:active {
     transform: translateY(0);
-    box-shadow: 0 1px 4px rgba(91, 95, 227, 0.20);
-    filter: brightness(0.96);
+    box-shadow: 0 1px 4px rgba(79, 70, 229, 0.18);
   }
 }
 

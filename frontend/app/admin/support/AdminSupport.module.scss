@@ -1,114 +1,205 @@
 @use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
 
-.page { display: flex; flex-direction: column; gap: 20px; }
+.page { display: flex; flex-direction: column; gap: $space-5; }
 
 .pageHeader { display: flex; align-items: center; }
-.pageTitle  { font-size: $text-xl; font-weight: 700; color: var(--text-primary); margin: 0; }
 
-.section {
-  background: var(--surface-panel); border: 1px solid var(--chrome-dim);
-  border-radius: $radius-md; padding: 18px; display: flex; flex-direction: column; gap: 12px;
+.pageTitle {
+  font-size: $text-2xl;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: $text-primary;
+  margin: 0;
 }
 
-.sectionTitle { font-size: $text-sm; font-weight: 600; color: var(--text-primary); }
-.sectionDesc  { font-size: $text-sm; color: var(--text-tertiary); margin: 0; }
+.section {
+  background: $surface-panel;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-xl;
+  padding: $space-5;
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  box-shadow: $shadow-xs;
+}
 
-.searchRow { display: flex; gap: 8px; }
+.sectionTitle {
+  font-size: $text-md;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: $text-primary;
+}
+
+.sectionDesc {
+  font-size: $text-sm;
+  color: $text-tertiary;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.searchRow { display: flex; gap: $space-2; }
 
 .input, .select {
-  height: 32px; background: var(--surface-base); border: 1px solid var(--chrome-dim);
-  border-radius: $radius-sm; padding: 0 10px; font-size: $text-sm; color: var(--text-primary);
-  font-family: $font-ui; outline: none; flex: 1;
-  &:focus { border-color: var(--accent); }
+  height: 34px;
+  background: $surface-raised;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-md;
+  padding: 0 $space-3;
+  font-size: $text-sm;
+  color: $text-primary;
+  font-family: $font-ui;
+  outline: none;
+  flex: 1;
+  transition: border-color $motion-fast;
+
+  &:focus { border-color: $accent; box-shadow: $shadow-glow; }
 }
 
 .select { flex: 0 0 auto; width: 120px; }
 
 .searchResults {
-  border: 1px solid var(--chrome-dim); border-radius: $radius-sm; overflow: hidden;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-lg;
+  overflow: hidden;
 }
 
 .resultGroup {}
 
 .resultGroupTitle {
-  font-size: $text-xs; font-weight: 600; color: var(--text-tertiary);
-  text-transform: uppercase; letter-spacing: 0.06em;
-  padding: 8px 14px; background: var(--surface-base);
-  border-bottom: 1px solid var(--chrome-dim);
+  @include section-label;
+  padding: $space-2 $space-4;
+  background: $surface-raised;
+  border-bottom: 1px solid $chrome-dim;
 }
 
 .resultRow {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  padding: 10px 14px; border-bottom: 1px solid var(--chrome-dim);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+  padding: $space-3 $space-4;
+  border-bottom: 1px solid $chrome-dim;
+  transition: background $motion-fast;
+
   &:last-child { border-bottom: none; }
-  &:hover { background: var(--surface-hover); }
+  &:hover { background: $surface-hover; }
 }
 
 .resultLink {
-  font-size: $text-sm; color: var(--accent); text-decoration: none; font-weight: 500;
-  &:hover { text-decoration: underline; }
+  font-size: $text-sm;
+  color: $accent;
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity $motion-fast;
+
+  &:hover { opacity: 0.75; text-decoration: underline; }
 }
 
-.resultSub { font-size: $text-xs; color: var(--text-tertiary); }
+.resultSub { font-size: $text-xs; color: $text-tertiary; }
 
 // ─── Tools grid ───────────────────────────────────────────────────────────────
 
-.toolsGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
-
-.toolCard {
-  background: var(--surface-panel); border: 1px solid var(--chrome-dim);
-  border-radius: $radius-md; padding: 18px;
-  display: flex; flex-direction: column; gap: 10px;
+.toolsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: $space-4;
 }
 
-.toolTitle { font-size: $text-sm; font-weight: 600; color: var(--text-primary); }
-.toolDesc  { font-size: $text-sm; color: var(--text-secondary); margin: 0; line-height: 1.5; }
+.toolCard {
+  background: $surface-raised;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-lg;
+  padding: $space-5;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
 
-.toolRow   { display: flex; gap: 8px; }
-.flagForm  { display: flex; flex-direction: column; gap: 8px; }
+.toolTitle {
+  font-size: $text-md;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: $text-primary;
+}
+
+.toolDesc {
+  font-size: $text-sm;
+  color: $text-secondary;
+  margin: 0;
+  line-height: 1.55;
+}
+
+.toolRow   { display: flex; gap: $space-2; }
+.flagForm  { display: flex; flex-direction: column; gap: $space-2; }
 
 // ─── Mini timeline ────────────────────────────────────────────────────────────
 
 .miniTimeline {
-  display: flex; flex-direction: column; gap: 4px;
-  max-height: 260px; overflow-y: auto;
-  border: 1px solid var(--chrome-dim); border-radius: $radius-sm; padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 260px;
+  overflow-y: auto;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-md;
+  padding: $space-2;
 }
 
 .miniItem {
-  display: flex; align-items: center; gap: 10px;
-  padding: 4px 6px; border-radius: $radius-xs;
-  &:hover { background: var(--surface-hover); }
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-1 $space-2;
+  border-radius: $radius-xs;
+  transition: background $motion-fast;
+
+  &:hover { background: $surface-hover; }
 }
 
-.monoText  { font-family: $font-data; font-size: $text-xs; flex: 1; color: var(--text-primary); }
-.timeSmall { font-size: $text-xs; color: var(--text-tertiary); white-space: nowrap; }
+.monoText  { @include mono-value($text-xs); flex: 1; color: $text-primary; }
+.timeSmall { font-size: $text-xs; color: $text-tertiary; white-space: nowrap; }
 
-.moreHint { font-size: $text-xs; color: var(--text-tertiary); text-align: center; padding: 6px; }
+.moreHint { font-size: $text-xs; color: $text-tertiary; text-align: center; padding: $space-2; }
 
 // ─── Buttons ──────────────────────────────────────────────────────────────────
 
 .btnPrimary, .btnDanger, .btnWarning {
-  height: 32px; padding: 0 14px; border-radius: $radius-sm; border: none;
-  font-size: $text-sm; font-family: $font-ui; font-weight: 500; cursor: pointer;
-  white-space: nowrap; flex-shrink: 0;
-  transition: opacity $motion-fast;
-  &:disabled { opacity: 0.5; cursor: default; }
+  height: 32px;
+  padding: 0 $space-4;
+  border-radius: $radius-md;
+  border: none;
+  font-size: $text-sm;
+  font-family: $font-ui;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: opacity $motion-fast, transform $motion-fast;
+
+  &:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+  &:active:not(:disabled) { transform: translateY(0); }
+  &:disabled { opacity: 0.4; cursor: default; }
 }
 
-.btnPrimary { background: var(--accent); color: #fff; }
-.btnDanger  { background: var(--neg); color: #fff; }
-.btnWarning { background: #f59e0b; color: #fff; }
+.btnPrimary { background: $accent; color: #fff; }
+.btnDanger  { background: $neg;    color: #fff; }
+.btnWarning { background: $warn;   color: #fff; }
 
 // ─── Severity badges ──────────────────────────────────────────────────────────
 
 .sevBadge {
-  font-size: $text-2xs; font-weight: 600; letter-spacing: 0.04em;
-  text-transform: uppercase; padding: 2px 6px; border-radius: $radius-xs;
+  font-size: $text-2xs;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: $radius-xs;
+  border: 1px solid transparent;
 }
 
-.sev_info     { background: var(--accent-faint); color: var(--accent); }
-.sev_warning  { background: rgba(245,158,11,.15); color: #f59e0b; }
-.sev_critical { background: var(--neg-bg); color: var(--neg); }
+.sev_info     { background: $accent-faint; color: $accent; border-color: rgba(79, 70, 229, 0.20); }
+.sev_warning  { background: $warn-bg;      color: $warn;   border-color: rgba(217, 119, 6, 0.25); }
+.sev_critical { background: $neg-bg;       color: $neg;    border-color: rgba(220, 38, 38, 0.25); }
 
-.empty { text-align: center; color: var(--text-tertiary); padding: 20px; font-size: $text-sm; }
+.empty { text-align: center; color: $text-tertiary; padding: $space-6; font-size: $text-sm; }

@@ -1,6 +1,5 @@
 @use '@/styles/variables' as *;
-
-// ─── Panel shell ──────────────────────────────────────────────────────────────
+@use '@/styles/mixins' as *;
 
 .panel {
   display: flex;
@@ -8,99 +7,91 @@
   gap: 0;
 }
 
-// ─── Toolbar ─────────────────────────────────────────────────────────────────
-
 .toolbar {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0 0 12px;
+  gap: $space-2;
+  padding: 0 0 $space-3;
   flex-wrap: wrap;
 }
 
 .searchInput {
   flex: 1;
   min-width: 160px;
-  height: 30px;
-  background: var(--surface-base);
-  border: 1px solid var(--chrome-dim);
-  border-radius: $radius-xs;
-  padding: 0 10px;
+  height: 32px;
+  background: $surface-raised;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-md;
+  padding: 0 $space-3;
   font-size: $text-sm;
-  color: var(--text-primary);
+  color: $text-primary;
   font-family: $font-ui;
   outline: none;
+  transition: border-color $motion-fast;
 
-  &::placeholder { color: var(--text-tertiary); }
-  &:focus { border-color: var(--accent); }
+  &::placeholder { color: $text-disabled; }
+  &:focus { border-color: $accent; box-shadow: $shadow-glow; }
 }
 
 .filterSelect {
-  height: 30px;
-  background: var(--surface-base);
-  border: 1px solid var(--chrome-dim);
-  border-radius: $radius-xs;
-  padding: 0 8px;
+  height: 32px;
+  background: $surface-raised;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-md;
+  padding: 0 $space-3;
   font-size: $text-sm;
-  color: var(--text-primary);
+  color: $text-primary;
   font-family: $font-ui;
   outline: none;
   cursor: pointer;
+  transition: border-color $motion-fast;
 
-  &:focus { border-color: var(--accent); }
+  &:focus { border-color: $accent; }
 }
 
 .clearBtn {
-  height: 30px;
-  padding: 0 10px;
+  height: 32px;
+  padding: 0 $space-3;
   background: transparent;
-  border: 1px solid var(--chrome-dim);
-  border-radius: $radius-xs;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-md;
   font-size: $text-sm;
-  color: var(--text-tertiary);
+  color: $text-tertiary;
   font-family: $font-ui;
   cursor: pointer;
   white-space: nowrap;
-  transition: color $motion-fast, border-color $motion-fast;
+  transition: color $motion-fast, border-color $motion-fast, background $motion-fast;
 
-  &:hover { color: var(--text-primary); border-color: var(--chrome-mid); }
+  &:hover { color: $text-primary; border-color: $chrome-mid; background: $surface-raised; }
 }
-
-// ─── Summary strip ────────────────────────────────────────────────────────────
 
 .strip {
   display: flex;
-  gap: 16px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--chrome-dim);
-  margin-bottom: 12px;
+  gap: $space-4;
+  padding-bottom: $space-3;
+  border-bottom: 1px solid $chrome-dim;
+  margin-bottom: $space-3;
 }
 
 .stripItem {
   font-size: $text-xs;
-  color: var(--text-tertiary);
+  color: $text-tertiary;
 }
-
-// ─── Feed ─────────────────────────────────────────────────────────────────────
 
 .feed {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: $space-5;
   max-height: 640px;
   overflow-y: auto;
-  padding-right: 4px;
-
-  // Custom scrollbar
+  padding-right: $space-1;
   scrollbar-width: thin;
-  scrollbar-color: var(--chrome-dim) transparent;
+  scrollbar-color: $chrome-dim transparent;
 
   &::-webkit-scrollbar { width: 4px; }
   &::-webkit-scrollbar-track { background: transparent; }
-  &::-webkit-scrollbar-thumb { background: var(--chrome-dim); border-radius: 2px; }
+  &::-webkit-scrollbar-thumb { background: $chrome-dim; border-radius: $radius-pill; }
 }
-
-// ─── Day group ────────────────────────────────────────────────────────────────
 
 .dayGroup {
   display: flex;
@@ -109,15 +100,11 @@
 }
 
 .dayLabel {
-  font-size: $text-2xs;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-tertiary);
-  padding: 0 0 8px 4px;
+  @include section-label;
+  padding: 0 0 $space-2 $space-1;
   position: sticky;
   top: 0;
-  background: var(--surface-panel);
+  background: $surface-panel;
   z-index: 1;
 }
 
@@ -127,11 +114,9 @@
   gap: 0;
 }
 
-// ─── Event row ────────────────────────────────────────────────────────────────
-
 .eventRow {
   display: flex;
-  gap: 10px;
+  gap: $space-3;
   position: relative;
   padding-bottom: 2px;
 
@@ -142,17 +127,15 @@
     top: 26px;
     bottom: 0;
     width: 1px;
-    background: var(--chrome-dim);
+    background: $chrome-dim;
   }
 }
 
 .eventRowOpen {
   &:not(:last-child)::after {
-    background: var(--chrome-mid);
+    background: $chrome-mid;
   }
 }
-
-// ─── Dot column ──────────────────────────────────────────────────────────────
 
 .dotCol {
   flex-shrink: 0;
@@ -172,30 +155,28 @@
   font-size: 11px;
   font-weight: 700;
   flex-shrink: 0;
-  color: var(--dot-color, var(--accent));
-  background: var(--dot-bg, var(--accent-faint));
-  border: 1.5px solid var(--dot-color, var(--accent));
+  color: var(--dot-color, #{$accent});
+  background: var(--dot-bg, #{$accent-faint});
+  border: 1.5px solid var(--dot-color, #{$accent});
   position: relative;
   z-index: 1;
 }
 
-// ─── Event content ────────────────────────────────────────────────────────────
-
 .eventContent {
   flex: 1;
   min-width: 0;
-  padding-bottom: 10px;
+  padding-bottom: $space-3;
 }
 
 .eventHeader {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: $space-2;
   flex-wrap: wrap;
   width: 100%;
   background: none;
   border: none;
-  padding: 4px 0;
+  padding: $space-1 0;
   text-align: left;
   font-family: $font-ui;
   border-radius: $radius-xs;
@@ -203,44 +184,38 @@
 
   &[aria-expanded="true"],
   &:hover[style*="pointer"] {
-    background: var(--surface-hover);
+    background: $surface-hover;
   }
 }
 
 .eventLabel {
   font-size: $text-sm;
-  color: var(--text-primary);
+  color: $text-primary;
   font-weight: 500;
 }
 
 .eventTime {
-  font-size: $text-xs;
-  color: var(--text-tertiary);
-  font-family: $font-data;
+  @include mono-value($text-xs);
+  color: $text-tertiary;
   margin-left: auto;
   white-space: nowrap;
 }
 
 .chevron {
   font-size: 14px;
-  color: var(--text-tertiary);
+  color: $text-tertiary;
   transition: transform $motion-fast;
   flex-shrink: 0;
 }
 
-.chevronOpen {
-  transform: rotate(90deg);
-}
-
-// ─── Badges ───────────────────────────────────────────────────────────────────
+.chevronOpen { transform: rotate(90deg); }
 
 .symbolBadge {
-  font-family: $font-data;
-  font-size: $text-2xs;
+  @include mono-value($text-2xs);
   font-weight: 700;
-  color: var(--accent);
-  background: var(--accent-faint);
-  border: 1px solid var(--accent-dim);
+  color: $accent;
+  background: $accent-faint;
+  border: 1px solid rgba(79, 70, 229, 0.20);
   padding: 1px 5px;
   border-radius: $radius-xs;
   letter-spacing: 0.04em;
@@ -249,104 +224,101 @@
 .sectorBadge {
   font-size: $text-2xs;
   font-weight: 600;
-  color: var(--sector-color, var(--text-tertiary));
-  background: color-mix(in srgb, var(--sector-color, var(--chrome-dim)) 15%, transparent);
-  border: 1px solid color-mix(in srgb, var(--sector-color, var(--chrome-dim)) 35%, transparent);
+  color: var(--sector-color, $text-tertiary);
+  background: color-mix(in srgb, var(--sector-color, #{$chrome-dim}) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--sector-color, #{$chrome-dim}) 35%, transparent);
   padding: 1px 5px;
   border-radius: $radius-xs;
   letter-spacing: 0.02em;
   white-space: nowrap;
 }
 
-// ─── Expanded detail ─────────────────────────────────────────────────────────
-
 .eventDetail {
-  margin-top: 4px;
-  padding: 10px 12px;
-  background: var(--surface-base);
-  border-radius: $radius-sm;
-  border: 1px solid var(--chrome-dim);
+  margin-top: $space-1;
+  padding: $space-3;
+  background: $surface-raised;
+  border-radius: $radius-md;
+  border: 1px solid $chrome-dim;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: $space-1;
 }
 
 .detailRow {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: $space-3;
   font-size: $text-xs;
 }
 
 .detailKey {
-  color: var(--text-tertiary);
+  color: $text-tertiary;
   min-width: 100px;
   flex-shrink: 0;
 }
 
 .detailVal {
-  color: var(--text-primary);
+  color: $text-primary;
   font-weight: 500;
 }
 
 .mono { font-family: $font-data; }
-
-.pos { color: var(--pos); }
-.neg { color: var(--neg); }
+.pos  { color: $pos; }
+.neg  { color: $neg; }
 
 .sevBadge {
   font-size: $text-2xs;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  padding: 1px 5px;
+  padding: 1px 6px;
   border-radius: $radius-xs;
+  border: 1px solid transparent;
 }
 
-.sev_warning  { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
-.sev_critical { background: var(--neg-bg); color: var(--neg); }
+.sev_warning  { background: $warn-bg;  color: $warn; border-color: rgba(217, 119, 6, 0.25); }
+.sev_critical { background: $neg-bg;   color: $neg;  border-color: rgba(220, 38, 38, 0.25); }
 
 .rawDetails {
-  margin-top: 4px;
+  margin-top: $space-1;
 
   summary {
     font-size: $text-xs;
-    color: var(--text-tertiary);
+    color: $text-tertiary;
     cursor: pointer;
     user-select: none;
+    transition: color $motion-fast;
 
-    &:hover { color: var(--text-secondary); }
+    &:hover { color: $text-secondary; }
   }
 }
 
 .rawPre {
   font-family: $font-data;
   font-size: $text-xs;
-  color: var(--text-secondary);
-  background: var(--surface-panel);
-  border-radius: $radius-xs;
-  padding: 6px 8px;
-  margin-top: 4px;
+  color: $text-secondary;
+  background: $surface-panel;
+  border-radius: $radius-sm;
+  padding: $space-2 $space-3;
+  margin-top: $space-1;
   overflow-x: auto;
   white-space: pre-wrap;
   max-height: 200px;
   overflow-y: auto;
 }
 
-// ─── States ───────────────────────────────────────────────────────────────────
-
 .loading, .empty {
-  padding: 24px 0;
+  padding: $space-6 0;
   text-align: center;
-  color: var(--text-tertiary);
+  color: $text-tertiary;
   font-size: $text-sm;
 }
 
 .error {
-  padding: 10px 12px;
-  color: var(--neg);
-  background: var(--neg-bg);
-  border: 1px solid var(--neg);
-  border-radius: $radius-sm;
+  padding: $space-3;
+  color: $neg;
+  background: $neg-bg;
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  border-radius: $radius-md;
   font-size: $text-sm;
 }

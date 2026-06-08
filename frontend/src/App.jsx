@@ -1,7 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ThemeProvider } from '@mui/material/styles';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/hooks/useTheme';
+import { buildMuiTheme } from '@/src/theme';
 import { CurrencyProvider } from '@/context/CurrencyContext';
 import { ToastProvider } from '@/components/Toast/ToastProvider';
 import { PrivateRoute } from '@/components/PrivateRoute/PrivateRoute';
@@ -56,7 +59,10 @@ function AppLayout() {
 }
 
 export default function App() {
+  const { theme } = useTheme();
+
   return (
+    <ThemeProvider theme={buildMuiTheme(theme)}>
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <DirectionSync />
       <CurrencyProvider>
@@ -101,5 +107,6 @@ export default function App() {
       </ToastProvider>
       </CurrencyProvider>
     </BrowserRouter>
+    </ThemeProvider>
   );
 }

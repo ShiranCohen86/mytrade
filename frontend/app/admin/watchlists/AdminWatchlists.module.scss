@@ -1,116 +1,212 @@
 @use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
 
-.page { display: flex; flex-direction: column; gap: 16px; }
+.page { display: flex; flex-direction: column; gap: $space-5; }
 
-.pageHeader { display: flex; align-items: baseline; gap: 12px; }
-.pageTitle  { font-size: $text-xl; font-weight: 700; color: var(--text-primary); margin: 0; }
-.pageCount  { font-size: $text-sm; color: var(--text-tertiary); }
+.pageHeader { display: flex; align-items: baseline; gap: $space-3; }
 
-.filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.pageTitle {
+  font-size: $text-2xl;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: $text-primary;
+  margin: 0;
+}
+
+.pageCount {
+  font-size: $text-sm;
+  color: $text-tertiary;
+  background: $surface-raised;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-pill;
+  padding: 2px 9px;
+  @include mono-value($text-xs);
+  font-weight: 600;
+}
+
+.filters {
+  display: flex;
+  gap: $space-2;
+  flex-wrap: wrap;
+  align-items: center;
+}
 
 .input, .select {
-  height: 30px;
-  background: var(--surface-panel);
-  border: 1px solid var(--chrome-dim);
-  border-radius: $radius-sm;
-  padding: 0 8px;
+  height: 34px;
+  background: $surface-raised;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-md;
+  padding: 0 $space-3;
   font-size: $text-sm;
-  color: var(--text-primary);
+  color: $text-primary;
   font-family: $font-ui;
   outline: none;
-  &:focus { border-color: var(--accent); }
+  transition: border-color $motion-fast;
+
+  &:focus { border-color: $accent; box-shadow: $shadow-glow; }
 }
+
 .input  { min-width: 160px; }
 .select { min-width: 120px; }
 
 .tableWrap {
   position: relative;
-  background: var(--surface-panel);
-  border: 1px solid var(--chrome-dim);
-  border-radius: $radius-md;
+  background: $surface-panel;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-xl;
   overflow: hidden;
+  box-shadow: $shadow-xs;
 }
 
 .loadingOverlay {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  background: rgba(0,0,0,0.3);
-  font-size: $text-sm; color: var(--text-tertiary); z-index: 2;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.04);
+  font-size: $text-sm;
+  color: $text-tertiary;
+  z-index: 2;
 }
 
 .table {
-  width: 100%; border-collapse: collapse; font-size: $text-sm;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: $text-sm;
 
   th {
-    padding: 9px 14px; text-align: left;
-    font-size: $text-xs; font-weight: 600; color: var(--text-tertiary);
-    text-transform: uppercase; letter-spacing: 0.05em;
-    border-bottom: 1px solid var(--chrome-dim);
+    padding: $space-2 $space-4;
+    text-align: left;
+    @include section-label;
+    border-bottom: 1px solid $chrome-dim;
+    height: 36px;
   }
 
   td {
-    padding: 10px 14px; color: var(--text-primary);
-    border-bottom: 1px solid var(--chrome-dim); vertical-align: middle;
+    padding: $space-2 $space-4;
+    color: $text-primary;
+    border-bottom: 1px solid $chrome-dim;
+    vertical-align: middle;
+    height: 44px;
   }
 
   tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--surface-hover); }
+  tr:hover td { background: $surface-hover; }
 }
 
-.symbolCell { font-family: $font-data; font-weight: 700; font-size: $text-md; }
-.userLink   { font-size: $text-sm; color: var(--accent); text-decoration: none; &:hover { text-decoration: underline; } }
-.emailSmall { font-size: $text-xs; color: var(--text-tertiary); }
-.timeCell   { font-size: $text-xs; color: var(--text-tertiary); white-space: nowrap; }
-.emptyCell  { text-align: center; color: var(--text-tertiary); padding: 32px; }
+.symbolCell { @include mono-value($text-md); font-weight: 700; }
+.userLink   { font-size: $text-sm; color: $accent; text-decoration: none; font-weight: 500; transition: opacity $motion-fast; &:hover { opacity: 0.75; text-decoration: underline; } }
+.emailSmall { font-size: $text-xs; color: $text-tertiary; }
+.timeCell   { font-size: $text-xs; color: $text-tertiary; white-space: nowrap; }
+.emptyCell  { text-align: center; color: $text-tertiary; padding: $space-8; }
 
-.statusActive  { color: var(--pos); font-size: $text-xs; font-weight: 600; }
-.statusRemoved { color: var(--text-tertiary); font-size: $text-xs; font-weight: 500; }
+.statusActive  { color: $pos; font-size: $text-xs; font-weight: 600; }
+.statusRemoved { color: $text-tertiary; font-size: $text-xs; font-weight: 500; }
 
-.actionBtns { display: flex; gap: 6px; }
+.actionBtns { display: flex; gap: $space-1; }
 
 .btnRestore, .btnDisable, .btnCancel {
-  height: 26px; padding: 0 10px; border-radius: $radius-xs; border: none;
-  font-size: $text-xs; font-family: $font-ui; font-weight: 600; cursor: pointer;
+  height: 26px;
+  padding: 0 $space-3;
+  border-radius: $radius-sm;
+  border: 1px solid transparent;
+  font-size: $text-2xs;
+  font-family: $font-ui;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
   transition: opacity $motion-fast;
-  &:disabled { opacity: 0.5; cursor: default; }
-}
 
-.btnRestore { background: rgba(52,211,153,0.15); color: #34d399; }
-.btnDisable { background: var(--neg-bg); color: var(--neg); }
-.btnCancel  { background: var(--surface-elevated); color: var(--text-secondary); }
-
-.pagination { display: flex; align-items: center; justify-content: center; gap: 16px; }
-
-.pageBtn {
-  height: 30px; padding: 0 12px; border-radius: $radius-sm;
-  border: 1px solid var(--chrome-dim); background: var(--surface-panel);
-  color: var(--text-secondary); font-size: $text-sm; font-family: $font-ui; cursor: pointer;
-  &:hover:not(:disabled) { color: var(--accent); border-color: var(--accent); }
   &:disabled { opacity: 0.4; cursor: default; }
 }
 
-.pageInfo { font-size: $text-sm; color: var(--text-tertiary); }
+.btnRestore { background: rgba(5, 150, 105, 0.10); color: $pos; border-color: rgba(5, 150, 105, 0.25); }
+.btnDisable { background: $neg-bg; color: $neg; border-color: rgba(220, 38, 38, 0.25); }
+.btnCancel  { background: $surface-raised; color: $text-secondary; border-color: $chrome-dim; }
 
-.error {
-  padding: 12px 16px; color: var(--neg); background: var(--neg-bg);
-  border: 1px solid var(--neg); border-radius: $radius-sm; font-size: $text-sm;
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-4;
 }
 
-// Modal
+.pageBtn {
+  height: 32px;
+  padding: 0 $space-4;
+  border-radius: $radius-md;
+  border: 1px solid $chrome-dim;
+  background: $surface-panel;
+  color: $text-secondary;
+  font-size: $text-sm;
+  font-family: $font-ui;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color $motion-fast, border-color $motion-fast, background $motion-fast;
+
+  &:hover:not(:disabled) { color: $accent; border-color: $accent; background: $accent-faint; }
+  &:disabled { opacity: 0.35; cursor: default; }
+}
+
+.pageInfo { font-size: $text-sm; color: $text-tertiary; }
+
+.error {
+  padding: $space-4;
+  color: $neg;
+  background: $neg-bg;
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  border-radius: $radius-md;
+  font-size: $text-sm;
+}
+
+// ─── Modal ────────────────────────────────────────────────────────────────────
+
 .modalOverlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.6);
-  display: flex; align-items: center; justify-content: center; z-index: 100;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.50);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
 }
 
 .modal {
-  background: var(--surface-elevated);
-  border: 1px solid var(--chrome-mid);
-  border-radius: $radius-md;
-  padding: 24px;
+  background: $surface-elevated;
+  border: 1px solid $chrome-mid;
+  border-radius: $radius-xl;
+  padding: $space-6;
   width: 380px;
-  display: flex; flex-direction: column; gap: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  box-shadow: $shadow-popup;
+  animation: scaleIn 160ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.97); }
+    to   { opacity: 1; transform: scale(1); }
+  }
 }
 
-.modalTitle { font-size: $text-md; font-weight: 600; color: var(--text-primary); }
-.modalSub   { font-size: $text-sm; color: var(--text-tertiary); margin: 0; }
-.modalActions { display: flex; gap: 8px; justify-content: flex-end; }
+.modalTitle {
+  font-size: $text-md;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: $text-primary;
+}
+
+.modalSub {
+  font-size: $text-sm;
+  color: $text-tertiary;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.modalActions {
+  display: flex;
+  gap: $space-2;
+  justify-content: flex-end;
+}
