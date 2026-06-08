@@ -12,6 +12,7 @@ const priceAlertSchema = new mongoose.Schema(
     ticker: { type: String, uppercase: true, trim: true },
     targetPrice: { type: Number, min: 0 },
     direction: { type: String, enum: ['above', 'below'], default: 'above' },
+    lastAlertNotifiedAt: { type: Date, default: null },
   },
   { _id: false }
 );
