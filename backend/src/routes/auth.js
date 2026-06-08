@@ -83,9 +83,14 @@ router.post('/login', (req, res, next) => {
     if (err) return next(err);
     if (!user) return res.status(401).json({ error: info?.message || 'Invalid credentials.' });
 
-    const { accessToken, refreshToken } = issueTokens(user);
-    setRefreshCookie(res, refreshToken);
-    res.json({ user: safeUserResponse(user), accessToken });
+    try {
+      const { accessToken, refreshToken } = issueTokens(user);
+      setRefreshCookie(res, refreshToken);
+      res.json({ user: safeUserResponse(user), accessToken });
+    } catch (tokenErr) {
+      logger.error('POST /auth/login token issue', { err: tokenErr.message });
+      res.status(500).json({ error: 'Login failed. Please try again.' });
+    }
   })(req, res, next);
 });
 
@@ -257,10 +262,16 @@ router.get('/google', passport.authenticate('google', {
 router.get('/google/callback',
   passport.authenticate('google', { session: false, failureRedirect: '/login?error=google' }),
   (req, res) => {
-    const { accessToken, refreshToken } = issueTokens(req.user);
-    setRefreshCookie(res, refreshToken);
-    const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
-    res.redirect(`${clientUrl}/auth/callback?token=${accessToken}`);
+    try {
+      const { accessToken, refreshToken } = issueTokens(req.user);
+      setRefreshCookie(res, refreshToken);
+      const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+      res.redirect(`${clientUrl}/auth/callback?token=${accessToken}`);
+    } catch (err) {
+      logger.error('GET /auth/google/callback', { err: err.message, userId: req.user?.id });
+      const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+      res.redirect(`${clientUrl}/login?error=google`);
+    }
   }
 );
 
