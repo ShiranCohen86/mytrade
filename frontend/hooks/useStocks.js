@@ -212,12 +212,12 @@ export function useStocks() {
     }
   }, []);
 
-  const updateEntryPrice = useCallback(async (ticker, entryPrice) => {
+  const updateEntryPrice = useCallback(async (ticker, entryPrice, shares = null) => {
     if (entryPrice === null) {
       await clearEntryPrice(ticker);
       setPortfolio((prev) => prev.filter((p) => p.ticker !== ticker));
     } else {
-      const entry = await setEntryPrice(ticker, entryPrice);
+      const entry = await setEntryPrice(ticker, entryPrice, shares);
       setPortfolio((prev) => {
         const idx = prev.findIndex((p) => p.ticker === ticker);
         if (idx >= 0) return prev.map((p) => (p.ticker === ticker ? entry : p));

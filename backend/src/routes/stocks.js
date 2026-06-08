@@ -235,6 +235,11 @@ router.put('/portfolio/:ticker', async (req, res) => {
     if (!isFinite(entryPrice) || entryPrice < 0) {
       return res.status(400).json({ error: 'entryPrice must be a non-negative number.' });
     }
+    const sharesRaw = req.body.shares;
+    const shares = sharesRaw != null ? parseFloat(sharesRaw) : null;
+    if (shares !== null && (!isFinite(shares) || shares < 0)) {
+      return res.status(400).json({ error: 'shares must be a non-negative number.' });
+    }
     const user = await getUser(req.user.id);
     if (!user.watchlist.includes(t)) {
       return res.status(403).json({ error: `${t} is not in your watchlist.` });
@@ -242,11 +247,12 @@ router.put('/portfolio/:ticker', async (req, res) => {
     const idx = user.portfolio.findIndex((p) => p.ticker === t);
     if (idx >= 0) {
       user.portfolio[idx].entryPrice = entryPrice;
+      user.portfolio[idx].shares = shares;
     } else {
-      user.portfolio.push({ ticker: t, entryPrice });
+      user.portfolio.push({ ticker: t, entryPrice, shares });
     }
     await user.save();
-    res.json({ ticker: t, entryPrice });
+    res.json({ ticker: t, entryPrice, shares });
   } catch (err) {
     logger.error('PUT /portfolio/:ticker', { err: err.message });
     res.status(500).json({ error: safeError(err) });

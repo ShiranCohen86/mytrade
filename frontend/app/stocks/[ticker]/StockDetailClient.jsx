@@ -86,6 +86,7 @@ function pctChange(historical, days) {
 
 function QuickActionsPanel({ ticker, portfolioEntry, priceAlert, note, currentPrice, onUpdateEntryPrice, onUpdateAlert, onUpdateNote }) {
   const [entryInput, setEntryInput] = useState('');
+  const [sharesInput, setSharesInput] = useState('');
   const [alertInput, setAlertInput] = useState('');
   const [alertDir, setAlertDir] = useState('above');
   const [noteText, setNoteText] = useState(note?.text ?? '');
@@ -93,8 +94,12 @@ function QuickActionsPanel({ ticker, portfolioEntry, priceAlert, note, currentPr
   const [alertLoading, setAlertLoading] = useState(false);
   const [noteSaving, setNoteSaving] = useState(false);
 
+  const shares = portfolioEntry?.shares ?? null;
   const pnlPct = portfolioEntry && currentPrice
     ? ((currentPrice - portfolioEntry.entryPrice) / portfolioEntry.entryPrice) * 100
+    : null;
+  const pnlAbs = portfolioEntry && currentPrice && shares
+    ? (currentPrice - portfolioEntry.entryPrice) * shares
     : null;
 
   return (
@@ -105,9 +110,11 @@ function QuickActionsPanel({ ticker, portfolioEntry, priceAlert, note, currentPr
         {portfolioEntry ? (
           <div className={styles.qaInfo}>
             <span className={styles.qaInfoVal}>@ {fmtPrice(portfolioEntry.entryPrice)}</span>
+            {shares != null && <span className={styles.qaInfoVal} style={{ color: 'var(--text-tertiary)', fontSize: '11px' }}>× {shares} shares</span>}
             {pnlPct != null && (
               <span className={`${styles.qaPnl} ${pnlPct >= 0 ? styles.qaPos : styles.qaNeg}`}>
                 {pnlPct >= 0 ? '+' : ''}{pnlPct.toFixed(2)}%
+                {pnlAbs != null && ` (${pnlAbs >= 0 ? '+' : ''}${fmtPrice(pnlAbs)})`}
               </span>
             )}
             <button className={styles.qaClear} onClick={() => onUpdateEntryPrice?.(ticker, null)} disabled={entryLoading}>clear</button>
@@ -117,10 +124,12 @@ function QuickActionsPanel({ ticker, portfolioEntry, priceAlert, note, currentPr
             e.preventDefault();
             const p = parseFloat(entryInput);
             if (!isFinite(p) || p <= 0) return;
+            const s = sharesInput ? parseFloat(sharesInput) : null;
             setEntryLoading(true);
-            try { await onUpdateEntryPrice?.(ticker, p); setEntryInput(''); } finally { setEntryLoading(false); }
+            try { await onUpdateEntryPrice?.(ticker, p, s && isFinite(s) && s > 0 ? s : null); setEntryInput(''); setSharesInput(''); } finally { setEntryLoading(false); }
           }}>
             <input type="number" step="0.01" min="0.01" className={styles.qaInput} placeholder="Entry price" value={entryInput} onChange={(e) => setEntryInput(e.target.value)} disabled={entryLoading} />
+            <input type="number" step="0.01" min="0.01" className={styles.qaInput} style={{ maxWidth: '72px' }} placeholder="Shares" value={sharesInput} onChange={(e) => setSharesInput(e.target.value)} disabled={entryLoading} />
             <button type="submit" className={styles.qaBtn} disabled={entryLoading || !entryInput}>Set</button>
           </form>
         )}

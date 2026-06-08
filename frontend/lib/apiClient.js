@@ -114,8 +114,8 @@ export const getNews = (ticker, signal) =>
 
 export const getPortfolio = () =>
   requestWithRetry(`${EXPRESS}/api/portfolio`);
-export const setEntryPrice = (ticker, entryPrice) =>
-  request(`${EXPRESS}/api/portfolio/${ticker}`, { method: 'PUT', body: JSON.stringify({ entryPrice }) });
+export const setEntryPrice = (ticker, entryPrice, shares = null) =>
+  request(`${EXPRESS}/api/portfolio/${ticker}`, { method: 'PUT', body: JSON.stringify({ entryPrice, shares }) });
 export const clearEntryPrice = (ticker) =>
   request(`${EXPRESS}/api/portfolio/${ticker}`, { method: 'DELETE' });
 

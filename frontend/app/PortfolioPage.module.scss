@@ -387,6 +387,15 @@
   white-space: nowrap;
 }
 
+.sharesHint {
+  display: block;
+  font-family: $font-data;
+  font-size: 10px;
+  color: $text-disabled;
+  font-variant-numeric: tabular-nums;
+  margin-top: 1px;
+}
+
 .sector {
   font-family: $font-ui;
   font-size: 11px;

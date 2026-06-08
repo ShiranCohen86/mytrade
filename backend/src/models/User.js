@@ -3,7 +3,11 @@ const mongoose = require('mongoose');
 const MAX_WATCHLIST = 25;
 
 const portfolioEntrySchema = new mongoose.Schema(
-  { ticker: { type: String, uppercase: true, trim: true }, entryPrice: { type: Number, min: 0 } },
+  {
+    ticker: { type: String, uppercase: true, trim: true },
+    entryPrice: { type: Number, min: 0 },
+    shares: { type: Number, min: 0, default: null },
+  },
   { _id: false }
 );
 

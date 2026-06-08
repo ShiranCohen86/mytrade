@@ -58,15 +58,19 @@ export default function PortfolioPage() {
         const stock = stocks.find((s) => s.ticker === entry.ticker);
         if (!stock) return null;
         const price = stock.cachedData?.price ?? null;
-        const pnlAbs = price != null ? price - entry.entryPrice : null;
-        const pnlPct = pnlAbs != null ? (pnlAbs / entry.entryPrice) * 100 : null;
+        const shares = entry.shares ?? null;
+        const pnlAbsPerShare = price != null ? price - entry.entryPrice : null;
+        const pnlPct = pnlAbsPerShare != null ? (pnlAbsPerShare / entry.entryPrice) * 100 : null;
+        const pnlAbs = pnlAbsPerShare != null && shares != null ? pnlAbsPerShare * shares : pnlAbsPerShare;
         return {
           ticker: stock.ticker,
           name: stock.name,
           sector: stock.sector,
           entryPrice: entry.entryPrice,
+          shares,
           currentPrice: price,
           cachedData: stock.cachedData,
+          pnlAbsPerShare,
           pnlAbs,
           pnlPct,
           riskScore: stock.analysis?.riskScore ?? null,
@@ -78,13 +82,20 @@ export default function PortfolioPage() {
   }, [stocks, portfolio]);
 
   const totals = useMemo(() => {
-    const withPrice = rows.filter((r) => r.pnlAbs != null);
+    const withPrice = rows.filter((r) => r.pnlAbsPerShare != null);
     if (!withPrice.length) return null;
-    const totalCost   = withPrice.reduce((s, r) => s + r.entryPrice, 0);
-    const totalValue  = withPrice.reduce((s, r) => s + r.currentPrice, 0);
+    // Use share-weighted totals when available, otherwise fall back to per-position (1 share)
+    const withShares = withPrice.filter((r) => r.shares != null);
+    const useShares = withShares.length > 0;
+    const totalCost  = useShares
+      ? withShares.reduce((s, r) => s + r.entryPrice * r.shares, 0)
+      : withPrice.reduce((s, r) => s + r.entryPrice, 0);
+    const totalValue = useShares
+      ? withShares.reduce((s, r) => s + r.currentPrice * r.shares, 0)
+      : withPrice.reduce((s, r) => s + r.currentPrice, 0);
     const totalPnlAbs = totalValue - totalCost;
     const totalPnlPct = (totalPnlAbs / totalCost) * 100;
-    return { totalCost, totalValue, totalPnlAbs, totalPnlPct, count: withPrice.length };
+    return { totalCost, totalValue, totalPnlAbs, totalPnlPct, count: withPrice.length, useShares };
   }, [rows]);
 
   const sectorData = useMemo(() => {
@@ -189,12 +200,13 @@ export default function PortfolioPage() {
   }, [rows, sortCol, sortDir]);
 
   const exportCSV = useCallback(() => {
-    const headers = ['Ticker', 'Name', 'Sector', 'Entry Price', 'Current Price', 'P&L $', 'Return %', 'Risk Score', 'Expectation Score'];
+    const headers = ['Ticker', 'Name', 'Sector', 'Entry Price', 'Shares', 'Current Price', 'P&L $', 'Return %', 'Risk Score', 'Expectation Score'];
     const csvRows = rows.map((r) => [
       r.ticker,
       `"${(r.name || '').replace(/"/g, '""')}"`,
       `"${(r.sector || '').replace(/"/g, '""')}"`,
       r.entryPrice?.toFixed(2) ?? '',
+      r.shares ?? '',
       r.currentPrice?.toFixed(2) ?? '',
       r.pnlAbs?.toFixed(2) ?? '',
       r.pnlPct?.toFixed(2) ?? '',
@@ -417,13 +429,16 @@ export default function PortfolioPage() {
                   <td className={styles.td}>
                     {r.sector && <span className={styles.sector}>{r.sector}</span>}
                   </td>
-                  <td className={styles.td}>{fmtPrice(r.entryPrice)}</td>
+                  <td className={styles.td}>
+                    <span>{fmtPrice(r.entryPrice)}</span>
+                    {r.shares != null && <span className={styles.sharesHint}>× {r.shares}</span>}
+                  </td>
                   <td className={styles.td}>
                     {fmtPrice(r.currentPrice)}
                     <ExtPriceBadge cachedData={r.cachedData} />
                   </td>
                   <td className={`${styles.td} ${r.pnlAbs != null ? (r.pnlAbs >= 0 ? styles.pos : styles.neg) : ''}`}>
-                    {fmtPrice(r.pnlAbs)}
+                    {r.pnlAbs != null ? (r.pnlAbs >= 0 ? '+' : '') + fmtPrice(Math.abs(r.pnlAbs)) : '—'}
                   </td>
                   <td className={`${styles.td} ${r.pnlPct != null ? (r.pnlPct >= 0 ? styles.pos : styles.neg) : ''}`}>
                     {fmtPct(r.pnlPct)}
