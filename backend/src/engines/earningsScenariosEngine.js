@@ -40,7 +40,7 @@ function annualizedVolatility(historicalPrices) {
   return Math.sqrt(variance) * Math.sqrt(252);
 }
 
-function calculate({ currentPrice, historicalPrices, sector, preEarningsDrift, sentimentLabel, marketRegime, earningsDate }) {
+function calculate({ currentPrice, historicalPrices, sector, preEarningsDrift, sentimentLabel, marketRegime, earningsDate, analystHighPrice, analystLowPrice, analystTargetPrice, recommendationKey }) {
   const annVol = annualizedVolatility(historicalPrices);
   const dailyVol = annVol / Math.sqrt(252);
   const multiplier = SECTOR_MULTIPLIERS[sector] || SECTOR_MULTIPLIERS.default;
@@ -70,6 +70,11 @@ function calculate({ currentPrice, historicalPrices, sector, preEarningsDrift, s
   if (sentimentLabel === 'positive') bullProb += 5;
   if (sentimentLabel === 'negative') bullProb -= 5;
 
+  // Analyst recommendation consensus shifts probabilities
+  if (recommendationKey === 'strong_buy') bullProb += 6;
+  else if (recommendationKey === 'buy') bullProb += 3;
+  else if (recommendationKey === 'sell' || recommendationKey === 'strong_sell') bullProb -= 4;
+
   bullProb = Math.max(10, Math.min(50, bullProb));
   const bearProb = Math.max(5, 100 - bullProb - neutralProb);
 
@@ -79,10 +84,20 @@ function calculate({ currentPrice, historicalPrices, sector, preEarningsDrift, s
   const neutralDir = preEarningsDrift === 'RISING' ? 1 : preEarningsDrift === 'FALLING' ? -1 : 0;
   const neutralShift = currentPrice * baseMove * 0.2 * neutralDir;
 
-  const bullTarget = parseFloat((currentPrice + upMove).toFixed(2));
+  // Anchor targets with analyst price range when available
+  let rawBullTarget = currentPrice + upMove;
+  let rawBearTarget = currentPrice - downMove;
+  if (analystHighPrice && analystHighPrice > currentPrice) {
+    // Blend 50/50 between volatility-based and analyst high target
+    rawBullTarget = (rawBullTarget + analystHighPrice) / 2;
+  }
+  if (analystLowPrice && analystLowPrice < currentPrice && analystLowPrice > 0) {
+    rawBearTarget = (rawBearTarget + analystLowPrice) / 2;
+  }
+
+  const bullTarget = parseFloat(rawBullTarget.toFixed(2));
   const neutralTarget = parseFloat((currentPrice + neutralShift).toFixed(2));
   // Bear target capped at $0.01 but percentMove uses the capped price
-  const rawBearTarget = currentPrice - downMove;
   const bearTarget = parseFloat(Math.max(rawBearTarget, 0.01).toFixed(2));
 
   const bullPct = parseFloat(((bullTarget - currentPrice) / currentPrice * 100).toFixed(1));

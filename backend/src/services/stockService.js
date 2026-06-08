@@ -83,6 +83,10 @@ async function analyzeStock(ticker) {
     sentimentLabel: sentiment.label,
     marketRegime: marketRegime.regime,
     earningsDate,
+    analystHighPrice: companyInfo.analystHighPrice,
+    analystLowPrice: companyInfo.analystLowPrice,
+    analystTargetPrice: companyInfo.analystTargetPrice,
+    recommendationKey: companyInfo.recommendationKey,
   });
 
   const currentSpyPrice = spyHistory.length > 0 ? spyHistory[spyHistory.length - 1].close : null;
