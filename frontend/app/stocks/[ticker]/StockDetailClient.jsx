@@ -1,4 +1,5 @@
 
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useStockAnalysis } from '@/hooks/useStockAnalysis';
 import { useStocks } from '@/hooks/useStocks';
@@ -14,6 +15,43 @@ import { StatsBar } from '@/components/StatsBar/StatsBar';
 import { PanelCard } from '@/components/PanelCard/PanelCard';
 import { fmtPrice, fmtBig } from '@/lib/format';
 import styles from './page.module.scss';
+
+function ScoreTrendChart({ scoreHistory }) {
+  const pts = (scoreHistory || []).slice(-20);
+  if (pts.length < 3) return null;
+  const W = 280, H = 60;
+  const risks = pts.map((p) => p.riskScore ?? 0);
+  const exps = pts.map((p) => p.expectationScore ?? 0);
+  const minV = 0, maxV = 100;
+  const toX = (i) => (i / (pts.length - 1)) * W;
+  const toY = (v) => H - ((v - minV) / (maxV - minV)) * H;
+  const riskPath = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${toX(i).toFixed(1)},${toY(p.riskScore ?? 0).toFixed(1)}`).join(' ');
+  const expPath  = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${toX(i).toFixed(1)},${toY(p.expectationScore ?? 0).toFixed(1)}`).join(' ');
+  const lastRisk = risks[risks.length - 1];
+  const riskColor = lastRisk >= 70 ? 'var(--neg)' : lastRisk >= 40 ? 'var(--warn)' : 'var(--pos)';
+  return (
+    <div style={{ padding: '12px 16px' }}>
+      <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display: 'block', overflow: 'visible' }} aria-hidden="true">
+        <line x1="0" y1={toY(70)} x2={W} y2={toY(70)} stroke="var(--neg)" strokeWidth="0.5" strokeDasharray="3 3" opacity="0.35" />
+        <line x1="0" y1={toY(40)} x2={W} y2={toY(40)} stroke="var(--warn)" strokeWidth="0.5" strokeDasharray="3 3" opacity="0.35" />
+        <path d={expPath} fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.6" />
+        <path d={riskPath} fill="none" stroke={riskColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx={toX(pts.length - 1)} cy={toY(lastRisk)} r="3" fill={riskColor} />
+        <circle cx={toX(pts.length - 1)} cy={toY(exps[exps.length - 1])} r="2.5" fill="var(--accent)" />
+      </svg>
+      <div style={{ display: 'flex', gap: 16, marginTop: 6, fontFamily: 'Inter, sans-serif', fontSize: 10 }}>
+        <span style={{ color: riskColor, display: 'flex', alignItems: 'center', gap: 4 }}>
+          <span style={{ width: 12, height: 2, background: riskColor, display: 'inline-block' }} />
+          Risk (now {lastRisk.toFixed(0)})
+        </span>
+        <span style={{ color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: 4 }}>
+          <span style={{ width: 12, height: 2, background: 'var(--accent)', display: 'inline-block', opacity: 0.6 }} />
+          Expectation (now {exps[exps.length - 1].toFixed(0)})
+        </span>
+      </div>
+    </div>
+  );
+}
 
 function pctChange(historical, days) {
   if (!historical || historical.length < days + 1) return null;
@@ -45,7 +83,7 @@ export default function StockDetailClient({ ticker }) {
     );
   }
 
-  const { cachedData, analysis, name, sector } = stock;
+  const { cachedData, analysis, name, sector, scoreHistory } = stock;
   const hist = cachedData?.historical || [];
 
   const sectorPeers = allStocks
@@ -154,11 +192,16 @@ export default function StockDetailClient({ ticker }) {
       </div>
 
       <div className={styles.detailGrid}>
-        {/* Left column: Chart + News */}
+        {/* Left column: Chart + Score Trend + News */}
         <div className={styles.leftCol}>
           <PanelCard title="Price Chart">
             <PriceChart historical={hist} ticker={ticker} />
           </PanelCard>
+          {(scoreHistory?.length ?? 0) >= 3 && (
+            <PanelCard title="Risk & Expectation Trend">
+              <ScoreTrendChart scoreHistory={scoreHistory} />
+            </PanelCard>
+          )}
           <PanelCard title="News & Sentiment">
             <NewsPanel ticker={ticker} />
           </PanelCard>
