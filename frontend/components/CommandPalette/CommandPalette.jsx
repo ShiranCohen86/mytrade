@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { searchStocks } from '@/lib/apiClient';
 import { useStocks } from '@/hooks/useStocks';
+import { useToast } from '@/components/Toast/ToastProvider';
 import styles from './CommandPalette.module.scss';
 
 const NAV_ITEMS = [
@@ -72,7 +73,9 @@ export function CommandPalette() {
   const inputRef = useRef(null);
   const debounceRef = useRef(null);
   const navigate = useNavigate();
-  const { stocks: watchlistStocks } = useStocks();
+  const { stocks: watchlistStocks, add: addToWatchlist } = useStocks();
+  const toast = useToast();
+  const [adding, setAdding] = useState(null);
 
   // ⌘K / Ctrl+K to open; also listen for custom event from TopBar button
   useEffect(() => {
@@ -143,6 +146,21 @@ export function CommandPalette() {
   // Recent items shown when no query (exclude ones currently in watchlist match set)
   const visibleRecent = !query.trim() ? recentItems : [];
 
+  // "Add to watchlist" actions for search results not already tracked
+  const addActions = useMemo(() => {
+    if (!query.trim() || !stockResults.length) return [];
+    return stockResults
+      .filter((r) => !watchlistStocks.some((w) => w.ticker === r.ticker))
+      .slice(0, 2)
+      .map((r) => ({
+        id: `add:${r.ticker}`,
+        type: 'addAction',
+        ticker: r.ticker,
+        label: `Add ${r.ticker} to watchlist`,
+        sublabel: r.name,
+      }));
+  }, [stockResults, query, watchlistStocks]);
+
   // Flat list of all selectable items (for keyboard nav)
   const allItems = [
     ...visibleRecent,
@@ -158,11 +176,30 @@ export function CommandPalette() {
         exchange: r.exchange,
         path: `/stocks/${r.ticker}`,
       })),
+    ...addActions,
   ];
 
   const close = useCallback(() => { setOpen(false); setQuery(''); }, []);
 
+  const handleAdd = useCallback(async (ticker) => {
+    if (adding) return;
+    setAdding(ticker);
+    try {
+      await addToWatchlist(ticker);
+      toast.success(`${ticker} added to watchlist.`);
+    } catch (err) {
+      toast.error(err?.message || `Failed to add ${ticker}.`);
+    } finally {
+      setAdding(null);
+    }
+    close();
+  }, [adding, addToWatchlist, toast, close]);
+
   const execute = useCallback((item) => {
+    if (item?.type === 'addAction') {
+      handleAdd(item.ticker);
+      return;
+    }
     if (item?.path) navigate(item.path);
     // Track recently visited stock/watchlist items
     if (item && (item.type === 'stock' || item.type === 'watchlist') && item.ticker) {
@@ -174,7 +211,7 @@ export function CommandPalette() {
       });
     }
     close();
-  }, [navigate, close]);
+  }, [navigate, close, handleAdd]);
 
   const handleKeyDown = (e) => {
     if (e.key === 'Escape') { close(); return; }
@@ -301,6 +338,28 @@ export function CommandPalette() {
                     </button>
                   );
                 })}
+            </div>
+          )}
+
+          {addActions.length > 0 && (
+            <div className={styles.group}>
+              <span className={styles.groupLabel}>Add to Watchlist</span>
+              {addActions.map((a) => {
+                const idx = allItems.findIndex((item) => item.id === a.id);
+                return (
+                  <button
+                    key={a.id}
+                    className={`${styles.item} ${highlighted === idx ? styles.itemActive : ''}`}
+                    onClick={() => execute(a)}
+                    onMouseEnter={() => setHighlighted(idx)}
+                    disabled={adding === a.ticker}
+                  >
+                    <span className={styles.addActionIcon}>+</span>
+                    <span className={styles.itemLabel}>{a.label}</span>
+                    <span className={styles.itemMeta}>{a.sublabel}</span>
+                  </button>
+                );
+              })}
             </div>
           )}
 

@@ -165,6 +165,17 @@
   flex-shrink: 0;
 }
 
+.addActionIcon {
+  font-family: $font-data;
+  font-size: 16px;
+  font-weight: 700;
+  color: $accent;
+  flex-shrink: 0;
+  width: 22px;
+  text-align: center;
+  line-height: 1;
+}
+
 .empty {
   font-family: $font-ui;
   font-size: $text-sm;
