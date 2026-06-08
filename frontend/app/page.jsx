@@ -50,6 +50,9 @@ export default function DashboardPage() {
   const [dismissedError, setDismissedError] = useState(null);
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef(null);
+  const [sectorFilter, setSectorFilter] = useState(null);
+  const [riskFilter, setRiskFilter] = useState(null);
+  const [earningsFilter, setEarningsFilter] = useState(null);
 
   useEffect(() => {
     if (!moreOpen) return;
@@ -77,6 +80,32 @@ export default function DashboardPage() {
   }, [sortKey]);
 
   const sortedStocks = useMemo(() => sortStocks(stocks, sortKey, portfolio), [stocks, sortKey, portfolio]);
+
+  const sectors = useMemo(() => (
+    [...new Set(stocks.map((s) => s.sector || 'Unknown'))].sort()
+  ), [stocks]);
+
+  const filteredStocks = useMemo(() => {
+    let result = sortedStocks;
+    if (sectorFilter) result = result.filter((s) => (s.sector || 'Unknown') === sectorFilter);
+    if (riskFilter) result = result.filter((s) => {
+      const sc = s.analysis?.riskScore;
+      if (sc == null) return false;
+      if (riskFilter === 'high') return sc >= 70;
+      if (riskFilter === 'medium') return sc >= 40 && sc < 70;
+      return sc < 40;
+    });
+    if (earningsFilter === 'soon') result = result.filter((s) => {
+      const ed = s.cachedData?.earningsDate;
+      if (!ed) return false;
+      const days = Math.ceil((new Date(ed).getTime() - Date.now()) / 86_400_000);
+      return days >= 0 && days <= 14;
+    });
+    return result;
+  }, [sortedStocks, sectorFilter, riskFilter, earningsFilter]);
+
+  const hasActiveFilters = sectorFilter !== null || riskFilter !== null || earningsFilter !== null;
+  const clearFilters = useCallback(() => { setSectorFilter(null); setRiskFilter(null); setEarningsFilter(null); }, []);
 
   // Toast when analysis finishes
   useEffect(() => {
@@ -169,7 +198,9 @@ export default function DashboardPage() {
           <div className={styles.toolbarLeft}>
             <span className={styles.pageTitle}>Watchlist</span>
             {stocks.length > 0 && (
-              <span className={styles.stockCount}>{stocks.length}</span>
+              <span className={styles.stockCount}>
+                {hasActiveFilters ? `${filteredStocks.length} / ${stocks.length}` : stocks.length}
+              </span>
             )}
           </div>
           <div className={styles.toolbarRight}>
@@ -297,24 +328,80 @@ export default function DashboardPage() {
         </>
       ) : (
         <>
+          {/* Filter bar */}
+          <div className={styles.filterBar}>
+            <div className={styles.filterScroll}>
+              <button
+                className={`${styles.filterPill} ${styles.filterPillHighRisk} ${riskFilter === 'high' ? styles.filterPillActive : ''}`}
+                onClick={() => setRiskFilter(riskFilter === 'high' ? null : 'high')}
+              >
+                High Risk
+              </button>
+              <button
+                className={`${styles.filterPill} ${styles.filterPillMedRisk} ${riskFilter === 'medium' ? styles.filterPillActive : ''}`}
+                onClick={() => setRiskFilter(riskFilter === 'medium' ? null : 'medium')}
+              >
+                Med Risk
+              </button>
+              <button
+                className={`${styles.filterPill} ${styles.filterPillLowRisk} ${riskFilter === 'low' ? styles.filterPillActive : ''}`}
+                onClick={() => setRiskFilter(riskFilter === 'low' ? null : 'low')}
+              >
+                Low Risk
+              </button>
+              <span className={styles.filterDivider} aria-hidden="true" />
+              <button
+                className={`${styles.filterPill} ${earningsFilter === 'soon' ? styles.filterPillActive : ''}`}
+                onClick={() => setEarningsFilter(earningsFilter === 'soon' ? null : 'soon')}
+              >
+                Earnings ≤14d
+              </button>
+              {sectors.length > 1 && <span className={styles.filterDivider} aria-hidden="true" />}
+              {sectors.length > 1 && sectors.map((s) => (
+                <button
+                  key={s}
+                  className={`${styles.filterPill} ${sectorFilter === s ? styles.filterPillActive : ''}`}
+                  onClick={() => setSectorFilter(sectorFilter === s ? null : s)}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+            {hasActiveFilters && (
+              <button className={styles.filterClear} onClick={clearFilters} aria-label="Clear all filters">
+                Clear
+              </button>
+            )}
+          </div>
+
           <SummaryStrip stocks={stocks} />
-          <WatchlistTable
-            stocks={sortedStocks}
-            analyzingTickers={analyzingTickers}
-            analysisErrors={analysisErrors}
-            portfolio={portfolio}
-            priceAlerts={priceAlerts}
-            notes={notes}
-            sortKey={sortKey}
-            onSortChange={setSortKey}
-            onRemove={remove}
-            onUpdateEntryPrice={updateEntryPrice}
-            onUpdateAlert={updateAlert}
-            onUpdateNote={updateNote}
-            onReorder={reorder}
-            onAnalyzeTicker={analyzeTicker}
-          />
-          <WatchlistSummary stocks={stocks} />
+
+          {filteredStocks.length === 0 ? (
+            <div className={styles.filterEmpty}>
+              No stocks match the current filters.{' '}
+              <button className={styles.filterEmptyLink} onClick={clearFilters}>Clear filters</button>
+            </div>
+          ) : (
+            <>
+              <WatchlistTable
+                stocks={filteredStocks}
+                analyzingTickers={analyzingTickers}
+                analysisErrors={analysisErrors}
+                portfolio={portfolio}
+                priceAlerts={priceAlerts}
+                notes={notes}
+                sortKey={sortKey}
+                onSortChange={setSortKey}
+                onRemove={remove}
+                onUpdateEntryPrice={updateEntryPrice}
+                onUpdateAlert={updateAlert}
+                onUpdateNote={updateNote}
+                onReorder={reorder}
+                onAnalyzeTicker={analyzeTicker}
+              />
+              <WatchlistSummary stocks={stocks} />
+            </>
+          )}
         </>
       )}
     </div>

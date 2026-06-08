@@ -371,3 +371,128 @@
     font-size: 15px;
   }
 }
+
+// ─── Filter / Screener Bar ────────────────────────────────────────────────────
+
+.filterBar {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-2 $space-6;
+  border-bottom: 1px solid $chrome-dim;
+  background: $surface-base;
+  flex-shrink: 0;
+
+  @media (max-width: 640px) {
+    padding: $space-2 $space-3;
+  }
+}
+
+.filterScroll {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  overflow-x: auto;
+  flex: 1;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+.filterPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: $radius-pill;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: $font-ui;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  color: $text-tertiary;
+  background: $surface-raised;
+  border: 1px solid $chrome-dim;
+  transition: color $motion-fast, background $motion-fast, border-color $motion-fast;
+  flex-shrink: 0;
+  cursor: pointer;
+
+  &:hover {
+    color: $text-secondary;
+    border-color: $chrome-mid;
+    background: $surface-elevated;
+  }
+}
+
+.filterPillActive {
+  color: $accent;
+  background: $accent-faint;
+  border-color: $accent;
+
+  &:hover {
+    color: $accent;
+    background: $accent-faint;
+  }
+}
+
+.filterPillHighRisk {
+  &.filterPillActive {
+    color: $neg;
+    background: rgba(239, 68, 68, 0.12);
+    border-color: $neg;
+  }
+}
+
+.filterPillMedRisk {
+  &.filterPillActive {
+    color: $warn;
+    background: rgba(245, 158, 11, 0.12);
+    border-color: $warn;
+  }
+}
+
+.filterPillLowRisk {
+  &.filterPillActive {
+    color: $pos;
+    background: rgba(34, 197, 94, 0.12);
+    border-color: $pos;
+  }
+}
+
+.filterDivider {
+  width: 1px;
+  height: 14px;
+  background: $chrome-mid;
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+
+.filterClear {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: $font-ui;
+  color: $text-tertiary;
+  padding: 3px 8px;
+  border-radius: $radius-sm;
+  transition: color $motion-fast;
+  white-space: nowrap;
+
+  &:hover { color: $accent; }
+}
+
+.filterEmpty {
+  padding: $space-10 $space-6;
+  text-align: center;
+  color: $text-tertiary;
+  font-size: 14px;
+  font-family: $font-ui;
+}
+
+.filterEmptyLink {
+  color: $accent;
+  font-weight: 600;
+  text-decoration: underline;
+  font-size: 14px;
+  font-family: $font-ui;
+
+  &:hover { opacity: 0.8; }
+}
