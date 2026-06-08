@@ -108,7 +108,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.09em;
-  color: $text-disabled;
+  color: $text-tertiary;
   padding: $space-2 $space-3 $space-1;
 }
 
@@ -161,7 +161,7 @@
 .itemMeta {
   font-family: $font-data;
   font-size: $text-xs;
-  color: $text-disabled;
+  color: $text-tertiary;
   flex-shrink: 0;
 }
 
@@ -200,7 +200,7 @@
 .hint {
   font-family: $font-ui;
   font-size: $text-2xs;
-  color: $text-disabled;
+  color: $text-tertiary;
   display: flex;
   align-items: center;
   gap: $space-1;

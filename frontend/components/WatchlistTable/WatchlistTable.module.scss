@@ -144,7 +144,7 @@ $cols-xs:      44px 1fr 68px 34px;
 .sectorHeaderCount {
   @include mono-value(10px);
   font-weight: 600;
-  color: $text-disabled;
+  color: $text-tertiary;
   background: $surface-panel;
   border: 1px solid $chrome-dim;
   border-radius: $radius-pill;

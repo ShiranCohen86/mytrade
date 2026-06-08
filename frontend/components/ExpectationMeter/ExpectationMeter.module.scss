@@ -18,7 +18,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.09em;
-  color: $text-disabled;
+  color: $text-tertiary;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -80,7 +80,7 @@
   justify-content: space-between;
   font-family: $font-ui;
   font-size: 10px;
-  color: $text-disabled;
+  color: $text-tertiary;
 }
 
 .guidance {

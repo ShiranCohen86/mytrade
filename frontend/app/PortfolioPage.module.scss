@@ -111,7 +111,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.09em;
-  color: $text-disabled;
+  color: $text-tertiary;
 }
 
 .summaryValue {
@@ -161,7 +161,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.09em;
-  color: $text-disabled;
+  color: $text-tertiary;
 }
 
 .donutRow {
@@ -295,7 +295,7 @@
 .chartSubtitle {
   font-family: $font-ui;
   font-size: 11px;
-  color: $text-disabled;
+  color: $text-tertiary;
 }
 
 .chartWrap {
@@ -326,7 +326,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: $text-disabled;
+  color: $text-secondary;
   text-align: right;
   border-bottom: 1px solid $chrome-dim;
   white-space: nowrap;
@@ -411,7 +411,7 @@
   display: block;
   font-family: $font-data;
   font-size: 10px;
-  color: $text-disabled;
+  color: $text-tertiary;
   font-variant-numeric: tabular-nums;
   margin-top: 1px;
 }

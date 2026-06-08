@@ -32,7 +32,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.09em;
-  color: $text-disabled;
+  color: $text-tertiary;
   margin-bottom: $space-3;
 }
 
@@ -122,7 +122,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: $text-disabled;
+  color: $text-tertiary;
 }
 
 .scenarioTarget {
@@ -148,7 +148,7 @@
   font-family: $font-data;
   font-size: 10px;
   font-variant-numeric: tabular-nums;
-  color: $text-disabled;
+  color: $text-tertiary;
 }
 
 // ─── Forms ────────────────────────────────────────────────────────────────────
@@ -175,7 +175,7 @@
 .sharesHint {
   font-family: $font-data;
   font-size: 11px;
-  color: $text-disabled;
+  color: $text-tertiary;
   font-variant-numeric: tabular-nums;
 }
 
@@ -314,7 +314,7 @@
 .noteCount {
   font-family: $font-data;
   font-size: 10px;
-  color: $text-disabled;
+  color: $text-tertiary;
   flex: 1;
 }
 

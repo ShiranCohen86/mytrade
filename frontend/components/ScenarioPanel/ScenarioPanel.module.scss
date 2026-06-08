@@ -20,7 +20,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.09em;
-  color: $text-disabled;
+  color: $text-tertiary;
 }
 
 .current {
@@ -44,7 +44,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.09em;
-  color: $text-disabled;
+  color: $text-tertiary;
 
   &:last-child { text-align: right; }
 }

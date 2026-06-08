@@ -341,7 +341,7 @@
 
 .emptyHint {
   @include mono-value(12px);
-  color: $text-disabled;
+  color: $text-tertiary;
   letter-spacing: 0.06em;
   margin-top: $space-1;
   background: $surface-raised;

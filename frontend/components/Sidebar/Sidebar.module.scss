@@ -100,7 +100,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.10em;
-  color: $text-disabled;
+  color: $text-tertiary;
   white-space: nowrap;
   user-select: none;
 }
@@ -230,7 +230,7 @@
 
 .userEmail {
   font-size: 10px;
-  color: $text-disabled;
+  color: $text-tertiary;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

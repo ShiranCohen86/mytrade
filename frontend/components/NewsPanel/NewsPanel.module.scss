@@ -83,7 +83,7 @@
 .time {
   font-family: $font-data;
   font-size: 11px;
-  color: $text-disabled;
+  color: $text-tertiary;
   font-variant-numeric: tabular-nums;
 }
 
@@ -103,7 +103,7 @@
   font-family: $font-ui;
   font-size: 10px;
   font-weight: 600;
-  color: $text-disabled;
+  color: $text-tertiary;
   letter-spacing: 0.02em;
   white-space: nowrap;
   overflow: hidden;
