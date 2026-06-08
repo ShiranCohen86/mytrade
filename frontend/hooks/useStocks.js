@@ -230,6 +230,29 @@ export function useStocks() {
     }
   }, []);
 
+  const analyzeTicker = useCallback(async (ticker) => {
+    setAnalyzingTickers((prev) => new Set([...prev, ticker]));
+    setAnalysisErrors((prev) => {
+      const next = new Map(prev);
+      next.delete(ticker);
+      return next;
+    });
+    try {
+      const fresh = await refreshStock(ticker);
+      setStocks((prev) => prev.map((s) => (s.ticker === ticker ? fresh : s)));
+    } catch (err) {
+      setAnalysisErrors((prev) =>
+        new Map([...prev, [ticker, err instanceof Error ? err.message : 'Analysis failed']])
+      );
+    } finally {
+      setAnalyzingTickers((prev) => {
+        const next = new Set(prev);
+        next.delete(ticker);
+        return next;
+      });
+    }
+  }, []);
+
   const reorder = useCallback(async (newOrder) => {
     setStocks((prev) => {
       const map = new Map(prev.map((s) => [s.ticker, s]));
@@ -243,7 +266,7 @@ export function useStocks() {
   return {
     stocks, isLoading, isAnalyzing, analyzingTickers, analysisErrors, isConnected, error,
     portfolio, priceAlerts, notes,
-    add, remove, analyzeAll, reload: load,
+    add, remove, analyzeAll, analyzeTicker, reload: load,
     updateEntryPrice, updateAlert, updateNote, reorder,
   };
 }

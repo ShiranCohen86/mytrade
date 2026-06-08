@@ -6,8 +6,8 @@ import { fmtPrice } from '@/lib/format';
 
 export function StockRowDetail({
   stock, portfolioEntry, priceAlert, note, pnlPct,
-  onUpdateEntryPrice, onUpdateAlert, onUpdateNote, onRemove, analysisError,
-  inSheet = false,
+  onUpdateEntryPrice, onUpdateAlert, onUpdateNote, onRemove, onAnalyzeTicker, analysisError,
+  inSheet = false, isAnalyzing = false,
 }) {
   const { ticker, analysis } = stock;
 
@@ -183,6 +183,16 @@ export function StockRowDetail({
       {/* Footer */}
       <div className={styles.footer}>
         <Link to={`/stocks/${ticker}`} className={styles.detailLink}>View Full Analysis →</Link>
+        {onAnalyzeTicker && (
+          <button
+            className={styles.analyzeBtn}
+            onClick={() => onAnalyzeTicker(ticker)}
+            disabled={isAnalyzing}
+            title="Re-run analysis for this stock"
+          >
+            {isAnalyzing ? '⟳ Analyzing…' : '⟳ Re-analyze'}
+          </button>
+        )}
         <button
           className={`${styles.removeBtn} ${confirmRemove ? styles.removeBtnConfirm : ''}`}
           onClick={handleRemove}

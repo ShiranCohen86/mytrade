@@ -283,6 +283,26 @@
   }
 }
 
+.analyzeBtn {
+  font-family: $font-ui;
+  font-size: 12px;
+  font-weight: 600;
+  color: $accent;
+  padding: 4px 12px;
+  height: 30px;
+  border-radius: $radius-md;
+  border: 1px solid $accent-faint;
+  background: $accent-faint;
+  transition: background $motion-fast, border-color $motion-fast, box-shadow $motion-fast;
+
+  &:hover:not(:disabled) {
+    background: $accent-glow;
+    border-color: $accent;
+    box-shadow: $shadow-glow;
+  }
+  &:disabled { opacity: 0.5; pointer-events: none; }
+}
+
 .removeBtn {
   font-family: $font-ui;
   font-size: 12px;

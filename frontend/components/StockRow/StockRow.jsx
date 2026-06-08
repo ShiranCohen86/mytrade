@@ -62,7 +62,7 @@ function EarningsRing({ daysToEarnings }) {
 function StockRowInner({
   stock, onRemove, isConnected = null, isAnalyzing = false, analysisError = null,
   portfolioEntry = null, priceAlert = null, note = null,
-  onUpdateEntryPrice, onUpdateAlert, onUpdateNote,
+  onUpdateEntryPrice, onUpdateAlert, onUpdateNote, onAnalyzeTicker,
   isDragging = false, onDragStart, onDragOver, onDragEnd, isDropTarget = false,
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -238,8 +238,10 @@ function StockRowInner({
             onUpdateEntryPrice={onUpdateEntryPrice}
             onUpdateAlert={onUpdateAlert}
             onUpdateNote={onUpdateNote}
+            onAnalyzeTicker={onAnalyzeTicker}
             onRemove={(t) => { onRemove(t); setExpanded(false); }}
             analysisError={analysisError}
+            isAnalyzing={isAnalyzing}
             inSheet
           />
         </BottomSheet>
@@ -253,8 +255,10 @@ function StockRowInner({
           onUpdateEntryPrice={onUpdateEntryPrice}
           onUpdateAlert={onUpdateAlert}
           onUpdateNote={onUpdateNote}
+          onAnalyzeTicker={onAnalyzeTicker}
           onRemove={onRemove}
           analysisError={analysisError}
+          isAnalyzing={isAnalyzing}
         />
       ) : null}
     </div>

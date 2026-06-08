@@ -23,7 +23,7 @@ export function WatchlistTable({
   stocks, isConnected, analyzingTickers, analysisErrors,
   portfolio, priceAlerts, notes,
   sortKey, onSortChange,
-  onRemove, onUpdateEntryPrice, onUpdateAlert, onUpdateNote, onReorder,
+  onRemove, onUpdateEntryPrice, onUpdateAlert, onUpdateNote, onReorder, onAnalyzeTicker,
 }) {
   const dragFrom = useRef(null);
   const [dragOver, setDragOver] = useState(null);
@@ -95,6 +95,7 @@ export function WatchlistTable({
               onUpdateEntryPrice={onUpdateEntryPrice}
               onUpdateAlert={onUpdateAlert}
               onUpdateNote={onUpdateNote}
+              onAnalyzeTicker={onAnalyzeTicker}
               isDragging={dragFrom.current === stock.ticker}
               isDropTarget={dragOver === stock.ticker}
               onDragStart={(t) => { dragFrom.current = t; }}

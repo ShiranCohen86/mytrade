@@ -27,7 +27,7 @@ export default function DashboardPage() {
   const {
     stocks, isLoading, isAnalyzing, analyzingTickers, analysisErrors,
     isConnected, error, portfolio, priceAlerts, notes,
-    add, remove, analyzeAll, reload, updateEntryPrice, updateAlert, updateNote, reorder,
+    add, remove, analyzeAll, analyzeTicker, reload, updateEntryPrice, updateAlert, updateNote, reorder,
   } = useStocks();
 
   const toast = useToast();
@@ -266,6 +266,7 @@ export default function DashboardPage() {
             onUpdateAlert={updateAlert}
             onUpdateNote={updateNote}
             onReorder={reorder}
+            onAnalyzeTicker={analyzeTicker}
           />
           <WatchlistSummary stocks={stocks} />
         </>
