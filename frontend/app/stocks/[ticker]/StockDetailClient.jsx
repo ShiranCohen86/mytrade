@@ -77,6 +77,14 @@ export default function StockDetailClient({ ticker }) {
       : []
     ),
     ...(cachedData?.dividendYield ? [{ label: 'Div Yield', value: `${(cachedData.dividendYield * 100).toFixed(2)}%` }] : []),
+    ...(cachedData?.analystTargetPrice && cachedData?.price
+      ? (() => {
+          const target = cachedData.analystTargetPrice;
+          const upside = ((target - cachedData.price) / cachedData.price) * 100;
+          return [{ label: 'Analyst Target', value: `${fmtPrice(target)} (${upside >= 0 ? '+' : ''}${upside.toFixed(1)}%)`, highlight: upside >= 5 ? 'pos' : upside <= -5 ? 'neg' : undefined }];
+        })()
+      : []
+    ),
   ];
 
   return (
