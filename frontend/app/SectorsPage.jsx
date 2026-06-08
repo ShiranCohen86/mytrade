@@ -1,9 +1,16 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useStocks } from '@/hooks/useStocks';
 import { fmtPrice } from '@/lib/format';
 import { ExtPriceBadge } from '@/components/ExtPriceBadge/ExtPriceBadge';
 import styles from './SectorsPage.module.scss';
+
+const SORT_OPTIONS = [
+  { key: 'size',   label: 'Size' },
+  { key: 'change', label: 'Today' },
+  { key: 'risk',   label: 'Risk' },
+  { key: 'expect', label: 'Expect' },
+];
 
 function riskPipClass(score) {
   if (score == null) return '';
@@ -14,6 +21,7 @@ function riskPipClass(score) {
 
 export default function SectorsPage() {
   const { stocks, isLoading } = useStocks();
+  const [sortBy, setSortBy] = useState('size');
 
   const sectors = useMemo(() => {
     if (!stocks.length) return [];
@@ -25,7 +33,7 @@ export default function SectorsPage() {
       map.get(key).push(s);
     }
 
-    return Array.from(map.entries())
+    const list = Array.from(map.entries())
       .map(([name, items]) => {
         const analyzed = items.filter((s) => s.analysis?.riskScore != null);
         const avgRisk = analyzed.length
@@ -39,18 +47,40 @@ export default function SectorsPage() {
           ? priced.reduce((sum, s) => sum + s.cachedData.changePercent, 0) / priced.length
           : null;
         return { name, items, avgRisk, avgExp, avgChange };
-      })
-      .sort((a, b) => b.items.length - a.items.length);
-  }, [stocks]);
+      });
 
-  const maxCount = sectors.length ? sectors[0].items.length : 1;
+    switch (sortBy) {
+      case 'change': return list.sort((a, b) => (b.avgChange ?? -Infinity) - (a.avgChange ?? -Infinity));
+      case 'risk':   return list.sort((a, b) => (b.avgRisk ?? -Infinity) - (a.avgRisk ?? -Infinity));
+      case 'expect': return list.sort((a, b) => (b.avgExp ?? -Infinity) - (a.avgExp ?? -Infinity));
+      default:       return list.sort((a, b) => b.items.length - a.items.length);
+    }
+  }, [stocks, sortBy]);
+
+  const maxCount = useMemo(
+    () => (sectors.length ? [...sectors].sort((a, b) => b.items.length - a.items.length)[0].items.length : 1),
+    [sectors]
+  );
 
   return (
     <div className={styles.page}>
       <div className={styles.toolbar}>
         <span className={styles.pageTitle}>Sectors</span>
         {sectors.length > 0 && (
-          <span className={styles.count}>{sectors.length} sector{sectors.length !== 1 ? 's' : ''}</span>
+          <>
+            <span className={styles.count}>{sectors.length} sector{sectors.length !== 1 ? 's' : ''}</span>
+            <div className={styles.sortPills}>
+              {SORT_OPTIONS.map(({ key, label }) => (
+                <button
+                  key={key}
+                  className={`${styles.sortPill} ${sortBy === key ? styles.sortPillActive : ''}`}
+                  onClick={() => setSortBy(key)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </>
         )}
       </div>
 

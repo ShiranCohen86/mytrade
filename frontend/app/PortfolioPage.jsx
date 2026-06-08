@@ -1,8 +1,9 @@
-import { useMemo, useCallback, useState } from 'react';
+import { useMemo, useCallback, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, LineChart, Line, XAxis, YAxis, ReferenceLine, Area, AreaChart } from 'recharts';
 import { useStocks } from '@/hooks/useStocks';
 import { fmtPrice } from '@/lib/format';
+import { getMarketOverview } from '@/lib/apiClient';
 import { ExtPriceBadge } from '@/components/ExtPriceBadge/ExtPriceBadge';
 import styles from './PortfolioPage.module.scss';
 
@@ -142,6 +143,22 @@ export default function PortfolioPage() {
 
   const [sortCol, setSortCol] = useState('pnlPct');
   const [sortDir, setSortDir] = useState('desc');
+  const [spyChange, setSpyChange] = useState(null);
+
+  // Fetch SPY change% for daily comparison
+  useEffect(() => {
+    getMarketOverview().then((quotes) => {
+      const spy = Array.isArray(quotes) ? quotes.find((q) => q.ticker === 'SPY') : null;
+      if (spy?.changePercent != null) setSpyChange(spy.changePercent);
+    }).catch(() => {});
+  }, []);
+
+  // Average today's change across portfolio positions that have current price data
+  const portfolioTodayChange = useMemo(() => {
+    const priced = rows.filter((r) => r.cachedData?.changePercent != null);
+    if (!priced.length) return null;
+    return priced.reduce((s, r) => s + r.cachedData.changePercent, 0) / priced.length;
+  }, [rows]);
 
   const handleSort = useCallback((col) => {
     setSortCol((prev) => {
@@ -228,6 +245,22 @@ export default function PortfolioPage() {
               {fmtPct(totals.totalPnlPct)}
             </span>
           </div>
+          {portfolioTodayChange != null && (
+            <div className={styles.summaryCard}>
+              <span className={styles.summaryLabel}>Today (avg)</span>
+              <span className={`${styles.summaryValue} ${portfolioTodayChange >= 0 ? styles.pos : styles.neg}`}>
+                {portfolioTodayChange >= 0 ? '+' : ''}{portfolioTodayChange.toFixed(2)}%
+              </span>
+            </div>
+          )}
+          {portfolioTodayChange != null && spyChange != null && (
+            <div className={styles.summaryCard}>
+              <span className={styles.summaryLabel}>vs S&amp;P 500</span>
+              <span className={`${styles.summaryValue} ${(portfolioTodayChange - spyChange) >= 0 ? styles.pos : styles.neg}`}>
+                {(portfolioTodayChange - spyChange) >= 0 ? '+' : ''}{(portfolioTodayChange - spyChange).toFixed(2)}%
+              </span>
+            </div>
+          )}
         </div>
       )}
 
