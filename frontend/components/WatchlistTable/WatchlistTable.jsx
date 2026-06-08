@@ -10,7 +10,7 @@ const COLUMNS = [
   { key: null, label: 'Name', className: styles.colName },
   { key: null, label: 'Price', className: styles.colPrice },
   { key: 'change-desc', label: 'Chg%', className: styles.colChange, sortable: true },
-  { key: 'pnl-desc', label: 'P&L', className: styles.colPnl, sortable: true },
+  { key: 'pnl-desc', label: 'P&L / Since Add', className: styles.colPnl, sortable: true },
   { key: 'risk-desc', label: 'Risk', className: styles.colRisk, sortable: true },
   { key: 'expectation-desc', label: 'Expect', className: styles.colExpect, sortable: true },
   { key: null, label: 'Regime', className: styles.colRegime },
