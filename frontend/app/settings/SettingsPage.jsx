@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/Toast/ToastProvider';
+import { useTheme } from '@/hooks/useTheme';
 import { updateProfile, changePassword, deleteAccount } from '@/lib/apiClient';
 import styles from './SettingsPage.module.scss';
 
@@ -21,6 +22,7 @@ export default function SettingsPage() {
   const { user, updateUser, logout } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
+  const { theme, toggle } = useTheme();
 
   const [displayName, setDisplayName] = useState(user?.displayName || '');
   const [nameSaving, setNameSaving] = useState(false);
@@ -120,6 +122,33 @@ export default function SettingsPage() {
               {nameSaving ? 'Saving…' : 'Save name'}
             </button>
           </form>
+        </section>
+
+        {/* Preferences */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Preferences</h2>
+          <div className={styles.prefRow}>
+            <div className={styles.prefLabel}>
+              <span className={styles.prefName}>Appearance</span>
+              <span className={styles.prefDesc}>Choose your display theme</span>
+            </div>
+            <div className={styles.themeToggleGroup}>
+              <button
+                className={`${styles.themeOption} ${theme === 'light' ? styles.themeOptionActive : ''}`}
+                onClick={() => { if (theme !== 'light') toggle(); }}
+                aria-pressed={theme === 'light'}
+              >
+                ☀ Light
+              </button>
+              <button
+                className={`${styles.themeOption} ${theme === 'dark' ? styles.themeOptionActive : ''}`}
+                onClick={() => { if (theme !== 'dark') toggle(); }}
+                aria-pressed={theme === 'dark'}
+              >
+                ☽ Dark
+              </button>
+            </div>
+          </div>
         </section>
 
         {/* Password section — only for non-Google users */}

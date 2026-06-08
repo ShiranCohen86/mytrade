@@ -95,7 +95,7 @@ export default function PortfolioPage() {
         <div className={styles.empty}>
           <span className={styles.emptyTitle}>No positions yet</span>
           <span className={styles.emptySubtitle}>
-            Set an entry price on any stock in your watchlist using the&nbsp;$ button to track it here.
+            Expand any stock row in your Watchlist and set an entry price under "Entry / P&amp;L" to track positions here.
           </span>
         </div>
       ) : (

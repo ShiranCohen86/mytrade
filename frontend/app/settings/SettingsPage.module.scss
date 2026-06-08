@@ -151,6 +151,64 @@
   &:disabled { opacity: 0.55; pointer-events: none; }
 }
 
+// ─── Preferences ─────────────────────────────────────────────────────────────
+
+.prefRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+}
+
+.prefLabel {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.prefName {
+  font-family: $font-ui;
+  font-size: $text-sm;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.prefDesc {
+  font-family: $font-ui;
+  font-size: $text-xs;
+  color: $text-tertiary;
+}
+
+.themeToggleGroup {
+  display: flex;
+  gap: $space-2;
+}
+
+.themeOption {
+  height: 34px;
+  padding: 0 $space-4;
+  font-family: $font-ui;
+  font-size: $text-sm;
+  font-weight: 500;
+  color: $text-secondary;
+  background: $surface-raised;
+  border: 1px solid $chrome-mid;
+  border-radius: $radius-md;
+  transition: background $motion-fast, color $motion-fast, border-color $motion-fast;
+
+  &:hover:not(.themeOptionActive) {
+    background: $surface-hover;
+    color: $text-primary;
+  }
+}
+
+.themeOptionActive {
+  background: $accent-faint;
+  border-color: $accent;
+  color: $accent;
+  font-weight: 600;
+}
+
 // ─── Buttons ──────────────────────────────────────────────────────────────────
 
 .btnPrimary {
