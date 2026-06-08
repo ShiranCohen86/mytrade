@@ -2,7 +2,7 @@
 import { useMemo } from 'react';
 import styles from './SummaryStrip.module.scss';
 
-export function SummaryStrip({ stocks, portfolio = [] }) {
+export function SummaryStrip({ stocks, portfolio = [], priceAlerts = [] }) {
   const stats = useMemo(() => {
     if (!stocks.length) return null;
     const analyzed = stocks.filter((s) => s.analysis);
@@ -41,8 +41,16 @@ export function SummaryStrip({ stocks, portfolio = [] }) {
       if (positions.length) avgPnl = positions.reduce((s, x) => s + x, 0) / positions.length;
     }
 
-    return { avgRisk, avgExp, highRisk, earningsSoon, stnRisk, avgToday, avgPnl };
-  }, [stocks, portfolio]);
+    // Triggered price alerts
+    const triggeredAlerts = priceAlerts.filter((alert) => {
+      const stock = stocks.find((s) => s.ticker === alert.ticker);
+      const price = stock?.cachedData?.price;
+      if (price == null) return false;
+      return alert.direction === 'above' ? price >= alert.targetPrice : price <= alert.targetPrice;
+    }).length;
+
+    return { avgRisk, avgExp, highRisk, earningsSoon, stnRisk, avgToday, avgPnl, triggeredAlerts };
+  }, [stocks, portfolio, priceAlerts]);
 
   if (!stats || !stocks.length) return null;
 
@@ -84,6 +92,12 @@ export function SummaryStrip({ stocks, portfolio = [] }) {
           <>
             <div className={styles.sep} />
             <StatCell label="STN" value={stats.stnRisk} alert tooltip="Sell-the-News Risk: stocks up >10% heading into earnings." />
+          </>
+        )}
+        {stats.triggeredAlerts > 0 && (
+          <>
+            <div className={styles.sep} />
+            <StatCell label="🔔 Alerts" value={stats.triggeredAlerts} alert tooltip="Price alerts currently triggered" />
           </>
         )}
       </div>
