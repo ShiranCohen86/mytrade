@@ -4,7 +4,6 @@ import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { ToastProvider } from '@/components/Toast/ToastProvider';
 import { PrivateRoute } from '@/components/PrivateRoute/PrivateRoute';
 import { AppShell } from '@/components/AppShell/AppShell';
-import { CommandPalette } from '@/components/CommandPalette/CommandPalette';
 import Dashboard from '@/app/page';
 import StockDetailClient from '@/app/stocks/[ticker]/StockDetailClient';
 import PortfolioPage from '@/app/PortfolioPage';
@@ -31,7 +30,6 @@ function AppLayout() {
   return (
     <AppShell>
       <Outlet />
-      <CommandPalette />
     </AppShell>
   );
 }
