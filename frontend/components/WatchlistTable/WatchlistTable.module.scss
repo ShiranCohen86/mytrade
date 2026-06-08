@@ -2,12 +2,14 @@
 @use '../../styles/mixins' as *;
 
 // Column tracks per breakpoint — must mirror StockRow.module.scss
+// xs removes the name column: name is display:none at ≤480px so dropping the
+// track keeps header/data rows aligned (4 items → 4 tracks).
 // drag / ticker / name / price / chg% / pnl / risk / expect / regime / earnings / spark / actions
 $cols-desktop: 20px 56px 1fr 104px 76px 68px 48px 76px 92px 56px 60px 34px;
 $cols-lg:      20px 56px 1fr 104px 76px 68px 48px 76px 92px 34px;
 $cols-md:      20px 56px 1fr 104px 76px 68px 48px 34px;
 $cols-sm:      56px 1fr 84px 68px 48px 34px;
-$cols-xs:      44px 1fr 76px 60px 34px;
+$cols-xs:      44px 1fr 68px 34px;
 
 .table {
   display: flex;
@@ -52,7 +54,7 @@ $cols-xs:      44px 1fr 76px 60px 34px;
   @include below-xs {
     grid-template-columns: $cols-xs;
     padding: 0 $space-2;
-    .colRisk { display: none; }
+    .colRisk, .colName { display: none; }
   }
 }
 
