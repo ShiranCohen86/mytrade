@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/context/AuthContext';
 import styles from './LandingPage.module.scss';
 
 function MarketTicker({ ticker, price, changePercent }) {
   const isPos = changePercent >= 0;
-  // VIX is an inverse sentiment indicator: rising VIX = fear = bad → show red when up
   const isVix = ticker === 'VIX';
   const colorPos = isVix ? !isPos : isPos;
   return (
@@ -21,78 +21,12 @@ function MarketTicker({ ticker, price, changePercent }) {
   );
 }
 
-const FEATURES = [
-  {
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-      </svg>
-    ),
-    title: 'Risk Analysis',
-    description: 'Score 0–100 across 6 engines. Know your risk before you trade.',
-  },
-  {
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <rect x="2" y="3" width="20" height="14" rx="2" />
-        <line x1="8" y1="21" x2="16" y2="21" />
-        <line x1="12" y1="17" x2="12" y2="21" />
-      </svg>
-    ),
-    title: 'Earnings Scenarios',
-    description: 'Bull, neutral, and bear price targets modeled before every earnings event.',
-  },
-  {
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M12 20V10" /><path d="M18 20V4" /><path d="M6 20v-4" />
-      </svg>
-    ),
-    title: 'Market Regime',
-    description: 'BULLISH · BEARISH · VOLATILE · NEUTRAL — updated per analysis run.',
-  },
-  {
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-      </svg>
-    ),
-    title: 'Price Alerts',
-    description: 'Set target prices. Get notified the moment a stock crosses your threshold.',
-  },
-  {
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <rect x="2" y="7" width="20" height="14" rx="2" />
-        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-      </svg>
-    ),
-    title: 'Portfolio Tracking',
-    description: 'Track your entry price, P&L, and performance vs SPY all in one view.',
-  },
-  {
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-      </svg>
-    ),
-    title: 'News Sentiment',
-    description: 'Headlines scored and aggregated per ticker. Know the narrative before the move.',
-  },
-];
-
-const STEPS = [
-  { n: '01', title: 'Add your tickers', desc: 'Type any stock symbol to add it to your watchlist.' },
-  { n: '02', title: 'Run analysis', desc: 'One click runs 6 engines across risk, regime, earnings, and sentiment.' },
-  { n: '03', title: 'Make informed decisions', desc: 'Act on data — not hope — with risk scores and scenario targets.' },
-];
-
 const EXPRESS = import.meta.env.VITE_EXPRESS_URL || '';
 
 export default function LandingPage() {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [market, setMarket] = useState([]);
 
   useEffect(() => {
@@ -111,6 +45,80 @@ export default function LandingPage() {
     return () => clearInterval(id);
   }, [isAuthenticated, navigate]);
 
+  const FEATURES = [
+    {
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+        </svg>
+      ),
+      title: t('landing.features.riskAnalysis'),
+      description: t('landing.features.riskAnalysisDesc'),
+    },
+    {
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <rect x="2" y="3" width="20" height="14" rx="2" />
+          <line x1="8" y1="21" x2="16" y2="21" />
+          <line x1="12" y1="17" x2="12" y2="21" />
+        </svg>
+      ),
+      title: t('landing.features.earningsScenarios'),
+      description: t('landing.features.earningsScenariosDesc'),
+    },
+    {
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M12 20V10" /><path d="M18 20V4" /><path d="M6 20v-4" />
+        </svg>
+      ),
+      title: t('landing.features.marketRegime'),
+      description: t('landing.features.marketRegimeDesc'),
+    },
+    {
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+        </svg>
+      ),
+      title: t('landing.features.priceAlerts'),
+      description: t('landing.features.priceAlertsDesc'),
+    },
+    {
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <rect x="2" y="7" width="20" height="14" rx="2" />
+          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+        </svg>
+      ),
+      title: t('landing.features.portfolioTracking'),
+      description: t('landing.features.portfolioTrackingDesc'),
+    },
+    {
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        </svg>
+      ),
+      title: t('landing.features.newsSentiment'),
+      description: t('landing.features.newsSentimentDesc'),
+    },
+  ];
+
+  const STEPS = [
+    { n: '01', title: t('landing.steps.addTickers'), desc: t('landing.steps.addTickersDesc') },
+    { n: '02', title: t('landing.steps.runAnalysis'), desc: t('landing.steps.runAnalysisDesc') },
+    { n: '03', title: t('landing.steps.makeDecisions'), desc: t('landing.steps.makeDecisionsDesc') },
+  ];
+
+  const STATS = [
+    { n: '6',    label: t('landing.statsEngines') },
+    { n: '<2s',  label: t('landing.statsPerAnalysis') },
+    { n: '100%', label: t('landing.statsFree') },
+    { n: '∞',    label: t('landing.statsStocks') },
+  ];
+
   return (
     <div className={styles.page}>
       {/* Navigation */}
@@ -120,27 +128,21 @@ export default function LandingPage() {
           <span>MyTrade</span>
         </Link>
         <div className={styles.navLinks}>
-          <Link to="/login" className={styles.navLink}>Sign in</Link>
-          <Link to="/signup" className={styles.navCta}>Get started →</Link>
+          <Link to="/login" className={styles.navLink}>{t('landing.signIn')}</Link>
+          <Link to="/signup" className={styles.navCta}>{t('landing.getStarted')}</Link>
         </div>
       </nav>
 
       {/* Hero */}
       <section className={styles.hero}>
-        <div className={styles.heroBadge}>6 analysis engines · Real-time data</div>
-        <h1 className={styles.heroHeading}>
-          Know what the market<br />expects. Before earnings.
-        </h1>
-        <p className={styles.heroSubheading}>
-          Risk scores, market regime analysis, earnings scenarios, and price alerts —
-          all in one intelligent dashboard built for serious traders.
-        </p>
+        <div className={styles.heroBadge}>{t('landing.heroBadge')}</div>
+        <h1 className={styles.heroHeading}>{t('landing.heroHeading')}</h1>
+        <p className={styles.heroSubheading}>{t('landing.heroSubheading')}</p>
         <div className={styles.heroCtas}>
-          <Link to="/signup" className={styles.ctaPrimary}>Start free →</Link>
-          <Link to="/login" className={styles.ctaGhost}>Sign in</Link>
+          <Link to="/signup" className={styles.ctaPrimary}>{t('landing.startFree')}</Link>
+          <Link to="/login" className={styles.ctaGhost}>{t('landing.signIn')}</Link>
         </div>
 
-        {/* Market preview strip */}
         {market.length > 0 && (
           <div className={styles.marketStrip}>
             {market.map((m) => (
@@ -152,12 +154,7 @@ export default function LandingPage() {
 
       {/* Social proof stats */}
       <section className={styles.statsBar}>
-        {[
-          { n: '6', label: 'Analysis engines' },
-          { n: '<2s', label: 'Per analysis' },
-          { n: '100%', label: 'Free to use' },
-          { n: '∞', label: 'Stocks supported' },
-        ].map(({ n, label }) => (
+        {STATS.map(({ n, label }) => (
           <div key={label} className={styles.stat}>
             <span className={styles.statNum}>{n}</span>
             <span className={styles.statLabel}>{label}</span>
@@ -167,7 +164,7 @@ export default function LandingPage() {
 
       {/* Feature grid */}
       <section className={styles.features}>
-        <h2 className={styles.sectionHeading}>Everything you need to trade smarter</h2>
+        <h2 className={styles.sectionHeading}>{t('landing.featuresHeading')}</h2>
         <div className={styles.featureGrid}>
           {FEATURES.map((f) => (
             <div key={f.title} className={styles.featureCard}>
@@ -181,7 +178,7 @@ export default function LandingPage() {
 
       {/* How it works */}
       <section className={styles.howItWorks}>
-        <h2 className={styles.sectionHeading}>Up and running in 60 seconds</h2>
+        <h2 className={styles.sectionHeading}>{t('landing.howItWorksHeading')}</h2>
         <div className={styles.steps}>
           {STEPS.map((s) => (
             <div key={s.n} className={styles.step}>
@@ -195,9 +192,9 @@ export default function LandingPage() {
 
       {/* CTA banner */}
       <section className={styles.ctaBanner}>
-        <h2 className={styles.ctaBannerHeading}>Ready to trade smarter?</h2>
-        <p className={styles.ctaBannerSub}>Free account. No credit card. No limits.</p>
-        <Link to="/signup" className={styles.ctaPrimary}>Create free account →</Link>
+        <h2 className={styles.ctaBannerHeading}>{t('landing.ctaBannerHeading')}</h2>
+        <p className={styles.ctaBannerSub}>{t('landing.ctaBannerSub')}</p>
+        <Link to="/signup" className={styles.ctaPrimary}>{t('landing.createFreeAccount')}</Link>
       </section>
 
       {/* Footer */}
@@ -206,10 +203,10 @@ export default function LandingPage() {
           <img src="/favicon.svg" alt="MyTrade" width={20} height={20} />
           <span>MyTrade</span>
         </div>
-        <p className={styles.footerTagline}>Built for serious traders.</p>
+        <p className={styles.footerTagline}>{t('landing.footerTagline')}</p>
         <div className={styles.footerLinks}>
-          <Link to="/login">Sign in</Link>
-          <Link to="/signup">Sign up</Link>
+          <Link to="/login">{t('landing.footerSignIn')}</Link>
+          <Link to="/signup">{t('landing.footerSignUp')}</Link>
         </div>
       </footer>
     </div>

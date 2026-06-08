@@ -313,6 +313,22 @@ input, button, textarea, select { outline: none; }
   &:disabled { opacity: 0.45; }
 }
 
+// ─── RTL (Hebrew) support ─────────────────────────────────────────────────────
+[dir="rtl"] {
+  body, input, button, select, textarea {
+    font-family: 'Heebo', 'Inter', sans-serif;
+  }
+
+  // Flip text alignment defaults
+  .btn { letter-spacing: 0; }
+
+  // Logical property shims — override directional classes
+  // Any flex row with gap should flip naturally due to dir=rtl on html
+
+  // Scrollbars stay on the left in RTL on some browsers; normalize
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+}
+
 // ─── Recharts global overrides ────────────────────────────────────────────────
 .recharts-cartesian-grid line { stroke: $chrome-dim !important; opacity: 0.5; }
 .recharts-text                { fill: $text-tertiary !important; font-size: 11px !important; font-family: $font-data !important; }

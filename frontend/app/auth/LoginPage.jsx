@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation, useSearchParams, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/context/AuthContext';
 import styles from './AuthPage.module.scss';
 
@@ -10,12 +11,13 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
+  const { t } = useTranslation();
   const from = location.state?.from || '/dashboard';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(
-    searchParams.get('error') === 'google' ? 'Google sign-in failed. Please try again or use email.' : ''
+    searchParams.get('error') === 'google' ? t('auth.googleFailed') : ''
   );
   const [loading, setLoading] = useState(false);
 
@@ -29,7 +31,7 @@ export default function LoginPage() {
       await login(email.trim(), password);
       navigate(from, { replace: true });
     } catch (err) {
-      setError(err.message || 'Login failed. Please try again.');
+      setError(err.message || t('auth.loginFailed'));
     } finally {
       setLoading(false);
     }
@@ -43,20 +45,20 @@ export default function LoginPage() {
           <span className={styles.logoName}>MyTrade</span>
         </div>
 
-        <h1 className={styles.heading}>Welcome back</h1>
-        <p className={styles.subheading}>Sign in to your account to continue.</p>
+        <h1 className={styles.heading}>{t('auth.welcomeBack')}</h1>
+        <p className={styles.subheading}>{t('auth.welcomeBackSub')}</p>
 
         {error && <div className={styles.errorBanner}><span>⚠</span> {error}</div>}
 
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
           <div className={styles.field}>
-            <label className={styles.label} htmlFor="email">Email</label>
+            <label className={styles.label} htmlFor="email">{t('auth.email')}</label>
             <input
               id="email"
               className={styles.input}
               type="email"
               autoComplete="email"
-              placeholder="you@example.com"
+              placeholder={t('auth.emailPlaceholder')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -64,7 +66,7 @@ export default function LoginPage() {
           </div>
 
           <div className={styles.field}>
-            <label className={styles.label} htmlFor="password">Password</label>
+            <label className={styles.label} htmlFor="password">{t('auth.password')}</label>
             <input
               id="password"
               className={styles.input}
@@ -75,15 +77,15 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            <Link to="/forgot-password" className={styles.forgotLink}>Forgot password?</Link>
+            <Link to="/forgot-password" className={styles.forgotLink}>{t('auth.forgotPassword')}</Link>
           </div>
 
           <button type="submit" className={styles.submitBtn} disabled={loading || !email || !password}>
-            {loading ? 'Signing in…' : 'Sign in'}
+            {loading ? t('auth.signingIn') : t('auth.signIn')}
           </button>
         </form>
 
-        <div className={styles.divider}><span>or</span></div>
+        <div className={styles.divider}><span>{t('auth.or')}</span></div>
 
         <a href={`${EXPRESS}/auth/google`} className={styles.googleBtn}>
           <svg className={styles.googleIcon} viewBox="0 0 24 24" aria-hidden="true">
@@ -92,11 +94,11 @@ export default function LoginPage() {
             <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
             <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
           </svg>
-          Continue with Google
+          {t('auth.continueWithGoogle')}
         </a>
 
         <p className={styles.footer}>
-          Don't have an account? <Link to="/signup">Create one</Link>
+          {t('auth.noAccount')} <Link to="/signup">{t('auth.createOne')}</Link>
         </p>
       </div>
     </div>

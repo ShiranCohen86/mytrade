@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/context/AuthContext';
 import styles from './AuthPage.module.scss';
 
 const EXPRESS = import.meta.env.VITE_EXPRESS_URL || '';
 
-function passwordStrength(pw) {
+function passwordStrength(pw, t) {
   if (!pw) return { score: 0, label: '', color: 'transparent' };
   let score = 0;
   if (pw.length >= 8) score++;
@@ -13,15 +14,16 @@ function passwordStrength(pw) {
   if (/[A-Z]/.test(pw)) score++;
   if (/[0-9]/.test(pw)) score++;
   if (/[^A-Za-z0-9]/.test(pw)) score++;
-  if (score <= 1) return { score, pct: 25, label: 'Weak', color: 'var(--neg)' };
-  if (score <= 2) return { score, pct: 50, label: 'Fair', color: 'var(--warn)' };
-  if (score <= 3) return { score, pct: 75, label: 'Good', color: 'var(--pos)' };
-  return { score, pct: 100, label: 'Strong', color: 'var(--pos)' };
+  if (score <= 1) return { score, pct: 25, label: t('auth.passwordStrengthWeak'), color: 'var(--neg)' };
+  if (score <= 2) return { score, pct: 50, label: t('auth.passwordStrengthFair'), color: 'var(--warn)' };
+  if (score <= 3) return { score, pct: 75, label: t('auth.passwordStrengthGood'), color: 'var(--pos)' };
+  return { score, pct: 100, label: t('auth.passwordStrengthStrong'), color: 'var(--pos)' };
 }
 
 export default function SignupPage() {
   const { register, isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
@@ -32,17 +34,17 @@ export default function SignupPage() {
 
   if (!isLoading && isAuthenticated) return <Navigate to="/dashboard" replace />;
 
-  const strength = passwordStrength(password);
+  const strength = passwordStrength(password, t);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     if (password !== confirmPassword) {
-      setError('Passwords do not match.');
+      setError(t('auth.passwordsDontMatch'));
       return;
     }
     if (password.length < 8) {
-      setError('Password must be at least 8 characters.');
+      setError(t('auth.passwordTooShort'));
       return;
     }
     setLoading(true);
@@ -50,7 +52,7 @@ export default function SignupPage() {
       await register(email.trim(), password, displayName.trim());
       navigate('/dashboard', { replace: true });
     } catch (err) {
-      setError(err.message || 'Registration failed. Please try again.');
+      setError(err.message || t('auth.registrationFailed'));
     } finally {
       setLoading(false);
     }
@@ -64,33 +66,33 @@ export default function SignupPage() {
           <span className={styles.logoName}>MyTrade</span>
         </div>
 
-        <h1 className={styles.heading}>Create account</h1>
-        <p className={styles.subheading}>Start tracking smarter today. Free forever.</p>
+        <h1 className={styles.heading}>{t('auth.createAccount')}</h1>
+        <p className={styles.subheading}>{t('auth.createAccountSub')}</p>
 
         {error && <div className={styles.errorBanner}><span>⚠</span> {error}</div>}
 
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
           <div className={styles.field}>
-            <label className={styles.label} htmlFor="name">Name</label>
+            <label className={styles.label} htmlFor="name">{t('auth.name')}</label>
             <input
               id="name"
               className={styles.input}
               type="text"
               autoComplete="name"
-              placeholder="Your name"
+              placeholder={t('auth.namePlaceholder')}
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
             />
           </div>
 
           <div className={styles.field}>
-            <label className={styles.label} htmlFor="email">Email</label>
+            <label className={styles.label} htmlFor="email">{t('auth.email')}</label>
             <input
               id="email"
               className={styles.input}
               type="email"
               autoComplete="email"
-              placeholder="you@example.com"
+              placeholder={t('auth.emailPlaceholder')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -98,13 +100,13 @@ export default function SignupPage() {
           </div>
 
           <div className={styles.field}>
-            <label className={styles.label} htmlFor="password">Password</label>
+            <label className={styles.label} htmlFor="password">{t('auth.password')}</label>
             <input
               id="password"
               className={styles.input}
               type="password"
               autoComplete="new-password"
-              placeholder="Min. 8 characters"
+              placeholder={t('auth.passwordMin')}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -120,13 +122,13 @@ export default function SignupPage() {
           </div>
 
           <div className={styles.field}>
-            <label className={styles.label} htmlFor="confirm">Confirm Password</label>
+            <label className={styles.label} htmlFor="confirm">{t('auth.confirmPassword')}</label>
             <input
               id="confirm"
               className={`${styles.input} ${confirmPassword && confirmPassword !== password ? styles.inputError : ''}`}
               type="password"
               autoComplete="new-password"
-              placeholder="Repeat password"
+              placeholder={t('auth.repeatPassword')}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
@@ -134,11 +136,11 @@ export default function SignupPage() {
           </div>
 
           <button type="submit" className={styles.submitBtn} disabled={loading || !email || !password}>
-            {loading ? 'Creating account…' : 'Create account →'}
+            {loading ? t('auth.creatingAccount') : t('auth.createAccountArrow')}
           </button>
         </form>
 
-        <div className={styles.divider}><span>or</span></div>
+        <div className={styles.divider}><span>{t('auth.or')}</span></div>
 
         <a href={`${EXPRESS}/auth/google`} className={styles.googleBtn}>
           <svg className={styles.googleIcon} viewBox="0 0 24 24" aria-hidden="true">
@@ -147,11 +149,11 @@ export default function SignupPage() {
             <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
             <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
           </svg>
-          Sign up with Google
+          {t('auth.signUpWithGoogle')}
         </a>
 
         <p className={styles.footer}>
-          Already have an account? <Link to="/login">Sign in</Link>
+          {t('auth.alreadyHaveAccount')} <Link to="/login">{t('auth.signIn')}</Link>
         </p>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { authForgotPassword } from '@/lib/apiClient';
 import styles from './AuthPage.module.scss';
 
@@ -8,6 +9,7 @@ export default function ForgotPasswordPage() {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,7 +19,7 @@ export default function ForgotPasswordPage() {
       await authForgotPassword(email.trim());
       setSent(true);
     } catch (err) {
-      setError(err.message || 'Failed to send reset email.');
+      setError(err.message || t('auth.failedToSendReset'));
     } finally {
       setLoading(false);
     }
@@ -31,36 +33,34 @@ export default function ForgotPasswordPage() {
           <span className={styles.logoName}>MyTrade</span>
         </div>
 
-        <Link to="/login" className={styles.backLink}>← Back to sign in</Link>
+        <Link to="/login" className={styles.backLink}>{t('auth.backToSignIn')}</Link>
 
-        <h1 className={styles.heading}>Reset password</h1>
-        <p className={styles.subheading}>
-          Enter your email and we'll send you a link to reset your password.
-        </p>
+        <h1 className={styles.heading}>{t('auth.resetPassword')}</h1>
+        <p className={styles.subheading}>{t('auth.resetPasswordSub')}</p>
 
         {error && <div className={styles.errorBanner}><span>⚠</span> {error}</div>}
 
         {sent ? (
           <div className={styles.successBanner}>
-            ✓ If an account exists for {email}, you'll receive a reset link shortly.
+            ✓ {t('auth.resetSent', { email })}
           </div>
         ) : (
           <form className={styles.form} onSubmit={handleSubmit} noValidate>
             <div className={styles.field}>
-              <label className={styles.label} htmlFor="email">Email</label>
+              <label className={styles.label} htmlFor="email">{t('auth.email')}</label>
               <input
                 id="email"
                 className={styles.input}
                 type="email"
                 autoComplete="email"
-                placeholder="you@example.com"
+                placeholder={t('auth.emailPlaceholder')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
             <button type="submit" className={styles.submitBtn} disabled={loading || !email}>
-              {loading ? 'Sending…' : 'Send reset link'}
+              {loading ? t('auth.sending') : t('auth.sendResetLink')}
             </button>
           </form>
         )}

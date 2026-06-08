@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/Toast/ToastProvider';
 import { useTheme } from '@/hooks/useTheme';
@@ -23,6 +24,7 @@ export default function SettingsPage() {
   const toast = useToast();
   const navigate = useNavigate();
   const { pref, setTheme } = useTheme();
+  const { t, i18n } = useTranslation();
 
   const [displayName, setDisplayName] = useState(user?.displayName || '');
   const [nameSaving, setNameSaving] = useState(false);
@@ -45,9 +47,9 @@ export default function SettingsPage() {
     try {
       const { user: updated } = await updateProfile({ displayName: name });
       updateUser(updated);
-      toast.success('Profile updated.');
+      toast.success(t('settings.profileUpdated'));
     } catch (err) {
-      toast.error(err.message || 'Failed to update profile.');
+      toast.error(err.message || t('settings.failedUpdateProfile'));
     } finally {
       setNameSaving(false);
     }
@@ -56,20 +58,20 @@ export default function SettingsPage() {
   const handlePasswordChange = async (e) => {
     e.preventDefault();
     if (newPw.length < 8) {
-      toast.warning('New password must be at least 8 characters.');
+      toast.warning(t('settings.pwTooShort'));
       return;
     }
     if (newPw !== confirmPw) {
-      toast.warning('Passwords do not match.');
+      toast.warning(t('settings.pwMismatch'));
       return;
     }
     setPwSaving(true);
     try {
       await changePassword(currentPw, newPw);
-      toast.success('Password changed successfully.');
+      toast.success(t('settings.pwChanged'));
       setCurrentPw(''); setNewPw(''); setConfirmPw('');
     } catch (err) {
-      toast.error(err.message || 'Failed to change password.');
+      toast.error(err.message || t('settings.failedChangePw'));
     } finally {
       setPwSaving(false);
     }
@@ -83,31 +85,36 @@ export default function SettingsPage() {
       logout();
       navigate('/');
     } catch (err) {
-      toast.error(err.message || 'Failed to delete account.');
+      toast.error(err.message || t('settings.failedDelete'));
       setDeleting(false);
     }
+  };
+
+  const handleLangChange = (lang) => {
+    i18n.changeLanguage(lang);
+    try { localStorage.setItem('mytrade-lang', lang); } catch { /* noop */ }
   };
 
   return (
     <div className={styles.page}>
       <div className={styles.inner}>
-        <h1 className={styles.pageTitle}>Settings</h1>
+        <h1 className={styles.pageTitle}>{t('settings.title')}</h1>
 
         {/* Profile section */}
         <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Profile</h2>
+          <h2 className={styles.sectionTitle}>{t('settings.profile')}</h2>
           <div className={styles.profileRow}>
             <div className={styles.avatar}>
               <Initials name={user?.displayName} avatar={user?.avatar} />
             </div>
             <div className={styles.profileInfo}>
               <p className={styles.profileEmail}>{user?.email}</p>
-              {isGoogle && <span className={styles.badge}>Google account</span>}
+              {isGoogle && <span className={styles.badge}>{t('settings.googleAccount')}</span>}
             </div>
           </div>
           <form onSubmit={handleProfileSave} className={styles.form}>
             <div className={styles.field}>
-              <label className={styles.label} htmlFor="displayName">Display name</label>
+              <label className={styles.label} htmlFor="displayName">{t('settings.displayName')}</label>
               <input
                 id="displayName"
                 className={styles.input}
@@ -119,18 +126,20 @@ export default function SettingsPage() {
               />
             </div>
             <button type="submit" className={styles.btnPrimary} disabled={nameSaving || !displayName.trim()}>
-              {nameSaving ? 'Saving…' : 'Save name'}
+              {nameSaving ? t('settings.saving') : t('settings.saveName')}
             </button>
           </form>
         </section>
 
         {/* Preferences */}
         <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Preferences</h2>
+          <h2 className={styles.sectionTitle}>{t('settings.preferences')}</h2>
+
+          {/* Appearance */}
           <div className={styles.prefRow}>
             <div className={styles.prefLabel}>
-              <span className={styles.prefName}>Appearance</span>
-              <span className={styles.prefDesc}>Choose your display theme</span>
+              <span className={styles.prefName}>{t('settings.appearance')}</span>
+              <span className={styles.prefDesc}>{t('settings.appearanceDesc')}</span>
             </div>
             <div className={styles.themeToggleGroup}>
               <button
@@ -138,21 +147,45 @@ export default function SettingsPage() {
                 onClick={() => setTheme('light')}
                 aria-pressed={pref === 'light'}
               >
-                ☀ Light
+                {t('settings.themeLight')}
               </button>
               <button
                 className={`${styles.themeOption} ${pref === 'dark' ? styles.themeOptionActive : ''}`}
                 onClick={() => setTheme('dark')}
                 aria-pressed={pref === 'dark'}
               >
-                ☽ Dark
+                {t('settings.themeDark')}
               </button>
               <button
                 className={`${styles.themeOption} ${pref === 'system' ? styles.themeOptionActive : ''}`}
                 onClick={() => setTheme('system')}
                 aria-pressed={pref === 'system'}
               >
-                ◑ System
+                {t('settings.themeSystem')}
+              </button>
+            </div>
+          </div>
+
+          {/* Language */}
+          <div className={styles.prefRow}>
+            <div className={styles.prefLabel}>
+              <span className={styles.prefName}>{t('settings.language')}</span>
+              <span className={styles.prefDesc}>{t('settings.languageDesc')}</span>
+            </div>
+            <div className={styles.themeToggleGroup}>
+              <button
+                className={`${styles.themeOption} ${i18n.language === 'en' ? styles.themeOptionActive : ''}`}
+                onClick={() => handleLangChange('en')}
+                aria-pressed={i18n.language === 'en'}
+              >
+                {t('settings.langEnglish')}
+              </button>
+              <button
+                className={`${styles.themeOption} ${i18n.language === 'he' ? styles.themeOptionActive : ''}`}
+                onClick={() => handleLangChange('he')}
+                aria-pressed={i18n.language === 'he'}
+              >
+                {t('settings.langHebrew')}
               </button>
             </div>
           </div>
@@ -161,10 +194,10 @@ export default function SettingsPage() {
         {/* Password section — only for non-Google users */}
         {!isGoogle && (
           <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>Change password</h2>
+            <h2 className={styles.sectionTitle}>{t('settings.changePassword')}</h2>
             <form onSubmit={handlePasswordChange} className={styles.form}>
               <div className={styles.field}>
-                <label className={styles.label} htmlFor="currentPw">Current password</label>
+                <label className={styles.label} htmlFor="currentPw">{t('settings.currentPassword')}</label>
                 <input
                   id="currentPw"
                   className={styles.input}
@@ -176,7 +209,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div className={styles.field}>
-                <label className={styles.label} htmlFor="newPw">New password</label>
+                <label className={styles.label} htmlFor="newPw">{t('settings.newPassword')}</label>
                 <input
                   id="newPw"
                   className={styles.input}
@@ -189,7 +222,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div className={styles.field}>
-                <label className={styles.label} htmlFor="confirmPw">Confirm new password</label>
+                <label className={styles.label} htmlFor="confirmPw">{t('settings.confirmNewPassword')}</label>
                 <input
                   id="confirmPw"
                   className={styles.input}
@@ -205,7 +238,7 @@ export default function SettingsPage() {
                 className={styles.btnPrimary}
                 disabled={pwSaving || !currentPw || !newPw || !confirmPw}
               >
-                {pwSaving ? 'Changing…' : 'Change password'}
+                {pwSaving ? t('settings.changing') : t('settings.changePassword')}
               </button>
             </form>
           </section>
@@ -213,13 +246,11 @@ export default function SettingsPage() {
 
         {/* Danger zone */}
         <section className={`${styles.section} ${styles.danger}`}>
-          <h2 className={styles.sectionTitle}>Danger zone</h2>
-          <p className={styles.dangerText}>
-            Permanently delete your account and all data. This cannot be undone.
-          </p>
+          <h2 className={styles.sectionTitle}>{t('settings.dangerZone')}</h2>
+          <p className={styles.dangerText}>{t('settings.dangerText')}</p>
           <div className={styles.field}>
             <label className={styles.label} htmlFor="deleteConfirm">
-              Type <strong>DELETE</strong> to confirm
+              {t('settings.typeDelete')} <strong>{t('settings.deleteConfirm')}</strong> {t('settings.toConfirm')}
             </label>
             <input
               id="deleteConfirm"
@@ -237,7 +268,7 @@ export default function SettingsPage() {
             onClick={handleDeleteAccount}
             disabled={deleting || deleteInput !== 'DELETE'}
           >
-            {deleting ? 'Deleting…' : 'Delete my account'}
+            {deleting ? t('settings.deleting') : t('settings.deleteAccount')}
           </button>
         </section>
       </div>

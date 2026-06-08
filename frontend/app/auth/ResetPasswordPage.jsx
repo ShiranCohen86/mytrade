@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { authResetPassword } from '@/lib/apiClient';
 import styles from './AuthPage.module.scss';
 
@@ -7,6 +8,7 @@ export default function ResetPasswordPage() {
   const [params] = useSearchParams();
   const token = params.get('token') || '';
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -17,15 +19,15 @@ export default function ResetPasswordPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    if (password !== confirm) { setError('Passwords do not match.'); return; }
-    if (password.length < 8) { setError('Password must be at least 8 characters.'); return; }
+    if (password !== confirm) { setError(t('auth.passwordsDontMatch')); return; }
+    if (password.length < 8) { setError(t('auth.passwordTooShort')); return; }
     setLoading(true);
     try {
       await authResetPassword(token, password);
       setDone(true);
       setTimeout(() => navigate('/login', { replace: true }), 2500);
     } catch (err) {
-      setError(err.message || 'Reset failed. The link may have expired.');
+      setError(err.message || t('auth.resetLinkInvalid'));
     } finally {
       setLoading(false);
     }
@@ -35,8 +37,8 @@ export default function ResetPasswordPage() {
     return (
       <div className={styles.page}>
         <div className={styles.card}>
-          <div className={styles.errorBanner}>⚠ Invalid reset link. Please request a new one.</div>
-          <p className={styles.footer}><Link to="/forgot-password">Request new link</Link></p>
+          <div className={styles.errorBanner}>⚠ {t('auth.resetLinkInvalid')}</div>
+          <p className={styles.footer}><Link to="/forgot-password">{t('auth.sendResetLink')}</Link></p>
         </div>
       </div>
     );
@@ -50,25 +52,25 @@ export default function ResetPasswordPage() {
           <span className={styles.logoName}>MyTrade</span>
         </div>
 
-        <h1 className={styles.heading}>Set new password</h1>
-        <p className={styles.subheading}>Choose a strong password for your account.</p>
+        <h1 className={styles.heading}>{t('auth.setPassword')}</h1>
+        <p className={styles.subheading}>{t('auth.resetPasswordSub')}</p>
 
         {error && <div className={styles.errorBanner}><span>⚠</span> {error}</div>}
 
         {done ? (
           <div className={styles.successBanner}>
-            ✓ Password reset! Redirecting to sign in…
+            ✓ {t('auth.passwordChanged')}
           </div>
         ) : (
           <form className={styles.form} onSubmit={handleSubmit} noValidate>
             <div className={styles.field}>
-              <label className={styles.label} htmlFor="password">New Password</label>
+              <label className={styles.label} htmlFor="password">{t('auth.newPassword')}</label>
               <input
                 id="password"
                 className={styles.input}
                 type="password"
                 autoComplete="new-password"
-                placeholder="Min. 8 characters"
+                placeholder={t('auth.passwordMin')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -76,13 +78,13 @@ export default function ResetPasswordPage() {
             </div>
 
             <div className={styles.field}>
-              <label className={styles.label} htmlFor="confirm">Confirm Password</label>
+              <label className={styles.label} htmlFor="confirm">{t('auth.confirmPassword')}</label>
               <input
                 id="confirm"
                 className={`${styles.input} ${confirm && confirm !== password ? styles.inputError : ''}`}
                 type="password"
                 autoComplete="new-password"
-                placeholder="Repeat password"
+                placeholder={t('auth.repeatPassword')}
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
                 required
@@ -90,7 +92,7 @@ export default function ResetPasswordPage() {
             </div>
 
             <button type="submit" className={styles.submitBtn} disabled={loading || !password || !confirm}>
-              {loading ? 'Saving…' : 'Set new password'}
+              {loading ? t('auth.setting') : t('auth.setPassword')}
             </button>
           </form>
         )}

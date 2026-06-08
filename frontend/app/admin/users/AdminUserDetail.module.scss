@@ -232,132 +232,56 @@
   white-space: nowrap;
 }
 
-// ─── Timeline ─────────────────────────────────────────────────────────────────
+// ─── Intelligence card (replaces basic timeline card) ─────────────────────────
 
-.timelineCard {
+.intelligenceCard {
   background: var(--surface-panel);
   border: 1px solid var(--chrome-dim);
   border-radius: $radius-md;
-  padding: 16px;
-}
-
-.timelineTitle {
-  font-size: $text-sm;
-  font-weight: 600;
-  color: var(--text-primary);
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--chrome-dim);
-  margin-bottom: 12px;
-}
-
-.timeline {
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 0;
 }
 
-.timelineItem {
+// ─── Tab bar ─────────────────────────────────────────────────────────────────
+
+.tabBar {
   display: flex;
-  gap: 12px;
-  position: relative;
-  padding-bottom: 16px;
-
-  &:last-child { padding-bottom: 0; }
-
-  &:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    left: 6px;
-    top: 16px;
-    bottom: 0;
-    width: 1px;
-    background: var(--chrome-dim);
-  }
-}
-
-.timelineDot {
-  width: 13px;
-  height: 13px;
-  border-radius: 50%;
-  border: 2px solid var(--chrome-mid);
+  border-bottom: 1px solid var(--chrome-dim);
   background: var(--surface-base);
-  flex-shrink: 0;
-  margin-top: 2px;
-  position: relative;
-  z-index: 1;
-
-  &[data-sev="warning"]  { border-color: #f59e0b; background: rgba(245, 158, 11, 0.2); }
-  &[data-sev="critical"] { border-color: var(--neg); background: var(--neg-bg); }
-  &[data-sev="info"]     { border-color: var(--accent); background: var(--accent-faint); }
+  padding: 0 4px;
+  gap: 2px;
 }
 
-.timelineBody {
+.tab {
+  height: 40px;
+  padding: 0 14px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: $text-sm;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  font-family: $font-ui;
+  cursor: pointer;
+  transition: color $motion-fast, border-color $motion-fast;
+  white-space: nowrap;
+  margin-bottom: -1px;
+
+  &:hover { color: var(--text-primary); }
+}
+
+.tabActive {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.tabBody {
+  padding: 16px;
   flex: 1;
-  min-width: 0;
+  min-height: 0;
 }
 
-.timelineAction {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 2px;
-}
-
-.monoText {
-  font-family: $font-data;
-  font-size: $text-xs;
-  color: var(--text-primary);
-}
-
-.timelineTime {
-  font-size: $text-xs;
-  color: var(--text-tertiary);
-}
-
-.timelineMeta {
-  font-size: $text-xs;
-  color: var(--text-tertiary);
-  font-family: $font-data;
-  margin-top: 2px;
-}
-
-.metaDetails {
-  margin-top: 4px;
-
-  summary {
-    font-size: $text-xs;
-    color: var(--text-tertiary);
-    cursor: pointer;
-    user-select: none;
-  }
-}
-
-.metaPre {
-  font-family: $font-data;
-  font-size: $text-xs;
-  color: var(--text-secondary);
-  background: var(--surface-base);
-  border-radius: $radius-xs;
-  padding: 6px 8px;
-  margin-top: 4px;
-  overflow-x: auto;
-  white-space: pre-wrap;
-}
-
-// ─── Severity badges ──────────────────────────────────────────────────────────
-
-.sevBadge {
-  font-size: $text-2xs;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  padding: 1px 5px;
-  border-radius: $radius-xs;
-}
-
-.sev_info     { background: var(--accent-faint); color: var(--accent); }
-.sev_warning  { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
-.sev_critical { background: var(--neg-bg); color: var(--neg); }
 
 // ─── States ───────────────────────────────────────────────────────────────────
 

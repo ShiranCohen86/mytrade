@@ -422,6 +422,7 @@ router.delete('/notes/:ticker', async (req, res) => {
     const user = await getUser(req.user.id);
     user.notes = user.notes.filter((n) => n.ticker !== t);
     await user.save();
+    audit.logUser(req, 'note.removed', { symbol: t, sector: getSector(t) });
     res.status(204).send();
   } catch (err) {
     logger.error('DELETE /notes/:ticker', { err: err.message });

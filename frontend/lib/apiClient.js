@@ -282,3 +282,20 @@ export const adminFlagUser = (userId, reason, severity = 'warning') =>
 
 export const adminSearch = (q) =>
   request(`${EXPRESS}/admin/support/search?q=${encodeURIComponent(q)}`);
+
+// ─── Admin: User Insights ─────────────────────────────────────────────────────
+
+export const adminGetUserInsights = (userId, days = 30) =>
+  request(`${EXPRESS}/admin/users/${userId}/insights?days=${days}`);
+
+// ─── User: Personal Timeline ──────────────────────────────────────────────────
+
+export const getTimeline = (params = {}) => {
+  const qs = new URLSearchParams(
+    Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== ''))
+  ).toString();
+  return requestWithRetry(`${EXPRESS}/api/timeline${qs ? `?${qs}` : ''}`);
+};
+
+export const getTimelineInsights = (days = 30) =>
+  requestWithRetry(`${EXPRESS}/api/timeline/insights?days=${days}`);

@@ -1,5 +1,6 @@
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { ToastProvider } from '@/components/Toast/ToastProvider';
 import { PrivateRoute } from '@/components/PrivateRoute/PrivateRoute';
@@ -25,6 +26,16 @@ import AdminWatchlists from '@/app/admin/watchlists/AdminWatchlists';
 import AdminAnalytics from '@/app/admin/analytics/AdminAnalytics';
 import AdminSupport from '@/app/admin/support/AdminSupport';
 
+function DirectionSync() {
+  const { i18n } = useTranslation();
+  useEffect(() => {
+    const dir = i18n.language === 'he' ? 'rtl' : 'ltr';
+    document.documentElement.setAttribute('dir', dir);
+    document.documentElement.setAttribute('lang', i18n.language);
+  }, [i18n.language]);
+  return null;
+}
+
 function StockDetailRoute() {
   const { ticker } = useParams();
   return <StockDetailClient ticker={ticker.toUpperCase()} />;
@@ -46,6 +57,7 @@ function AppLayout() {
 export default function App() {
   return (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <DirectionSync />
       <ToastProvider>
       <AuthProvider>
         <Routes>
