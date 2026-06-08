@@ -55,6 +55,7 @@ export default function DashboardPage() {
   const [sectorFilter, setSectorFilter] = useState(null);
   const [riskFilter, setRiskFilter] = useState(null);
   const [earningsFilter, setEarningsFilter] = useState(null);
+  const [groupBySector, setGroupBySector] = useState(false);
   const importRef = useRef(null);
 
   useEffect(() => {
@@ -242,6 +243,13 @@ export default function DashboardPage() {
             {/* Desktop-only secondary actions */}
             {stocks.length > 0 && (
               <div className={styles.desktopActions}>
+                <button
+                  className={`${styles.toolBtn} ${groupBySector ? styles.toolBtnActive : ''}`}
+                  onClick={() => setGroupBySector((v) => !v)}
+                  title="Group by sector"
+                >
+                  ⊞ Group
+                </button>
                 <button className={styles.toolBtn} onClick={() => setMoversOpen(true)} title="Today's top movers">
                   ↑↓ Movers
                 </button>
@@ -442,6 +450,7 @@ export default function DashboardPage() {
                 stocks={filteredStocks}
                 analyzingTickers={analyzingTickers}
                 analysisErrors={analysisErrors}
+                groupBySector={groupBySector && !hasActiveFilters}
                 portfolio={portfolio}
                 priceAlerts={priceAlerts}
                 notes={notes}

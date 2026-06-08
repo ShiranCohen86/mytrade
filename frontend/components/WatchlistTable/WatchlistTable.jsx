@@ -1,5 +1,5 @@
 
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useState, useCallback, useMemo } from 'react';
 import { ErrorBoundary } from '@/components/ErrorBoundary/ErrorBoundary';
 import { StockRow } from '@/components/StockRow/StockRow';
 import styles from './WatchlistTable.module.scss';
@@ -24,9 +24,31 @@ export function WatchlistTable({
   portfolio, priceAlerts, notes,
   sortKey, onSortChange,
   onRemove, onUpdateEntryPrice, onUpdateAlert, onUpdateNote, onReorder, onAnalyzeTicker,
+  groupBySector = false,
 }) {
   const dragFrom = useRef(null);
   const [dragOver, setDragOver] = useState(null);
+  const [collapsedSectors, setCollapsedSectors] = useState(new Set());
+
+  const toggleSector = useCallback((sector) => {
+    setCollapsedSectors((prev) => {
+      const next = new Set(prev);
+      if (next.has(sector)) next.delete(sector);
+      else next.add(sector);
+      return next;
+    });
+  }, []);
+
+  const grouped = useMemo(() => {
+    if (!groupBySector) return null;
+    const map = new Map();
+    for (const s of stocks) {
+      const key = s.sector || 'Unknown';
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(s);
+    }
+    return Array.from(map.entries()).sort((a, b) => b[1].length - a[1].length);
+  }, [stocks, groupBySector]);
 
   const handleDragEnd = useCallback(() => {
     const from = dragFrom.current;
@@ -81,28 +103,78 @@ export function WatchlistTable({
 
       {/* Rows */}
       <div className={styles.tbody} role="rowgroup">
-        {stocks.map((stock) => (
-          <ErrorBoundary key={stock.ticker}>
-            <StockRow
-              stock={stock}
-              onRemove={onRemove}
-              isAnalyzing={analyzingTickers.has(stock.ticker)}
-              analysisError={analysisErrors.get(stock.ticker) ?? null}
-              portfolioEntry={portfolio.find((p) => p.ticker === stock.ticker) ?? null}
-              priceAlert={priceAlerts.find((a) => a.ticker === stock.ticker) ?? null}
-              note={notes.find((n) => n.ticker === stock.ticker) ?? null}
-              onUpdateEntryPrice={onUpdateEntryPrice}
-              onUpdateAlert={onUpdateAlert}
-              onUpdateNote={onUpdateNote}
-              onAnalyzeTicker={onAnalyzeTicker}
-              isDragging={dragFrom.current === stock.ticker}
-              isDropTarget={dragOver === stock.ticker}
-              onDragStart={(t) => { dragFrom.current = t; }}
-              onDragOver={setDragOver}
-              onDragEnd={handleDragEnd}
-            />
-          </ErrorBoundary>
-        ))}
+        {grouped ? (
+          grouped.map(([sector, sectorStocks]) => {
+            const isCollapsed = collapsedSectors.has(sector);
+            const avgRisk = sectorStocks.filter((s) => s.analysis?.riskScore != null).reduce((sum, s, _, arr) => sum + s.analysis.riskScore / arr.length, 0) || null;
+            return (
+              <div key={sector}>
+                <div
+                  className={styles.sectorHeader}
+                  onClick={() => toggleSector(sector)}
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={!isCollapsed}
+                  onKeyDown={(e) => e.key === 'Enter' && toggleSector(sector)}
+                >
+                  <span className={styles.sectorChevron}>{isCollapsed ? '▶' : '▼'}</span>
+                  <span className={styles.sectorHeaderName}>{sector}</span>
+                  <span className={styles.sectorHeaderCount}>{sectorStocks.length}</span>
+                  {avgRisk != null && (
+                    <span className={`${styles.sectorAvgRisk} ${avgRisk >= 70 ? styles.riskHigh : avgRisk >= 40 ? styles.riskMid : styles.riskLow}`}>
+                      Risk {avgRisk.toFixed(0)}
+                    </span>
+                  )}
+                </div>
+                {!isCollapsed && sectorStocks.map((stock) => (
+                  <ErrorBoundary key={stock.ticker}>
+                    <StockRow
+                      stock={stock}
+                      onRemove={onRemove}
+                      isAnalyzing={analyzingTickers.has(stock.ticker)}
+                      analysisError={analysisErrors.get(stock.ticker) ?? null}
+                      portfolioEntry={portfolio.find((p) => p.ticker === stock.ticker) ?? null}
+                      priceAlert={priceAlerts.find((a) => a.ticker === stock.ticker) ?? null}
+                      note={notes.find((n) => n.ticker === stock.ticker) ?? null}
+                      onUpdateEntryPrice={onUpdateEntryPrice}
+                      onUpdateAlert={onUpdateAlert}
+                      onUpdateNote={onUpdateNote}
+                      onAnalyzeTicker={onAnalyzeTicker}
+                      isDragging={false}
+                      isDropTarget={false}
+                      onDragStart={() => {}}
+                      onDragOver={() => {}}
+                      onDragEnd={() => {}}
+                    />
+                  </ErrorBoundary>
+                ))}
+              </div>
+            );
+          })
+        ) : (
+          stocks.map((stock) => (
+            <ErrorBoundary key={stock.ticker}>
+              <StockRow
+                stock={stock}
+                onRemove={onRemove}
+                isAnalyzing={analyzingTickers.has(stock.ticker)}
+                analysisError={analysisErrors.get(stock.ticker) ?? null}
+                portfolioEntry={portfolio.find((p) => p.ticker === stock.ticker) ?? null}
+                priceAlert={priceAlerts.find((a) => a.ticker === stock.ticker) ?? null}
+                note={notes.find((n) => n.ticker === stock.ticker) ?? null}
+                onUpdateEntryPrice={onUpdateEntryPrice}
+                onUpdateAlert={onUpdateAlert}
+                onUpdateNote={onUpdateNote}
+                onAnalyzeTicker={onAnalyzeTicker}
+                isDragging={dragFrom.current === stock.ticker}
+                isDropTarget={dragOver === stock.ticker}
+                onDragStart={(t) => { dragFrom.current = t; }}
+                onDragOver={setDragOver}
+                onDragEnd={handleDragEnd}
+              />
+            </ErrorBoundary>
+          ))
+        )}
       </div>
     </div>
   );

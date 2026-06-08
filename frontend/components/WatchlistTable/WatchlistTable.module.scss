@@ -115,3 +115,60 @@ $cols-xs:      44px 1fr 76px 60px 34px;
   display: flex;
   flex-direction: column;
 }
+
+// ─── Sector group header ─────────────────────────────────────────────────────
+
+.sectorHeader {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-2 $space-4;
+  background: $surface-raised;
+  border-bottom: 1px solid $chrome-dim;
+  cursor: pointer;
+  user-select: none;
+  transition: background $motion-fast;
+  position: sticky;
+  top: 84px;
+  z-index: 8;
+
+  &:hover { background: $surface-hover; }
+}
+
+.sectorChevron {
+  font-size: 9px;
+  color: $text-disabled;
+  width: 12px;
+}
+
+.sectorHeaderName {
+  font-family: $font-ui;
+  font-size: 11px;
+  font-weight: 700;
+  color: $text-secondary;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  flex: 1;
+}
+
+.sectorHeaderCount {
+  font-family: $font-data;
+  font-size: 11px;
+  color: $text-disabled;
+  background: $surface-panel;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-pill;
+  padding: 1px 7px;
+}
+
+.sectorAvgRisk {
+  font-family: $font-data;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: $radius-pill;
+}
+
+.riskHigh { color: $neg; background: $neg-bg; }
+.riskMid  { color: $warn; background: $warn-bg; }
+.riskLow  { color: $pos; background: $pos-bg; }
