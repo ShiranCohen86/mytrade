@@ -1,8 +1,26 @@
 import { useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { useStocks } from '@/hooks/useStocks';
 import { fmtPrice } from '@/lib/format';
 import styles from './PortfolioPage.module.scss';
+
+const SECTOR_COLORS = [
+  '#3D7EFF', '#22c55e', '#f59e0b', '#ef4444',
+  '#8b5cf6', '#06b6d4', '#f97316', '#ec4899',
+  '#14b8a6', '#a855f7',
+];
+
+function SectorTooltip({ active, payload }) {
+  if (!active || !payload?.length) return null;
+  const { name, value } = payload[0].payload;
+  return (
+    <div style={{ background: 'var(--surface-elevated)', border: '1px solid var(--chrome-mid)', borderRadius: 8, padding: '8px 12px', fontSize: 12, boxShadow: '0 4px 16px rgba(0,0,0,0.3)' }}>
+      <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: 2 }}>{name}</strong>
+      <span style={{ color: 'var(--text-secondary)' }}>{value} position{value !== 1 ? 's' : ''}</span>
+    </div>
+  );
+}
 
 function fmtPct(n) {
   if (n == null) return '—';
@@ -51,6 +69,24 @@ export default function PortfolioPage() {
     const totalPnlAbs = totalValue - totalCost;
     const totalPnlPct = (totalPnlAbs / totalCost) * 100;
     return { totalCost, totalValue, totalPnlAbs, totalPnlPct, count: withPrice.length };
+  }, [rows]);
+
+  const sectorData = useMemo(() => {
+    if (!rows.length) return [];
+    const map = new Map();
+    for (const r of rows) {
+      const key = r.sector || 'Unknown';
+      map.set(key, (map.get(key) || 0) + 1);
+    }
+    return Array.from(map.entries())
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value);
+  }, [rows]);
+
+  const avgRisk = useMemo(() => {
+    const analyzed = rows.filter((r) => r.riskScore != null);
+    if (!analyzed.length) return null;
+    return analyzed.reduce((s, r) => s + r.riskScore, 0) / analyzed.length;
   }, [rows]);
 
   const exportCSV = useCallback(() => {
@@ -110,6 +146,60 @@ export default function PortfolioPage() {
               {fmtPct(totals.totalPnlPct)}
             </span>
           </div>
+        </div>
+      )}
+
+      {rows.length > 0 && (
+        <div className={styles.insights}>
+          {/* Sector allocation donut */}
+          <div className={styles.insightCard}>
+            <span className={styles.insightTitle}>Sector Allocation</span>
+            <div className={styles.donutRow}>
+              <div className={styles.donutChart}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={sectorData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius="55%"
+                      outerRadius="80%"
+                      paddingAngle={sectorData.length > 1 ? 2 : 0}
+                      dataKey="value"
+                      stroke="none"
+                    >
+                      {sectorData.map((_, i) => (
+                        <Cell key={i} fill={SECTOR_COLORS[i % SECTOR_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip content={<SectorTooltip />} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className={styles.donutLegend}>
+                {sectorData.map((s, i) => (
+                  <div key={s.name} className={styles.legendItem}>
+                    <span className={styles.legendDot} style={{ background: SECTOR_COLORS[i % SECTOR_COLORS.length] }} />
+                    <span className={styles.legendName}>{s.name}</span>
+                    <span className={styles.legendCount}>{s.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Avg portfolio risk */}
+          {avgRisk != null && (
+            <div className={styles.insightCard}>
+              <span className={styles.insightTitle}>Avg Portfolio Risk</span>
+              <span className={`${styles.insightBigNum} ${avgRisk >= 70 ? styles.neg : avgRisk >= 40 ? styles.warn : styles.pos}`}>
+                {avgRisk.toFixed(0)}
+              </span>
+              <span className={`${styles.insightSubLabel} ${avgRisk >= 70 ? styles.neg : avgRisk >= 40 ? styles.warn : styles.pos}`}>
+                {avgRisk >= 70 ? 'HIGH RISK' : avgRisk >= 40 ? 'MEDIUM RISK' : 'LOW RISK'}
+              </span>
+            </div>
+          )}
         </div>
       )}
 
