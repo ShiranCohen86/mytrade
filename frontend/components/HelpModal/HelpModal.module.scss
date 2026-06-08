@@ -130,6 +130,61 @@
   line-height: 1.70;
 }
 
+.shortcutsSection {
+  padding: $space-4 $space-6;
+  border-top: 1px solid $chrome-dim;
+}
+
+.shortcutsTitle {
+  font-family: $font-ui;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: $text-disabled;
+  margin-bottom: $space-3;
+}
+
+.shortcutsList {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.shortcutRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: $font-ui;
+  font-size: 12px;
+}
+
+.shortcutLabel {
+  color: $text-secondary;
+}
+
+.shortcutKeys {
+  display: flex;
+  gap: $space-1;
+}
+
+.kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: $font-data;
+  font-size: 10px;
+  font-weight: 600;
+  color: $text-tertiary;
+  background: $surface-raised;
+  border: 1px solid $chrome-mid;
+  border-radius: $radius-sm;
+  padding: 1px 6px;
+  min-width: 22px;
+  height: 20px;
+  letter-spacing: 0;
+}
+
 .footer {
   display: flex;
   justify-content: flex-end;

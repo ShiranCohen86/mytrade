@@ -240,6 +240,7 @@ function StockRowInner({
             onUpdateNote={onUpdateNote}
             onRemove={(t) => { onRemove(t); setExpanded(false); }}
             analysisError={analysisError}
+            inSheet
           />
         </BottomSheet>
       ) : expanded ? (

@@ -156,6 +156,9 @@
 .bottom {
   padding: $space-3 $space-3;
   border-top: 1px solid $chrome-dim;
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
 
   :global(.triggerBtn), button {
     width: 100%;
@@ -175,5 +178,34 @@
       background: $surface-raised;
       color: $text-secondary;
     }
+  }
+}
+
+.settingsLink {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-2 $space-4;
+  border-radius: $radius-md;
+  font-size: 12px;
+  font-family: $font-ui;
+  color: $text-tertiary;
+  height: 36px;
+  transition: background $motion-fast, color $motion-fast;
+
+  &:hover {
+    background: $surface-raised;
+    color: $text-secondary;
+  }
+}
+
+.settingsLinkActive {
+  color: $accent-text;
+  background: $accent-faint;
+
+  .navIcon { color: $accent; }
+
+  &:hover {
+    background: $accent-faint;
   }
 }

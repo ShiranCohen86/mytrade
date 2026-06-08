@@ -48,6 +48,19 @@ export default function DashboardPage() {
     return () => { document.removeEventListener('mousedown', onOutside); document.removeEventListener('touchstart', onOutside); };
   }, [moreOpen]);
 
+  // Press "r" to reload; "a" to analyze all — when not typing in a field
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const active = document.activeElement;
+      if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)) return;
+      if (e.key === 'r' && !isLoading && !isAnalyzing) reload();
+      if (e.key === 'a' && !isAnalyzing && stocks.length > 0) analyzeAll();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [reload, analyzeAll, isLoading, isAnalyzing, stocks.length]);
+
   useEffect(() => {
     try { localStorage.setItem('watchlist-sort', sortKey); } catch { /* storage unavailable */ }
   }, [sortKey]);

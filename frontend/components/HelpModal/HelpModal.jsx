@@ -4,6 +4,16 @@ import styles from './HelpModal.module.scss';
 
 const LS_KEY = 'mytrade_help_seen';
 
+const SHORTCUTS = [
+  { keys: ['⌘K', 'Ctrl+K'], label: 'Open command palette' },
+  { keys: ['/'],             label: 'Focus add-ticker input' },
+  { keys: ['r'],             label: 'Reload watchlist data' },
+  { keys: ['a'],             label: 'Analyze all stocks' },
+  { keys: ['Space'],         label: 'Expand / collapse selected row' },
+  { keys: ['Enter'],         label: 'Open stock detail page' },
+  { keys: ['Esc'],           label: 'Close any open overlay' },
+];
+
 const TERMS = [
   {
     term: 'Risk Score (0–100)',
@@ -102,6 +112,21 @@ export function HelpModal({ trigger }) {
                 </div>
               ))}
             </dl>
+
+            <div className={styles.shortcutsSection}>
+              <h3 className={styles.shortcutsTitle}>Keyboard shortcuts</h3>
+              <div className={styles.shortcutsList}>
+                {SHORTCUTS.map(({ keys, label }) => (
+                  <div key={label} className={styles.shortcutRow}>
+                    <span className={styles.shortcutLabel}>{label}</span>
+                    <span className={styles.shortcutKeys}>
+                      {keys.map((k) => <kbd key={k} className={styles.kbd}>{k}</kbd>)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <div className={styles.footer}>
               <button className={styles.gotItBtn} onClick={handleClose}>Got it</button>
             </div>

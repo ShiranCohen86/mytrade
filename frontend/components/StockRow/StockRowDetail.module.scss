@@ -17,6 +17,14 @@
   }
 }
 
+.detailInSheet {
+  background: transparent;
+  border-top: none;
+  padding: $space-4;
+  flex-direction: column;
+  gap: $space-4;
+}
+
 .sectionLabel {
   display: block;
   font-family: $font-ui;

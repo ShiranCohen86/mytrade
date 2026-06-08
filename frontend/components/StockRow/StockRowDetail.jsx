@@ -7,6 +7,7 @@ import { fmtPrice } from '@/lib/format';
 export function StockRowDetail({
   stock, portfolioEntry, priceAlert, note, pnlPct,
   onUpdateEntryPrice, onUpdateAlert, onUpdateNote, onRemove, analysisError,
+  inSheet = false,
 }) {
   const { ticker, analysis } = stock;
 
@@ -55,7 +56,7 @@ export function StockRowDetail({
   };
 
   return (
-    <div className={styles.detail}>
+    <div className={`${styles.detail} ${inSheet ? styles.detailInSheet : ''}`}>
       {/* Risk breakdown */}
       {analysis?.riskBreakdown && (
         <div className={styles.breakdown}>
