@@ -274,8 +274,24 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   z-index: 1;
+}
 
-  &:first-child { text-align: left; }
+.thLeft { text-align: left; }
+
+.thSortable {
+  cursor: pointer;
+  user-select: none;
+  transition: color $motion-fast;
+
+  &:hover { color: $text-secondary; }
+}
+
+.thActive { color: $accent; }
+
+.sortArrow {
+  font-family: $font-data;
+  font-size: 10px;
+  opacity: 0.8;
 }
 
 .tr {

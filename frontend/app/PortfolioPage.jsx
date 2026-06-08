@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { useStocks } from '@/hooks/useStocks';
@@ -96,6 +96,37 @@ export default function PortfolioPage() {
     const losses = priced.length - wins;
     return { wins, losses, total: priced.length };
   }, [rows]);
+
+  const [sortCol, setSortCol] = useState('pnlPct');
+  const [sortDir, setSortDir] = useState('desc');
+
+  const handleSort = useCallback((col) => {
+    setSortCol((prev) => {
+      if (prev === col) { setSortDir((d) => d === 'desc' ? 'asc' : 'desc'); return col; }
+      setSortDir('desc');
+      return col;
+    });
+  }, []);
+
+  const sortedRows = useMemo(() => {
+    return [...rows].sort((a, b) => {
+      let av, bv;
+      switch (sortCol) {
+        case 'ticker':    av = a.ticker;           bv = b.ticker;           break;
+        case 'sector':    av = a.sector || '';      bv = b.sector || '';     break;
+        case 'entry':     av = a.entryPrice ?? 0;   bv = b.entryPrice ?? 0;  break;
+        case 'current':   av = a.currentPrice ?? 0; bv = b.currentPrice ?? 0; break;
+        case 'pnlAbs':    av = a.pnlAbs ?? -Infinity; bv = b.pnlAbs ?? -Infinity; break;
+        case 'risk':      av = a.riskScore ?? 0;    bv = b.riskScore ?? 0;   break;
+        case 'expect':    av = a.expectationScore ?? 0; bv = b.expectationScore ?? 0; break;
+        default:          av = a.pnlPct ?? -Infinity; bv = b.pnlPct ?? -Infinity;
+      }
+      if (typeof av === 'string') {
+        return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
+      }
+      return sortDir === 'asc' ? av - bv : bv - av;
+    });
+  }, [rows, sortCol, sortDir]);
 
   const exportCSV = useCallback(() => {
     const headers = ['Ticker', 'Name', 'Sector', 'Entry Price', 'Current Price', 'P&L $', 'Return %', 'Risk Score', 'Expectation Score'];
@@ -242,18 +273,30 @@ export default function PortfolioPage() {
           <table className={styles.table}>
             <thead>
               <tr>
-                <th className={styles.th}>Ticker</th>
-                <th className={styles.th}>Sector</th>
-                <th className={styles.th}>Entry</th>
-                <th className={styles.th}>Current</th>
-                <th className={styles.th}>P&amp;L</th>
-                <th className={styles.th}>Return</th>
-                <th className={styles.th}>Risk</th>
-                <th className={styles.th}>Expect</th>
+                {[
+                  { col: 'ticker',  label: 'Ticker',  left: true },
+                  { col: 'sector',  label: 'Sector' },
+                  { col: 'entry',   label: 'Entry' },
+                  { col: 'current', label: 'Current' },
+                  { col: 'pnlAbs',  label: 'P&L' },
+                  { col: 'pnlPct',  label: 'Return' },
+                  { col: 'risk',    label: 'Risk' },
+                  { col: 'expect',  label: 'Expect' },
+                ].map(({ col, label, left }) => (
+                  <th
+                    key={col}
+                    className={`${styles.th} ${styles.thSortable} ${sortCol === col ? styles.thActive : ''} ${left ? styles.thLeft : ''}`}
+                    onClick={() => handleSort(col)}
+                    title={`Sort by ${label}`}
+                  >
+                    {label}
+                    {sortCol === col && <span className={styles.sortArrow}>{sortDir === 'desc' ? ' ↓' : ' ↑'}</span>}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {rows.map((r) => (
+              {sortedRows.map((r) => (
                 <tr key={r.ticker} className={styles.tr}>
                   <td className={`${styles.td} ${styles.tickerCell}`}>
                     <Link to={`/stocks/${r.ticker}`} className={styles.tickerLink}>
