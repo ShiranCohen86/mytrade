@@ -50,6 +50,14 @@ export default function StockDetailClient({ ticker }) {
   const p30 = pctChange(hist, 30);
   const p60 = pctChange(hist, 60);
 
+  const volumeRatio = (() => {
+    if (!cachedData?.volume || hist.length < 10) return null;
+    const vols = hist.slice(-30).map((d) => d.volume).filter(Boolean);
+    if (!vols.length) return null;
+    const avg = vols.reduce((s, v) => s + v, 0) / vols.length;
+    return avg > 0 ? cachedData.volume / avg : null;
+  })();
+
   const earningsDateStr = cachedData?.earningsDate
     ? new Date(cachedData.earningsDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     : null;
@@ -63,6 +71,14 @@ export default function StockDetailClient({ ticker }) {
     ...(p30 !== null ? [{ label: '30d', value: `${p30 >= 0 ? '+' : ''}${p30.toFixed(1)}%`, highlight: p30 >= 0 ? 'pos' : 'neg' }] : []),
     ...(p60 !== null ? [{ label: '60d', value: `${p60 >= 0 ? '+' : ''}${p60.toFixed(1)}%`, highlight: p60 >= 0 ? 'pos' : 'neg' }] : []),
     { label: 'Vol', value: cachedData?.volume ? `${(cachedData.volume / 1e6).toFixed(1)}M` : '—' },
+    ...(volumeRatio != null
+      ? [{
+          label: 'Vol vs Avg',
+          value: `${volumeRatio.toFixed(1)}×`,
+          highlight: volumeRatio >= 2 ? (cachedData?.changePercent >= 0 ? 'pos' : 'neg') : volumeRatio >= 1.5 ? 'warn' : undefined,
+        }]
+      : []
+    ),
     { label: 'Mkt Cap', value: fmtBig(cachedData?.marketCap) },
     ...(cachedData?.peRatio ? [{ label: 'P/E', value: cachedData.peRatio.toFixed(1) }] : []),
     ...(cachedData?.beta ? [{ label: 'Beta', value: cachedData.beta.toFixed(2) }] : []),
@@ -96,6 +112,13 @@ export default function StockDetailClient({ ticker }) {
         price={cachedData?.price}
         change={cachedData?.change}
         changePercent={cachedData?.changePercent}
+        preMarketPrice={cachedData?.preMarketPrice}
+        preMarketChange={cachedData?.preMarketChange}
+        preMarketChangePercent={cachedData?.preMarketChangePercent}
+        postMarketPrice={cachedData?.postMarketPrice}
+        postMarketChange={cachedData?.postMarketChange}
+        postMarketChangePercent={cachedData?.postMarketChangePercent}
+        marketState={cachedData?.marketState}
         onRefresh={refresh}
         isRefreshing={isRefreshing}
       />
