@@ -22,7 +22,7 @@ export default function SettingsPage() {
   const { user, updateUser, logout } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
-  const { theme, toggle } = useTheme();
+  const { pref, setTheme } = useTheme();
 
   const [displayName, setDisplayName] = useState(user?.displayName || '');
   const [nameSaving, setNameSaving] = useState(false);
@@ -134,18 +134,25 @@ export default function SettingsPage() {
             </div>
             <div className={styles.themeToggleGroup}>
               <button
-                className={`${styles.themeOption} ${theme === 'light' ? styles.themeOptionActive : ''}`}
-                onClick={() => { if (theme !== 'light') toggle(); }}
-                aria-pressed={theme === 'light'}
+                className={`${styles.themeOption} ${pref === 'light' ? styles.themeOptionActive : ''}`}
+                onClick={() => setTheme('light')}
+                aria-pressed={pref === 'light'}
               >
                 ☀ Light
               </button>
               <button
-                className={`${styles.themeOption} ${theme === 'dark' ? styles.themeOptionActive : ''}`}
-                onClick={() => { if (theme !== 'dark') toggle(); }}
-                aria-pressed={theme === 'dark'}
+                className={`${styles.themeOption} ${pref === 'dark' ? styles.themeOptionActive : ''}`}
+                onClick={() => setTheme('dark')}
+                aria-pressed={pref === 'dark'}
               >
                 ☽ Dark
+              </button>
+              <button
+                className={`${styles.themeOption} ${pref === 'system' ? styles.themeOptionActive : ''}`}
+                onClick={() => setTheme('system')}
+                aria-pressed={pref === 'system'}
+              >
+                ◑ System
               </button>
             </div>
           </div>

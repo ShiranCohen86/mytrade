@@ -115,7 +115,7 @@ function UserMenu({ user, onClose }) {
 }
 
 export function TopBar({ onToggleSidebar }) {
-  const { theme, toggle } = useTheme();
+  const { theme, pref, toggle } = useTheme();
   const { user, isAuthenticated } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
@@ -172,10 +172,10 @@ export function TopBar({ onToggleSidebar }) {
         <button
           className={styles.themeToggle}
           onClick={toggle}
-          title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-          aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+          title={pref === 'system' ? 'Theme: System' : pref === 'light' ? 'Switch to dark' : 'Switch to light'}
+          aria-label={pref === 'system' ? 'Theme: System (auto)' : pref === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
         >
-          {theme === 'light' ? '☽' : '☀'}
+          {pref === 'system' ? '◑' : theme === 'light' ? '☽' : '☀'}
         </button>
 
         {isAuthenticated && user && (
