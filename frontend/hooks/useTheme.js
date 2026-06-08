@@ -32,8 +32,21 @@ export function useTheme() {
     }
   }, [pref]);
 
-  const setTheme = (t) => setPref(t);
-  const toggle = () => setPref((t) => (t === 'light' ? 'dark' : t === 'dark' ? 'system' : 'light'));
+  // Sync theme changes across all hook instances on the same page
+  useEffect(() => {
+    const handler = (e) => setPref(e.detail);
+    window.addEventListener('mytrade:theme', handler);
+    return () => window.removeEventListener('mytrade:theme', handler);
+  }, []);
+
+  const setTheme = (t) => {
+    setPref(t);
+    window.dispatchEvent(new CustomEvent('mytrade:theme', { detail: t }));
+  };
+  const toggle = () => {
+    const next = pref === 'light' ? 'dark' : pref === 'dark' ? 'system' : 'light';
+    setTheme(next);
+  };
 
   return { theme, pref, setTheme, toggle };
 }
