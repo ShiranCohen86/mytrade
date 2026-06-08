@@ -463,6 +463,17 @@
   }
 }
 
+.filterPillStale {
+  color: $warn;
+  background: rgba(245, 158, 11, 0.10);
+  border-color: $warn;
+
+  &:hover {
+    color: $warn;
+    background: rgba(245, 158, 11, 0.18);
+  }
+}
+
 .filterDivider {
   width: 1px;
   height: 14px;

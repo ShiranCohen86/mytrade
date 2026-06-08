@@ -55,6 +55,7 @@ export default function DashboardPage() {
   const [sectorFilter, setSectorFilter] = useState(null);
   const [riskFilter, setRiskFilter] = useState(null);
   const [earningsFilter, setEarningsFilter] = useState(null);
+  const [staleFilter, setStaleFilter] = useState(false);
   const [groupBySector, setGroupBySector] = useState(false);
   const importRef = useRef(null);
 
@@ -105,11 +106,16 @@ export default function DashboardPage() {
       const days = Math.ceil((new Date(ed).getTime() - Date.now()) / 86_400_000);
       return days >= 0 && days <= 14;
     });
+    if (staleFilter) result = result.filter((s) => {
+      if (!s.analysis?.analyzedAt) return true;
+      const ageDays = Math.floor((Date.now() - new Date(s.analysis.analyzedAt).getTime()) / 86_400_000);
+      return ageDays >= 7;
+    });
     return result;
-  }, [sortedStocks, sectorFilter, riskFilter, earningsFilter]);
+  }, [sortedStocks, sectorFilter, riskFilter, earningsFilter, staleFilter]);
 
-  const hasActiveFilters = sectorFilter !== null || riskFilter !== null || earningsFilter !== null;
-  const clearFilters = useCallback(() => { setSectorFilter(null); setRiskFilter(null); setEarningsFilter(null); }, []);
+  const hasActiveFilters = sectorFilter !== null || riskFilter !== null || earningsFilter !== null || staleFilter;
+  const clearFilters = useCallback(() => { setSectorFilter(null); setRiskFilter(null); setEarningsFilter(null); setStaleFilter(false); }, []);
 
   // Toast when analysis finishes
   useEffect(() => {
@@ -418,6 +424,13 @@ export default function DashboardPage() {
                 onClick={() => setEarningsFilter(earningsFilter === 'soon' ? null : 'soon')}
               >
                 Earnings ≤14d
+              </button>
+              <button
+                className={`${styles.filterPill} ${staleFilter ? styles.filterPillStale : ''}`}
+                onClick={() => setStaleFilter((v) => !v)}
+                title="Show stocks with analysis older than 7 days"
+              >
+                ⚠ Needs Update
               </button>
               {sectors.length > 1 && <span className={styles.filterDivider} aria-hidden="true" />}
               {sectors.length > 1 && sectors.map((s) => (
