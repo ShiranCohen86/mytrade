@@ -204,6 +204,7 @@ export default function PortfolioPage() {
         case 'current':   av = a.currentPrice ?? 0; bv = b.currentPrice ?? 0; break;
         case 'pnlAbs':    av = a.pnlAbs ?? -Infinity; bv = b.pnlAbs ?? -Infinity; break;
         case 'todayPct':  av = a.todayPct ?? -Infinity; bv = b.todayPct ?? -Infinity; break;
+        case 'alloc':     av = (a.currentPrice ?? 0) * (a.shares ?? 0); bv = (b.currentPrice ?? 0) * (b.shares ?? 0); break;
         case 'risk':      av = a.riskScore ?? 0;    bv = b.riskScore ?? 0;   break;
         case 'expect':    av = a.expectationScore ?? 0; bv = b.expectationScore ?? 0; break;
         default:          av = a.pnlPct ?? -Infinity; bv = b.pnlPct ?? -Infinity;
@@ -216,7 +217,9 @@ export default function PortfolioPage() {
   }, [rows, sortCol, sortDir]);
 
   const exportCSV = useCallback(() => {
-    const headers = ['Ticker', 'Name', 'Sector', 'Entry Price', 'Shares', 'Current Price', 'Today %', 'P&L $', 'Return %', 'Risk Score', 'Expectation Score'];
+    const hasShares = rows.some((r) => r.shares != null);
+    const totalVal = totals?.totalValue ?? 0;
+    const headers = ['Ticker', 'Name', 'Sector', 'Entry Price', 'Shares', 'Current Price', 'Today %', 'P&L $', 'Return %', ...(hasShares ? ['Alloc %'] : []), 'Risk Score', 'Expectation Score'];
     const csvRows = rows.map((r) => [
       r.ticker,
       `"${(r.name || '').replace(/"/g, '""')}"`,
@@ -227,6 +230,7 @@ export default function PortfolioPage() {
       r.todayPct?.toFixed(2) ?? '',
       r.pnlAbs?.toFixed(2) ?? '',
       r.pnlPct?.toFixed(2) ?? '',
+      ...(hasShares ? [r.shares != null && r.currentPrice != null && totalVal > 0 ? ((r.shares * r.currentPrice / totalVal) * 100).toFixed(1) : ''] : []),
       r.riskScore?.toFixed(0) ?? '',
       r.expectationScore?.toFixed(0) ?? '',
     ]);
@@ -420,6 +424,7 @@ export default function PortfolioPage() {
                   { col: 'todayPct', label: 'Today' },
                   { col: 'pnlAbs',   label: 'P&L' },
                   { col: 'pnlPct',   label: 'Return' },
+                  ...(totals?.useShares ? [{ col: 'alloc', label: 'Alloc' }] : []),
                   { col: 'risk',     label: 'Risk' },
                   { col: 'expect',   label: 'Expect' },
                 ].map(({ col, label, left }) => (
@@ -464,6 +469,13 @@ export default function PortfolioPage() {
                   <td className={`${styles.td} ${r.pnlPct != null ? (r.pnlPct >= 0 ? styles.pos : styles.neg) : ''}`}>
                     {fmtPct(r.pnlPct)}
                   </td>
+                  {totals?.useShares && (
+                    <td className={styles.td}>
+                      {r.shares != null && r.currentPrice != null && totals.totalValue > 0
+                        ? `${((r.shares * r.currentPrice / totals.totalValue) * 100).toFixed(1)}%`
+                        : '—'}
+                    </td>
+                  )}
                   <td className={styles.td}>
                     {r.riskScore != null ? (
                       <span className={`${styles.riskBadge} ${riskClass(r.riskScore)}`}>
