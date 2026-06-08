@@ -5,13 +5,16 @@ import styles from './LandingPage.module.scss';
 
 function MarketTicker({ ticker, price, changePercent }) {
   const isPos = changePercent >= 0;
+  // VIX is an inverse sentiment indicator: rising VIX = fear = bad → show red when up
+  const isVix = ticker === 'VIX';
+  const colorPos = isVix ? !isPos : isPos;
   return (
     <div className={styles.tickerCard}>
       <span className={styles.tickerSymbol}>{ticker}</span>
       <span className={styles.tickerPrice}>
         {price != null ? `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '—'}
       </span>
-      <span className={`${styles.tickerChange} ${isPos ? styles.pos : styles.neg}`}>
+      <span className={`${styles.tickerChange} ${colorPos ? styles.pos : styles.neg}`}>
         {changePercent != null ? `${isPos ? '+' : ''}${changePercent.toFixed(2)}%` : '—'}
       </span>
     </div>
@@ -97,10 +100,15 @@ export default function LandingPage() {
       navigate('/dashboard', { replace: true });
       return;
     }
-    fetch(`${EXPRESS}/api/market/overview`)
-      .then((r) => r.ok ? r.json() : [])
-      .then(setMarket)
-      .catch(() => {});
+    const fetchMarket = () => {
+      fetch(`${EXPRESS}/api/market/overview`)
+        .then((r) => r.ok ? r.json() : [])
+        .then(setMarket)
+        .catch(() => {});
+    };
+    fetchMarket();
+    const id = setInterval(fetchMarket, 60_000);
+    return () => clearInterval(id);
   }, [isAuthenticated, navigate]);
 
   return (

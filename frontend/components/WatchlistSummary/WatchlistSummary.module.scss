@@ -145,9 +145,10 @@
   margin: $space-2 0 $space-1;
 }
 
-.sentimentBull { background: $pos; transition: width $motion-base; }
-.sentimentVol  { background: $warn; transition: width $motion-base; }
-.sentimentBear { background: $neg; transition: width $motion-base; }
+.sentimentBull    { background: $pos; transition: width $motion-base; }
+.sentimentVol     { background: $warn; transition: width $motion-base; }
+.sentimentNeutral { background: $text-disabled; transition: width $motion-base; }
+.sentimentBear    { background: $neg; transition: width $motion-base; }
 
 @media (max-width: 640px) {
   .wrapper {

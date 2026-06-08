@@ -127,6 +127,7 @@ function StockRowInner({
     ? cachedData?.postMarketChangePercent ?? null
     : null;
   const extLabel = marketStatus === 'pre' ? 'PRE' : 'AH';
+  const extIsPos  = (extPct ?? 0) >= 0;
   const pnlPct = entryPrice && currentPrice ? ((currentPrice - entryPrice) / entryPrice) * 100 : null;
   const pnlAbs = pnlPct != null && shares != null ? (currentPrice - entryPrice) * shares : null;
   // Fallback: show return since added when no portfolio entry is set
@@ -189,8 +190,9 @@ function StockRowInner({
           {extPrice != null && (
             <span className={styles.extPriceLine}>
               <span className={styles.extBadge}>{extLabel}</span>
-              <span className={`${styles.extPrice} ${(extPct ?? 0) >= 0 ? styles.pos : styles.neg}`}>
+              <span className={`${styles.extPrice} ${extIsPos ? styles.pos : styles.neg}`}>
                 {fmtPrice(extPrice)}
+                {extPct != null && ` ${extIsPos ? '+' : ''}${extPct.toFixed(2)}%`}
               </span>
             </span>
           )}

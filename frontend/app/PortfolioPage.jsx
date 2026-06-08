@@ -300,7 +300,7 @@ export default function PortfolioPage() {
             <div className={styles.summaryCard}>
               <span className={styles.summaryLabel}>Today ($)</span>
               <span className={`${styles.summaryValue} ${portfolioTodayDollar >= 0 ? styles.pos : styles.neg}`}>
-                {portfolioTodayDollar >= 0 ? '+' : ''}{fmtPrice(Math.abs(portfolioTodayDollar))}
+                {portfolioTodayDollar >= 0 ? '+' : ''}{fmtPrice(portfolioTodayDollar)}
               </span>
             </div>
           )}
@@ -497,7 +497,7 @@ export default function PortfolioPage() {
                     {r.todayPct != null ? `${r.todayPct >= 0 ? '+' : ''}${r.todayPct.toFixed(2)}%` : '—'}
                   </td>
                   <td className={`${styles.td} ${r.pnlAbs != null ? (r.pnlAbs >= 0 ? styles.pos : styles.neg) : ''}`}>
-                    {r.pnlAbs != null ? (r.pnlAbs >= 0 ? '+' : '') + fmtPrice(Math.abs(r.pnlAbs)) : '—'}
+                    {r.pnlAbs != null ? (r.pnlAbs >= 0 ? '+' : '') + fmtPrice(r.pnlAbs) : '—'}
                   </td>
                   <td className={`${styles.td} ${r.pnlPct != null ? (r.pnlPct >= 0 ? styles.pos : styles.neg) : ''}`}>
                     {fmtPct(r.pnlPct)}

@@ -31,8 +31,9 @@ export function WatchlistSummary({ stocks, portfolio = [] }) {
     const bullish  = analyzed.filter((s) => s.analysis?.marketRegime === 'BULLISH').length;
     const bearish  = analyzed.filter((s) => s.analysis?.marketRegime === 'BEARISH').length;
     const volatile = analyzed.filter((s) => s.analysis?.marketRegime === 'VOLATILE').length;
+    const neutral  = analyzed.filter((s) => s.analysis?.marketRegime === 'NEUTRAL').length;
 
-    return { avgRisk, avgExp, sellNews, sectors, highRisk, earningsIn7, total: analyzed.length, bullish, bearish, volatile };
+    return { avgRisk, avgExp, sellNews, sectors, highRisk, earningsIn7, total: analyzed.length, bullish, bearish, volatile, neutral };
   }, [stocks]);
 
   const pnlStats = useMemo(() => {
@@ -136,7 +137,7 @@ export function WatchlistSummary({ stocks, portfolio = [] }) {
             <span className={styles.sub}>at risk</span>
           </div>
         )}
-        {stats.total > 0 && (stats.bullish > 0 || stats.bearish > 0) && (
+        {stats.total > 0 && (stats.bullish > 0 || stats.bearish > 0 || stats.volatile > 0 || stats.neutral > 0) && (
           <div className={styles.card}>
             <span className={styles.label}>Regime Mix</span>
             <div className={styles.sentimentBar}>
@@ -154,6 +155,13 @@ export function WatchlistSummary({ stocks, portfolio = [] }) {
                   title={`${stats.volatile} Volatile`}
                 />
               )}
+              {stats.neutral > 0 && (
+                <div
+                  className={styles.sentimentNeutral}
+                  style={{ width: `${(stats.neutral / stats.total) * 100}%` }}
+                  title={`${stats.neutral} Neutral`}
+                />
+              )}
               {stats.bearish > 0 && (
                 <div
                   className={styles.sentimentBear}
@@ -164,9 +172,11 @@ export function WatchlistSummary({ stocks, portfolio = [] }) {
             </div>
             <span className={styles.sub}>
               {stats.bullish > 0 && <span className={styles.safe}>{stats.bullish} bull</span>}
-              {stats.bullish > 0 && (stats.volatile > 0 || stats.bearish > 0) && <span className={styles.muted}> · </span>}
+              {stats.bullish > 0 && (stats.volatile > 0 || stats.neutral > 0 || stats.bearish > 0) && <span className={styles.muted}> · </span>}
               {stats.volatile > 0 && <span className={styles.warn}>{stats.volatile} vol</span>}
-              {stats.volatile > 0 && stats.bearish > 0 && <span className={styles.muted}> · </span>}
+              {stats.volatile > 0 && (stats.neutral > 0 || stats.bearish > 0) && <span className={styles.muted}> · </span>}
+              {stats.neutral > 0 && <span className={styles.muted}>{stats.neutral} neutral</span>}
+              {stats.neutral > 0 && stats.bearish > 0 && <span className={styles.muted}> · </span>}
               {stats.bearish > 0 && <span className={styles.danger}>{stats.bearish} bear</span>}
             </span>
           </div>
