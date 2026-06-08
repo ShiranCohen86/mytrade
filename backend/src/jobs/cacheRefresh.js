@@ -26,15 +26,18 @@ cron.schedule(cronSchedule, async () => {
   const startTime = Date.now();
   logger.info('Running watchlist refresh');
   try {
-    const user = await User.findOne();
-    if (!user || !user.watchlist.length) return;
+    // Collect all unique tickers across all users — Stock docs are shared,
+    // so refreshing each ticker once keeps all users up-to-date.
+    const users = await User.find({ 'watchlist.0': { $exists: true } }).select('watchlist').lean();
+    if (!users.length) return;
+
+    const allTickers = [...new Set(users.flatMap((u) => u.watchlist))];
+    if (!allTickers.length) return;
 
     const limit = await pLimit(3); // max 3 concurrent analyses to avoid Yahoo rate limits
 
     const results = await Promise.allSettled(
-      user.watchlist.map((ticker) =>
-        limit(() => stockService.analyzeStock(ticker))
-      )
+      allTickers.map((ticker) => limit(() => stockService.analyzeStock(ticker)))
     );
 
     let success = 0;
@@ -44,12 +47,12 @@ cron.schedule(cronSchedule, async () => {
         success++;
       } else {
         failed++;
-        logger.error(`Failed to refresh ${user.watchlist[i]}`, { err: r.reason?.message });
+        logger.error(`Failed to refresh ${allTickers[i]}`, { err: r.reason?.message });
       }
     });
 
     const durationS = ((Date.now() - startTime) / 1000).toFixed(1);
-    logger.info('Watchlist refresh complete', { success, failed, durationS });
+    logger.info('Watchlist refresh complete', { success, failed, total: allTickers.length, durationS });
     if (Date.now() - startTime > 30 * 60 * 1000) {
       logger.warn('Cron refresh took longer than 30 minutes');
     }
