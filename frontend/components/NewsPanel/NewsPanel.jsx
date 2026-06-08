@@ -67,6 +67,9 @@ export function NewsPanel({ ticker }) {
                   {item.isGuidanceRelated && (
                     <span className={styles.guidanceBadge}>Guidance</span>
                   )}
+                  {item.source && (
+                    <span className={styles.source} title={item.source}>{item.source}</span>
+                  )}
                   <span className={styles.time}>{fmtRelativeTime(item.publishedAt)}</span>
                 </div>
               </div>
