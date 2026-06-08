@@ -454,7 +454,7 @@ export default function DashboardPage() {
                 onReorder={reorder}
                 onAnalyzeTicker={analyzeTicker}
               />
-              <WatchlistSummary stocks={stocks} />
+              <WatchlistSummary stocks={stocks} portfolio={portfolio} />
             </>
           )}
         </>

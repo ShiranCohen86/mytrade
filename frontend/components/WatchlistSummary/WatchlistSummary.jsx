@@ -2,7 +2,7 @@
 import { useMemo } from 'react';
 import styles from './WatchlistSummary.module.scss';
 
-export function WatchlistSummary({ stocks }) {
+export function WatchlistSummary({ stocks, portfolio = [] }) {
   const stats = useMemo(() => {
     const analyzed = stocks.filter((s) => s.analysis?.riskScore != null);
     if (analyzed.length === 0) return null;
@@ -31,12 +31,62 @@ export function WatchlistSummary({ stocks }) {
     return { avgRisk, avgExp, sellNews, sectors, highRisk, earningsIn7, total: analyzed.length };
   }, [stocks]);
 
+  const pnlStats = useMemo(() => {
+    if (!portfolio.length) return null;
+    const positions = portfolio
+      .map((p) => {
+        const stock = stocks.find((s) => s.ticker === p.ticker);
+        const current = stock?.cachedData?.price;
+        if (!current || !p.entryPrice) return null;
+        return { ticker: p.ticker, pnlPct: ((current - p.entryPrice) / p.entryPrice) * 100 };
+      })
+      .filter(Boolean);
+    if (positions.length === 0) return null;
+    const avgReturn = positions.reduce((sum, p) => sum + p.pnlPct, 0) / positions.length;
+    const winners = positions.filter((p) => p.pnlPct >= 0).length;
+    const sorted = [...positions].sort((a, b) => b.pnlPct - a.pnlPct);
+    return { avgReturn, winners, losers: positions.length - winners, total: positions.length, best: sorted[0], worst: sorted[sorted.length - 1] };
+  }, [portfolio, stocks]);
+
   if (!stats) return null;
 
   return (
     <section className={styles.wrapper} aria-label="Watchlist summary">
       <h2 className={styles.heading}>Portfolio Overview</h2>
       <div className={styles.grid}>
+        {pnlStats && (
+          <>
+            <div className={styles.card}>
+              <span className={styles.label}>Avg Return</span>
+              <span className={`${styles.value} ${pnlStats.avgReturn >= 0 ? styles.safe : styles.danger}`}>
+                {pnlStats.avgReturn >= 0 ? '+' : ''}{pnlStats.avgReturn.toFixed(1)}%
+              </span>
+              <span className={styles.sub}>{pnlStats.total} tracked</span>
+            </div>
+            <div className={styles.card}>
+              <span className={styles.label}>Win / Loss</span>
+              <span className={styles.value}>
+                <span className={styles.safe}>{pnlStats.winners}</span>
+                <span className={styles.muted}> / </span>
+                <span className={pnlStats.losers > 0 ? styles.danger : ''}>{pnlStats.losers}</span>
+              </span>
+              <span className={styles.sub}>positions</span>
+            </div>
+            {pnlStats.total >= 2 && (
+              <div className={styles.card}>
+                <span className={styles.label}>Best · Worst</span>
+                <span className={styles.value}>
+                  <span className={styles.safe}>{pnlStats.best.ticker}</span>
+                  <span className={styles.muted}> / </span>
+                  <span className={pnlStats.worst.pnlPct < 0 ? styles.danger : styles.safe}>{pnlStats.worst.ticker}</span>
+                </span>
+                <span className={styles.sub}>
+                  {pnlStats.best.pnlPct >= 0 ? '+' : ''}{pnlStats.best.pnlPct.toFixed(1)}% / {pnlStats.worst.pnlPct >= 0 ? '+' : ''}{pnlStats.worst.pnlPct.toFixed(1)}%
+                </span>
+              </div>
+            )}
+          </>
+        )}
         <div className={styles.card}>
           <span className={styles.label}>Avg Risk</span>
           <span className={`${styles.value} ${riskClass(stats.avgRisk)}`}>{stats.avgRisk.toFixed(0)}</span>
