@@ -103,7 +103,8 @@ export default function DashboardPage() {
     a.download = `mytrade-watchlist-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [stocks]);
+    toast.success(`Exported ${stocks.length} stock${stocks.length !== 1 ? 's' : ''} to CSV.`);
+  }, [stocks, toast]);
 
   return (
     <div className={styles.page}>

@@ -24,7 +24,21 @@ export function AddTickerForm({ onAdd }) {
   const [highlighted, setHighlighted] = useState(-1);
 
   const wrapRef = useRef(null);
+  const inputRef = useRef(null);
   const debounceRef = useRef(null);
+
+  // Press "/" anywhere to focus the add-ticker input (unless already in a field)
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key !== '/') return;
+      const active = document.activeElement;
+      if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)) return;
+      e.preventDefault();
+      inputRef.current?.focus();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, []);
 
   const isBulk = value.includes(',') || value.includes(';');
 
@@ -150,6 +164,7 @@ export function AddTickerForm({ onAdd }) {
       <div className={styles.inputRow}>
         <div className={styles.inputWrap}>
           <input
+            ref={inputRef}
             type="text"
             className={styles.input}
             placeholder={isBulk ? 'AAPL, MSFT, TSLA' : 'Add ticker (e.g. AAPL)'}
@@ -166,7 +181,7 @@ export function AddTickerForm({ onAdd }) {
             maxLength={50}
             spellCheck={false}
             autoComplete="off"
-            aria-label="Add stock ticker or comma-separated list"
+            aria-label="Add stock ticker or comma-separated list (press / to focus)"
             aria-autocomplete="list"
             aria-expanded={showDropdown}
           />

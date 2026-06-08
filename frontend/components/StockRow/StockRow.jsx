@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, memo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './StockRow.module.scss';
 import { StockRowDetail } from './StockRowDetail';
+import { BottomSheet } from '@/components/BottomSheet/BottomSheet';
 import { fmtPrice, fmtVolume, scoreClass } from '@/lib/format';
 
 // Inline sparkline for risk trend
@@ -29,6 +30,35 @@ function MiniSparkline({ history }) {
 
 const REGIME_ICONS = { BULLISH: '▲', BEARISH: '▼', VOLATILE: '⚡', NEUTRAL: '→' };
 
+// Circular progress ring showing proximity to next earnings
+function EarningsRing({ daysToEarnings }) {
+  if (daysToEarnings === null || daysToEarnings < 0) return null;
+  const CYCLE = 91;
+  const progress = Math.max(0, Math.min(1, 1 - daysToEarnings / CYCLE));
+  const size = 14;
+  const r = 5;
+  const circ = 2 * Math.PI * r;
+  const dash = progress * circ;
+  const color = daysToEarnings <= 14 ? 'var(--neg)' : daysToEarnings <= 30 ? 'var(--warn)' : 'var(--pos)';
+  return (
+    <svg
+      width={size} height={size}
+      viewBox={`0 0 ${size} ${size}`}
+      aria-hidden="true"
+      className={styles.earningsRing}
+      style={{ transform: 'rotate(-90deg)' }}
+    >
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="currentColor" strokeWidth="2" opacity="0.15" />
+      <circle
+        cx={size / 2} cy={size / 2} r={r}
+        fill="none" stroke={color} strokeWidth="2"
+        strokeDasharray={`${dash.toFixed(2)} ${(circ - dash).toFixed(2)}`}
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 function StockRowInner({
   stock, onRemove, isConnected = null, isAnalyzing = false, analysisError = null,
   portfolioEntry = null, priceAlert = null, note = null,
@@ -38,7 +68,17 @@ function StockRowInner({
   const [expanded, setExpanded] = useState(false);
   const [flash, setFlash] = useState(null);
   const prevPriceRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 640px)').matches
+  );
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 640px)');
+    const handler = (e) => setIsMobile(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
 
   const { ticker, name, cachedData, analysis } = stock;
 
@@ -85,9 +125,6 @@ function StockRowInner({
   const handleKeyDown = (e) => {
     if (e.target !== e.currentTarget) return;
     if (e.key === 'Enter') navigate(`/stocks/${ticker}`);
-    if (e.key === 'Delete') {
-      if (window.confirm(`Remove ${ticker}?`)) onRemove(ticker);
-    }
     if (e.key === ' ') { e.preventDefault(); setExpanded((v) => !v); }
   };
 
@@ -157,7 +194,11 @@ function StockRowInner({
         </span>
 
         {/* Earnings */}
-        <span className={`${styles.earnings} ${earningsUrgent ? styles.earningsUrgent : ''}`}>
+        <span
+          className={`${styles.earnings} ${earningsUrgent ? styles.earningsUrgent : ''}`}
+          title={daysToEarnings !== null && daysToEarnings >= 0 ? `${daysToEarnings} days to earnings` : undefined}
+        >
+          <EarningsRing daysToEarnings={daysToEarnings} />
           {earningsLabel}
           {earningsUrgent && analysis?.isSellTheNewsRisk && <span className={styles.stnDot} title="Sell-the-News Risk"> ⚡</span>}
         </span>
@@ -186,7 +227,22 @@ function StockRowInner({
         </span>
       </div>
 
-      {expanded && (
+      {expanded && isMobile ? (
+        <BottomSheet title={ticker} onClose={() => setExpanded(false)}>
+          <StockRowDetail
+            stock={stock}
+            portfolioEntry={portfolioEntry}
+            priceAlert={priceAlert}
+            note={note}
+            pnlPct={pnlPct}
+            onUpdateEntryPrice={onUpdateEntryPrice}
+            onUpdateAlert={onUpdateAlert}
+            onUpdateNote={onUpdateNote}
+            onRemove={(t) => { onRemove(t); setExpanded(false); }}
+            analysisError={analysisError}
+          />
+        </BottomSheet>
+      ) : expanded ? (
         <StockRowDetail
           stock={stock}
           portfolioEntry={portfolioEntry}
@@ -199,7 +255,7 @@ function StockRowInner({
           onRemove={onRemove}
           analysisError={analysisError}
         />
-      )}
+      ) : null}
     </div>
   );
 }

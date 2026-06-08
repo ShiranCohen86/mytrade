@@ -1,0 +1,83 @@
+@use '../../styles/variables' as *;
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: rgba(0, 0, 0, 0.40);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-end;
+  animation: fadeIn 160ms ease both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.sheet {
+  width: 100%;
+  background: $surface-elevated;
+  border-radius: $radius-xl $radius-xl 0 0;
+  border-top: 1px solid $chrome-mid;
+  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.20);
+  max-height: 85dvh;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp $motion-spring both;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(60px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+.handle {
+  width: 36px;
+  height: 4px;
+  background: $chrome-mid;
+  border-radius: $radius-pill;
+  margin: $space-3 auto $space-2;
+  flex-shrink: 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 $space-5 $space-3;
+  flex-shrink: 0;
+  border-bottom: 1px solid $chrome-dim;
+}
+
+.headerTitle {
+  font-family: $font-data;
+  font-size: $text-md;
+  font-weight: 700;
+  color: $text-primary;
+  letter-spacing: 0.04em;
+}
+
+.closeBtn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-md;
+  font-size: 13px;
+  color: $text-tertiary;
+  transition: background $motion-fast, color $motion-fast;
+
+  &:hover { background: $surface-hover; color: $text-primary; }
+}
+
+.body {
+  overflow-y: auto;
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
