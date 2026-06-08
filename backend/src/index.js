@@ -11,6 +11,7 @@ const logger = require('./utils/logger');
 
 // Initialize passport strategies
 require('./config/passport');
+const googleOAuthEnabled = !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
 
 const app = express();
 
@@ -212,7 +213,10 @@ async function start() {
     }
 
     server = app.listen(config.PORT, () => {
-      logger.info(`Server running on port ${config.PORT}`, { storage: db.mode });
+      logger.info(`Server running on port ${config.PORT}`, {
+        storage: db.mode,
+        googleOAuth: googleOAuthEnabled ? 'enabled' : 'disabled — GOOGLE_CLIENT_ID/SECRET not set',
+      });
     });
   } catch (err) {
     logger.error('Failed to start server', { err: err.message });

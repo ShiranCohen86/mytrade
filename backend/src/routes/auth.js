@@ -252,15 +252,25 @@ router.post('/reset-password', async (req, res) => {
   }
 });
 
+const googleAvailable = () => !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
+
 // GET /auth/google
-router.get('/google', passport.authenticate('google', {
-  session: false,
-  scope: ['profile', 'email'],
-}));
+router.get('/google', (req, res, next) => {
+  if (!googleAvailable()) {
+    return res.status(503).json({ error: 'Google Sign-In is not configured on this server.' });
+  }
+  passport.authenticate('google', { session: false, scope: ['profile', 'email'] })(req, res, next);
+});
 
 // GET /auth/google/callback
 router.get('/google/callback',
-  passport.authenticate('google', { session: false, failureRedirect: '/login?error=google' }),
+  (req, res, next) => {
+    if (!googleAvailable()) {
+      const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+      return res.redirect(`${clientUrl}/login?error=google`);
+    }
+    passport.authenticate('google', { session: false, failureRedirect: '/login?error=google' })(req, res, next);
+  },
   (req, res) => {
     try {
       const { accessToken, refreshToken } = issueTokens(req.user);
