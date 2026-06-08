@@ -282,7 +282,7 @@ export default function DashboardPage() {
                   className={styles.toolBtn}
                   onClick={reload}
                   disabled={isLoading || isAnalyzing}
-                  title="Reload from server"
+                  title="Reload from server (R)"
                 >
                   ↺ Reload
                 </button>
@@ -293,7 +293,7 @@ export default function DashboardPage() {
                 className={`${styles.toolBtn} ${styles.analyzeBtn} ${isAnalyzing ? styles.analyzeBtnActive : ''}`}
                 onClick={analyzeAll}
                 disabled={isAnalyzing}
-                title="Run full analysis on all stocks"
+                title="Run full analysis on all stocks (A)"
               >
                 {isAnalyzing ? (
                   <><span className={styles.spinning}>⟳</span> Analyzing…</>

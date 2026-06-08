@@ -389,14 +389,24 @@ export default function PortfolioPage() {
           </div>
           <div className={styles.chartWrap}>
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={portfolioChartData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+              <AreaChart data={portfolioChartData} margin={{ top: 4, right: 4, left: -20, bottom: 8 }}>
                 <defs>
                   <linearGradient id="portfolioGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor={portfolioChartData[portfolioChartData.length - 1]?.ret >= 0 ? '#22c55e' : '#ef4444'} stopOpacity={0.25} />
                     <stop offset="100%" stopColor={portfolioChartData[portfolioChartData.length - 1]?.ret >= 0 ? '#22c55e' : '#ef4444'} stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="date" hide />
+                <XAxis
+                  dataKey="date"
+                  tickFormatter={(d) => {
+                    const dt = new Date(d);
+                    return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                  }}
+                  tick={{ fontSize: 9, fill: 'var(--text-disabled)', fontFamily: 'Inter, sans-serif' }}
+                  tickLine={false}
+                  axisLine={false}
+                  interval="preserveStartEnd"
+                />
                 <YAxis tickFormatter={(v) => `${v > 0 ? '+' : ''}${v}%`} tick={{ fontSize: 10, fill: 'var(--text-disabled)' }} tickLine={false} axisLine={false} />
                 <ReferenceLine y={0} stroke="var(--chrome-mid)" strokeDasharray="3 3" />
                 <Tooltip content={<ChartTooltip />} />
