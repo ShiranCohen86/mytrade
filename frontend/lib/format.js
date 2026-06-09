@@ -1,15 +1,17 @@
 export function fmtPrice(n, currency = 'USD', rate = 1) {
   if (n == null) return '—';
-  const val = n * rate;
+  // Data is denominated in USD (base). Only convert when showing ILS.
   if (currency === 'ILS') {
+    const val = n * rate;
     return `₪${val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
-  return val.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
+  return n.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
 }
 
 export function fmtBig(n, currency = 'USD', rate = 1) {
   if (n == null || n === 0) return '—';
-  const val = n * rate;
+  // Data is denominated in USD (base). Only convert when showing ILS.
+  const val = currency === 'ILS' ? n * rate : n;
   const sym = currency === 'ILS' ? '₪' : '$';
   if (val >= 1e12) return `${sym}${(val / 1e12).toFixed(2)}T`;
   if (val >= 1e9) return `${sym}${(val / 1e9).toFixed(2)}B`;
