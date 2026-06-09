@@ -60,6 +60,13 @@ function buildTokens(ctx, rule) {
     t.userName = String(ctx.user.displayName || '').trim() || t.firstName;
     t.email = ctx.user.email || '';
   }
+  // Event-subject tokens (e.g. the just-registered user) — distinct from the
+  // recipient, so an admin-alert rule can name who triggered the event.
+  if (ctx.subject) {
+    t.newUserFirstName = firstNameOf(ctx.subject);
+    t.newUserName = String(ctx.subject.displayName || '').trim() || t.newUserFirstName;
+    t.newUserEmail = ctx.subject.email || '';
+  }
   return t;
 }
 
@@ -166,7 +173,10 @@ async function fireOne(rule, user, ctx, opts = {}) {
     return { userId: String(user._id), email: user.email, ticker: ctx.ticker || '', variantKey: variant ? variant.key : '', preview: content };
   }
 
-  const key = ctx.ticker || '';
+  // For subject-bound events (e.g. registration) scope anti-spam by the event subject,
+  // so an admin-alert rule fires once per *new user* rather than being collapsed into a
+  // single per-recipient cooldown/dedupe across every registration.
+  const key = ctx.ticker || (ctx.subject && ctx.subject._id ? `subject:${ctx.subject._id}` : '');
   const dedupeHash = safeDedupe(trigger, ctx, rule);
 
   const gate = await antiSpam.check(rule, user._id, key, dedupeHash);
@@ -319,13 +329,43 @@ async function runNow(rule) {
   return { attempted: fired.length, sent };
 }
 
+/**
+ * Real-time fire for one event-class rule (e.g. on registration). Recipients follow
+ * the rule's targeting; the event subject (the user who triggered it) rides along in
+ * ctx.subject for token interpolation. Default/'all' targeting on a subject-bound event
+ * means "notify the subject" (the welcome use-case) — NOT a broadcast to every user.
+ */
+async function fireEventRule(rule, eventCtx = {}, opts = {}) {
+  const subject = eventCtx.user || null;
+  const tg = rule.targeting || {};
+  const results = [];
+
+  if (subject && (!tg.mode || tg.mode === 'all')) {
+    const r = await fireOne(rule, subject, { user: subject, subject }, opts);
+    if (r) results.push(r);
+    return results;
+  }
+
+  // Explicit targeting → resolve recipients; the subject stays in context for tokens.
+  const allUsers = await dataLoader.loadActiveUsers();
+  const allUsersById = new Map(allUsers.map((u) => [String(u._id), u]));
+  const targetIds = (await resolveTargetUserIds(rule, allUsersById)) || [...allUsersById.keys()];
+  for (const id of targetIds) {
+    const user = allUsersById.get(id);
+    if (!user) continue;
+    const r = await fireOne(rule, user, { user, subject }, opts); // eslint-disable-line no-await-in-loop
+    if (r) results.push(r);
+  }
+  return results;
+}
+
 /** Fire event-class rules of a given trigger type (e.g. on registration). */
 async function handleEvent(triggerType, eventCtx = {}) {
   try {
     const rules = await AutomationRule.find({ status: 'active', 'trigger.type': triggerType });
     for (const rule of rules) {
       if (eventCtx.user) {
-        await fireOne(rule, eventCtx.user, { user: eventCtx.user }, {}); // eslint-disable-line no-await-in-loop
+        await fireEventRule(rule, eventCtx, {}); // eslint-disable-line no-await-in-loop
       } else {
         await runNow(rule); // eslint-disable-line no-await-in-loop
       }
@@ -334,6 +374,6 @@ async function handleEvent(triggerType, eventCtx = {}) {
 }
 
 module.exports = {
-  fireOne, runMarketRule, runMarketLevelRule, runUserRule, runEventRule,
+  fireOne, runMarketRule, runMarketLevelRule, runUserRule, runEventRule, fireEventRule,
   resolveTargetUserIds, resolveContent, simulate, runNow, handleEvent,
 };

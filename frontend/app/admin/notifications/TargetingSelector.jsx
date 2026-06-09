@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { adminGetUsers } from '@/lib/apiClient';
+import { adminGetUsers, adminGetUser } from '@/lib/apiClient';
 import styles from './AdminNotifications.module.scss';
 
 const SEGMENTS = ['active', 'inactive', 'new', 'returning', 'pwa_installed', 'notif_enabled'];
@@ -20,6 +20,32 @@ export function TargetingSelector({ value, onChange, showWatchlistHolders = fals
   const [results, setResults] = useState([]);
   const [selected, setSelected] = useState([]); // {id, email}
   const debounceRef = useRef(null);
+  const selectedRef = useRef([]);
+  useEffect(() => { selectedRef.current = selected; }, [selected]);
+
+  // Hydrate the chips from incoming userIds (e.g. when editing a saved rule). The rule
+  // only carries ids, so fetch each user's email/name for display. Stable string key
+  // avoids re-fetching on every render (value.userIds is a fresh array each time).
+  const idsKey = (value.userIds || []).map(String).join(',');
+  useEffect(() => {
+    const ids = (value.userIds || []).map(String);
+    setSelected((prev) => prev.filter((s) => ids.includes(String(s.id)))); // drop de-targeted chips
+    if (!ids.length) return undefined;
+    const known = new Set(selectedRef.current.map((s) => String(s.id)));
+    const missing = ids.filter((uid) => !known.has(uid));
+    if (!missing.length) return undefined;
+    let cancelled = false;
+    Promise.all(missing.map((uid) => adminGetUser(uid).then((r) => r.user).catch(() => null)))
+      .then((users) => {
+        if (cancelled) return;
+        const add = users.filter(Boolean).map((u) => ({ id: String(u._id), email: u.email || u.displayName || String(u._id) }));
+        if (add.length) setSelected((cur) => {
+          const seen = new Set(cur.map((s) => String(s.id)));
+          return [...cur, ...add.filter((a) => !seen.has(a.id))];
+        });
+      });
+    return () => { cancelled = true; };
+  }, [idsKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const setMode = (m) => {
     if (m === 'all') onChange({ mode: 'all', userIds: [], segment: null });
