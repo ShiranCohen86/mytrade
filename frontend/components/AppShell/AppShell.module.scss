@@ -21,6 +21,8 @@
   position: relative;
   overflow-y: auto;
   overflow-x: hidden;
+  overscroll-behavior: contain; // keep scroll inside the content; no bounce revealing whitespace under the pinned TopBar
+  -webkit-overflow-scrolling: touch;
   background: $surface-base;
 
   &::-webkit-scrollbar       { width: 5px; }

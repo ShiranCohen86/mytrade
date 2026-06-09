@@ -135,6 +135,8 @@ body {
   text-rendering: optimizeLegibility;
   font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
   min-height: 100vh;
+  min-height: 100dvh; // dvh tracks the visual viewport on mobile — avoids a sliver of phantom document scroll
+  overscroll-behavior-y: none; // no native pull-to-refresh / rubber-band bounce
 }
 
 a   { color: inherit; text-decoration: none; }

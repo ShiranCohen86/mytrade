@@ -33,6 +33,23 @@ export function AppShell({ children }) {
     contentRef.current?.scrollTo({ top: 0, behavior: 'instant' });
   }, [pathname]);
 
+  // Lock the document to the viewport while the shell is mounted so ONLY the
+  // inner content scrolls. Otherwise body's min-height leaves a sliver of
+  // document-level scroll on mobile (100vh > visual viewport) that drags the
+  // whole grid — including the sticky TopBar — out of view. Restored on unmount
+  // so public pages (landing/login) keep their natural document scroll.
+  useEffect(() => {
+    const { documentElement: html, body } = document;
+    const prevHtml = html.style.overflow;
+    const prevBody = body.style.overflow;
+    html.style.overflow = 'hidden';
+    body.style.overflow = 'hidden';
+    return () => {
+      html.style.overflow = prevHtml;
+      body.style.overflow = prevBody;
+    };
+  }, []);
+
   // Clear the app icon badge whenever the app is focused/visible.
   useEffect(() => {
     clearAppBadge();
