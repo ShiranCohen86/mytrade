@@ -102,7 +102,9 @@
 
 .toolsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  // min() keeps the 340px track on desktop but collapses to a single full-width
+  // column on phones narrower than that — otherwise the grid overflows the screen.
+  grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
   gap: $space-4;
 }
 

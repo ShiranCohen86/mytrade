@@ -123,7 +123,8 @@
   background: $surface-panel;
   border: 1px solid $chrome-dim;
   border-radius: $radius-xl;
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   box-shadow: $shadow-xs;
 }
 
@@ -143,6 +144,7 @@
   width: 100%;
   border-collapse: collapse;
   font-size: $text-sm;
+  min-width: 760px; // keep columns legible; .tableWrap scrolls on small screens
 
   th {
     padding: $space-2 $space-4;

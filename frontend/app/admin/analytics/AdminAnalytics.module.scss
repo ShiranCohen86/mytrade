@@ -3,7 +3,7 @@
 
 .page { display: flex; flex-direction: column; gap: $space-5; }
 
-.pageHeader { display: flex; align-items: center; justify-content: space-between; }
+.pageHeader { display: flex; align-items: center; justify-content: space-between; gap: $space-3; flex-wrap: wrap; }
 
 .pageTitle {
   font-size: $text-2xl;

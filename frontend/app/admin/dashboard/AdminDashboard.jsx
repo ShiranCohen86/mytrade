@@ -125,6 +125,7 @@ export default function AdminDashboard() {
         {recentLogs.length === 0
           ? <p className={styles.empty}>No warnings in the current window.</p>
           : (
+            <div className={styles.tableScroll}>
             <table className={styles.table}>
               <thead>
                 <tr>
@@ -145,6 +146,7 @@ export default function AdminDashboard() {
                 ))}
               </tbody>
             </table>
+            </div>
           )}
       </div>
     </div>

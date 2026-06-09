@@ -108,12 +108,15 @@ export default function AdminLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [searchVal, setSearchVal] = useState('');
 
   // Build nav: base items + role-gated entries
   const NAV = [...BASE_NAV];
   if (NOTIFICATION_ROLES.has(user?.role)) NAV.push(NOTIFICATION_NAV);
   if (INTELLIGENCE_ROLES.has(user?.role)) NAV.push(INTELLIGENCE_NAV);
+
+  const closeMobile = useCallback(() => setMobileOpen(false), []);
 
   const handleLogout = useCallback(async () => {
     await logout();
@@ -125,13 +128,14 @@ export default function AdminLayout() {
     if (searchVal.trim()) {
       navigate(`/admin/support?q=${encodeURIComponent(searchVal.trim())}`);
       setSearchVal('');
+      setMobileOpen(false);
     }
   };
 
   return (
     <div className={`${styles.shell} ${collapsed ? styles.collapsed : ''}`}>
       {/* ─── Sidebar ─────────────────────────────────────────────── */}
-      <aside className={styles.sidebar}>
+      <aside className={`${styles.sidebar} ${mobileOpen ? styles.mobileOpen : ''}`}>
         <div className={styles.sidebarHeader}>
           <div className={styles.brand}>
             <span className={styles.brandIcon}>⚡</span>
@@ -160,6 +164,7 @@ export default function AdminLayout() {
                 `${styles.navItem} ${isActive ? styles.navItemActive : ''}`
               }
               title={collapsed ? label : undefined}
+              onClick={closeMobile}
             >
               <span className={styles.navIcon}>{icon}</span>
               {!collapsed && <span className={styles.navLabel}>{label}</span>}
@@ -192,10 +197,26 @@ export default function AdminLayout() {
         </div>
       </aside>
 
+      {/* ─── Mobile drawer backdrop ──────────────────────────────── */}
+      {mobileOpen && (
+        <div className={styles.backdrop} onClick={closeMobile} aria-hidden="true" />
+      )}
+
       {/* ─── Main area ───────────────────────────────────────────── */}
       <div className={styles.main}>
         {/* Top bar */}
         <header className={styles.topbar}>
+          <button
+            type="button"
+            className={styles.menuBtn}
+            onClick={() => setMobileOpen((v) => !v)}
+            aria-label="Toggle navigation menu"
+            aria-expanded={mobileOpen}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
           <form className={styles.searchForm} onSubmit={handleSearch}>
             <svg className={styles.searchIcon} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />

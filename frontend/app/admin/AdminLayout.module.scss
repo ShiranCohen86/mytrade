@@ -260,6 +260,29 @@
   flex-shrink: 0;
 }
 
+// Hamburger — only shown on mobile (see breakpoint block below)
+.menuBtn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: $radius-md;
+  border: 1px solid $chrome-dim;
+  background: $surface-raised;
+  color: $text-secondary;
+  cursor: pointer;
+  transition: color $motion-fast, border-color $motion-fast, background $motion-fast;
+
+  &:hover { color: $accent; border-color: $accent; background: $accent-faint; }
+}
+
+// Drawer backdrop — only shown on mobile while the drawer is open
+.backdrop {
+  display: none;
+}
+
 .searchForm {
   display: flex;
   align-items: center;
@@ -349,4 +372,74 @@
   &::-webkit-scrollbar { width: 5px; }
   &::-webkit-scrollbar-thumb { background: $chrome-mid; border-radius: $radius-pill; }
   &::-webkit-scrollbar-track { background: transparent; }
+}
+
+// ─── Mobile (≤768px): sidebar becomes an off-canvas drawer ──────────────────────
+
+@include below-md {
+  // Content takes the full width; the drawer floats above it.
+  .shell,
+  .shell.collapsed {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    inset-inline-start: 0;
+    width: 248px;
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform $motion-base;
+    box-shadow: $shadow-xl;
+    border-inline-end: 1px solid $chrome-mid;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+
+    :global([dir="rtl"]) & {
+      transform: translateX(100%);
+    }
+
+    &.mobileOpen { transform: translateX(0); }
+  }
+
+  // The desktop collapse toggle is meaningless inside the drawer.
+  .collapseBtn { display: none; }
+
+  .backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 150;
+    background: rgba(0, 0, 0, 0.50);
+    backdrop-filter: blur(2px);
+    animation: adminBackdropIn 160ms ease;
+  }
+
+  @keyframes adminBackdropIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .menuBtn { display: inline-flex; }
+
+  .topbar {
+    gap: $space-2;
+    padding: 0 $space-3;
+  }
+
+  .searchForm { max-width: none; }
+
+  // Hide the verbose placeholder hint on narrow screens — keep the field usable.
+  .searchKbd { display: none; }
+
+  .content {
+    padding: $space-4 $space-3;
+    gap: $space-4;
+  }
+}
+
+@include below-sm {
+  // The "App" link label is redundant next to the icon on the smallest screens.
+  .appLink { padding: 5px $space-2; }
 }

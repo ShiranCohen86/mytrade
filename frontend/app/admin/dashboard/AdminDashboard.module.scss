@@ -143,10 +143,16 @@
   color: $text-primary;
 }
 
+.tableScroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
   font-size: $text-sm;
+  min-width: 540px; // keep columns legible; .tableScroll scrolls on small screens
 
   th {
     padding: $space-2 $space-4;
