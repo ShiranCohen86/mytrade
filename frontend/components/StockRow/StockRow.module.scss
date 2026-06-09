@@ -3,6 +3,7 @@
 
 // ─── Column Grid ──────────────────────────────────────────────────────────────
 $cols-desktop: 20px 56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 56px 60px 34px;
+$cols-mobile:       56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 56px 60px 34px;
 
 .rowWrapper {
   border-bottom: 1px solid $chrome-dim;
@@ -50,6 +51,12 @@ $cols-desktop: 20px 56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 56px 60px 3
     outline: none;
     box-shadow: inset 0 0 0 2px $accent;
   }
+
+  @media (max-width: 640px) {
+    grid-template-columns: $cols-mobile;
+    gap: 0 $space-2;
+    padding: 12px $space-3;
+  }
 }
 
 // ─── Drag handle ─────────────────────────────────────────────────────────────
@@ -72,6 +79,8 @@ $cols-desktop: 20px 56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 56px 60px 3
   }
 
   &:active { cursor: grabbing; }
+
+  @media (max-width: 640px) { display: none; }
 }
 
 // ─── Ticker ──────────────────────────────────────────────────────────────────
