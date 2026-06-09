@@ -314,8 +314,25 @@ async function evaluateRuleStandalone(rule, opts = {}) {
     const flags = await dataLoader.loadUserFlags(allUsers.map((u) => u._id));
     return runUserRule(rule, allUsers, flags, {}, opts);
   }
-  // event / scheduled → broadcast to targeting
+  // Subject-bearing events (e.g. registration): test/run-now has no real event, so ride
+  // a representative recent user as ctx.subject and go through the *same* path as a live
+  // fire — otherwise {{newUser*}} tokens render blank in the preview. Real fires get the
+  // actual subject via handleEvent → fireEventRule.
+  if (trigger.subjectKind === 'user') {
+    const subject = mostRecentUser(allUsers);
+    if (subject) return fireEventRule(rule, { user: subject }, opts);
+  }
+  // Plain event / scheduled (broadcasts) → fan out to targeting, no subject.
   return runEventRule(rule, allUsers, opts);
+}
+
+/** Representative "just registered" user for dry-run / run-now of subject-bearing events. */
+function mostRecentUser(users) {
+  let best = null;
+  for (const u of users || []) {
+    if (!best || new Date(u.createdAt || 0) > new Date(best.createdAt || 0)) best = u;
+  }
+  return best;
 }
 
 async function simulate(rule) {

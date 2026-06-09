@@ -6,10 +6,15 @@ const mk = (key, label, description, paramSchema, match, defaults, dedupeKey, ev
 const daily = (key) => () => `${key}:${new Date().toISOString().slice(0, 10)}`;
 
 module.exports = [
-  mk('user_registered', 'New registration / welcome', 'Fires once when a user signs up',
-    [], () => true,
-    () => ({ title: 'Welcome to MyTrade 👋', message: 'Hi {{firstName}}! Add your first ticker to start tracking the market.', type: 'success', icon: '👋', deepLink: '/dashboard', actionText: 'Get started' }),
-    (c) => `welcome:${((c.subject || c.user) || {})._id}`, 'event'),
+  // subjectKind:'user' → carries the just-registered user as ctx.subject, so the
+  // {{newUser*}} tokens are offered and resolve (in real fires *and* in test/run-now).
+  Object.assign(
+    mk('user_registered', 'New registration / welcome', 'Fires once when a user signs up',
+      [], () => true,
+      () => ({ title: 'Welcome to MyTrade 👋', message: 'Hi {{firstName}}! Add your first ticker to start tracking the market.', type: 'success', icon: '👋', deepLink: '/dashboard', actionText: 'Get started' }),
+      (c) => `welcome:${((c.subject || c.user) || {})._id}`, 'event'),
+    { subjectKind: 'user' },
+  ),
 
   mk('user_inactive', 'User inactive N days', 'No activity for N+ days',
     [{ name: 'days', type: 'number', default: 7, label: 'Inactive for (days)' }],
