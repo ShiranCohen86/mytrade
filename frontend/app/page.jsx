@@ -48,7 +48,6 @@ export default function DashboardPage() {
   const toast = useToast();
   const { t } = useTranslation();
   const { setRefreshHandler } = useAppShell();
-  const prevAnalyzingRef = useRef(false);
 
   // Drive pull-to-refresh from the app shell.
   useEffect(() => {
@@ -165,20 +164,6 @@ export default function DashboardPage() {
 
   const hasActiveFilters = sectorFilter !== null || riskFilter !== null || earningsFilter !== null || staleFilter || expectFilter !== null || regimeFilter !== null;
   const clearFilters = useCallback(() => { setSectorFilter(null); setRiskFilter(null); setEarningsFilter(null); setStaleFilter(false); setExpectFilter(null); setRegimeFilter(null); }, []);
-
-  useEffect(() => {
-    if (prevAnalyzingRef.current && !isAnalyzing && stocks.length > 0) {
-      const n = stocks.length;
-      const failed = analysisErrors.size;
-      if (failed === 0) {
-        toast.success(t('dashboard.analysisComplete', { count: n }));
-      } else {
-        toast.warning(t('dashboard.analysisCompleteWithErrors', { updated: n - failed, failed }));
-      }
-    }
-    prevAnalyzingRef.current = isAnalyzing;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAnalyzing]);
 
   useEffect(() => {
     if (!stocks.length || !priceAlerts.length) return;
