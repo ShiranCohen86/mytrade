@@ -36,13 +36,22 @@ const MARKET_TOKENS = [
   { token: 'changePercent', label: 'Index change %' },
   { token: 'value', label: 'Trigger value (VIX / regime)' },
 ];
+// Event triggers carry a subject (e.g. the user who just registered) separate from
+// the recipient, so an admin-alert rule can say *who* triggered it.
+const EVENT_SUBJECT_TOKENS = [
+  { token: 'newUserName', label: "Triggering user's full name" },
+  { token: 'newUserFirstName', label: "Triggering user's first name" },
+  { token: 'newUserEmail', label: "Triggering user's email" },
+];
 
 /** Notification template variables available for a given trigger definition. */
 function tokensFor(t) {
   let base = [];
   if (t.evaluatorClass === 'market') base = STOCK_TOKENS;
   else if (t.evaluatorClass === 'market_level') base = MARKET_TOKENS;
-  return [...base, ...USER_TOKENS];
+  const tokens = [...base, ...USER_TOKENS];
+  if (t.evaluatorClass === 'event') tokens.push(...EVENT_SUBJECT_TOKENS);
+  return tokens;
 }
 
 function get(key) { return byKey.get(key) || null; }
