@@ -3,7 +3,6 @@ import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStocks } from '@/hooks/useStocks';
 import { WatchlistTable } from '@/components/WatchlistTable/WatchlistTable';
-import { SummaryStrip } from '@/components/SummaryStrip/SummaryStrip';
 import { WatchlistSummary } from '@/components/WatchlistSummary/WatchlistSummary';
 import { AddTickerForm } from '@/components/AddTickerForm/AddTickerForm';
 import { EarningsCalendar } from '@/components/EarningsCalendar/EarningsCalendar';
@@ -479,8 +478,6 @@ export default function DashboardPage() {
               </button>
             )}
           </div>
-
-          <SummaryStrip stocks={stocks} portfolio={portfolio} priceAlerts={priceAlerts} />
 
           {filteredStocks.length === 0 ? (
             <div className={styles.filterEmpty}>

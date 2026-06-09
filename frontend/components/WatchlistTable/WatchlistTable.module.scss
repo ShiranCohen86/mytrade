@@ -17,6 +17,10 @@ $cols-desktop: 20px 56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 56px 60px 3
   flex-direction: column;
   min-width: 820px;
   width: 100%;
+
+  @media (max-width: 640px) {
+    min-width: unset; // flex rows fit viewport — no horizontal scroll on mobile
+  }
 }
 
 // ─── Header ──────────────────────────────────────────────────────────────────
@@ -25,7 +29,7 @@ $cols-desktop: 20px 56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 56px 60px 3
   display: grid;
   grid-template-columns: $cols-desktop;
   align-items: center;
-  gap: 0 $space-3;
+  gap: 0 $space-4;
   padding: 0 $space-4;
   height: 38px;
   min-width: 820px; // mirrors .table min-width so 1fr is computed consistently
