@@ -613,7 +613,38 @@
     "channelSoon": "Coming soon",
     "contentHint": "Leave blank to use the smart default. Insert variables with the buttons below.",
     "variablesLabel": "Insert variable",
-    "variablesHint": "Click to insert at the cursor. Values are filled in per recipient when the notification is sent (e.g. {{firstName}}).",
+    "variablesHint": "Click a variable to insert it at the cursor; values are filled in when the notification is sent. Note: 'Recipient' variables refer to whoever receives the message, while 'New user' variables refer to the person who registered and triggered it.",
+    "varGroup": {
+      "recipient": "Notification recipient",
+      "subject": "The new user (who triggered it)",
+      "stock": "Stock",
+      "market": "Market"
+    },
+    "var": {
+      "recipient": {
+        "firstName": "Recipient's first name",
+        "userName": "Recipient's full name",
+        "email": "Recipient's email"
+      },
+      "subject": {
+        "newUserFirstName": "New user's first name",
+        "newUserName": "New user's full name",
+        "newUserEmail": "New user's email"
+      },
+      "stock": {
+        "ticker": "Stock symbol",
+        "name": "Company name",
+        "price": "Current price",
+        "changePercent": "Daily change %",
+        "targetPrice": "Configured target price",
+        "value": "Trigger value (rating / target / %)"
+      },
+      "market": {
+        "index": "Index symbol (e.g. SPY)",
+        "changePercent": "Index change %",
+        "value": "Trigger value (VIX / regime)"
+      }
+    },
     "extraConditions": "Extra conditions (optional)",
     "addCondition": "Add condition",
     "value": "value",

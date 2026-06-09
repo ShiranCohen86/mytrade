@@ -43,20 +43,29 @@
 .removeBtn { display: grid; place-items: center; width: 30px; height: 30px; border-radius: $radius-sm; color: $text-tertiary; &:hover { background: $neg-bg; color: $neg; } }
 .addCond { font-size: $text-xs; font-weight: 600; color: $accent; padding: 4px 8px; border-radius: $radius-sm; &:hover { background: $accent-faint; } }
 
-// Insertable template variables ({{token}})
+// Insertable template variables ({{token}}) — grouped by who they refer to
+.tokenGroups { display: flex; flex-direction: column; gap: $space-3; }
+.tokenGroup { display: flex; flex-direction: column; gap: $space-2; }
+.tokenGroupHead {
+  font-size: $text-2xs; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+  color: $text-tertiary;
+}
 .tokenRow { display: flex; flex-wrap: wrap; gap: $space-2; }
 .tokenChip {
-  font-family: $font-mono;
-  font-size: $text-2xs;
-  font-weight: 600;
-  color: $accent;
-  padding: 3px 9px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  text-align: start;
+  padding: 5px 10px;
   border: 1px solid $chrome-dim;
-  border-radius: $radius-pill;
+  border-radius: $radius-md;
   background: $accent-faint;
   transition: all $motion-fast;
   &:hover { border-color: $accent; }
 }
+.tokenChipLabel { font-size: $text-2xs; font-weight: 600; color: $text-secondary; line-height: 1.2; }
+.tokenChipCode { font-family: $font-mono; font-size: $text-2xs; font-weight: 600; color: $accent; line-height: 1.2; }
 
 // Anti-spam grid
 .antiGrid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: $space-3; @include below-sm { grid-template-columns: 1fr; } }

@@ -63,6 +63,19 @@ export default function AdminAutomationBuilder() {
   const selectedDef = useMemo(() => catalog.find((c) => c.key === form.trigger.type) || null, [catalog, form.trigger.type]);
   const byCat = useMemo(() => catalog.filter((c) => c.category === activeCat), [catalog, activeCat]);
 
+  // Insertable variables grouped by who they refer to (recipient vs the new user vs
+  // stock/market), preserving the trigger's token order, so the picker reads clearly.
+  const tokenGroups = useMemo(() => {
+    const order = [];
+    const map = new Map();
+    ((selectedDef && selectedDef.tokens) || []).forEach((tk) => {
+      const g = tk.group || 'other';
+      if (!map.has(g)) { map.set(g, []); order.push(g); }
+      map.get(g).push(tk);
+    });
+    return order.map((g) => ({ group: g, tokens: map.get(g) }));
+  }, [selectedDef]);
+
   const selectTrigger = (def) => {
     if (!def.feasible) { toast.warning(t('autom.needsDataToast')); }
     const p = {};
@@ -256,15 +269,29 @@ export default function AdminAutomationBuilder() {
               <textarea ref={msgRef} className={styles.textarea} value={form.actions.content.message} onFocus={() => setFocusedField('message')} onChange={(e) => setContent('message', e.target.value)} />
             </div>
 
-            {/* Insertable variables — populated from the selected trigger's available tokens */}
-            {selectedDef && (selectedDef.tokens || []).length > 0 && (
+            {/* Insertable variables — grouped by who they refer to, with readable labels */}
+            {selectedDef && tokenGroups.length > 0 && (
               <div className={styles.field}>
                 <label className={styles.label}>{t('autom.variablesLabel')}</label>
-                <div className={auto.tokenRow}>
-                  {selectedDef.tokens.map((tk) => (
-                    <button key={tk.token} type="button" className={auto.tokenChip} title={tk.label} onClick={() => insertToken(tk.token)}>
-                      {`{{${tk.token}}}`}
-                    </button>
+                <div className={auto.tokenGroups}>
+                  {tokenGroups.map(({ group, tokens }) => (
+                    <div key={group} className={auto.tokenGroup}>
+                      <div className={auto.tokenGroupHead}>{t(`autom.varGroup.${group}`, group)}</div>
+                      <div className={auto.tokenRow}>
+                        {tokens.map((tk) => (
+                          <button
+                            key={`${group}:${tk.token}`}
+                            type="button"
+                            className={auto.tokenChip}
+                            title={`{{${tk.token}}}`}
+                            onClick={() => insertToken(tk.token)}
+                          >
+                            <span className={auto.tokenChipLabel}>{t(`autom.var.${group}.${tk.token}`, tk.label)}</span>
+                            <span className={auto.tokenChipCode}>{`{{${tk.token}}}`}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
                 <p className={styles.headSub} style={{ marginTop: 6 }}>{t('autom.variablesHint')}</p>
