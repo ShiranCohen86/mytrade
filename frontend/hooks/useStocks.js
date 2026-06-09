@@ -137,7 +137,10 @@ export function useStocks() {
   const add = useCallback(async (ticker) => {
     const stock = await addStock(ticker);
     setStocks((prev) => [...prev, stock]);
-    onStockAdded(stocksRef.current.length + 1);
+    // Keep the ref in sync synchronously so the activation count is accurate even
+    // for rapid successive adds (the [stocks] effect would otherwise lag).
+    stocksRef.current = [...stocksRef.current, stock];
+    onStockAdded(stocksRef.current.length);
     return stock;
   }, []);
 

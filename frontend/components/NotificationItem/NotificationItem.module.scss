@@ -1,0 +1,115 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.item {
+  position: relative;
+  display: flex;
+  gap: $space-3;
+  padding: $space-3 $space-4;
+  cursor: pointer;
+  border-radius: $radius-md;
+  border: 1px solid transparent;
+  transition: background $motion-fast, border-color $motion-fast;
+  text-align: start;
+
+  &:hover { background: $surface-hover; }
+  &:focus-visible { @include focus-ring; }
+}
+
+.unread {
+  background: $accent-faint;
+  &:hover { background: $accent-glow; }
+}
+
+.unreadDot {
+  position: absolute;
+  inset-inline-start: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: $accent;
+}
+
+.icon {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+  border-radius: $radius-md;
+  background: $surface-raised;
+  border: 1px solid $chrome-dim;
+}
+
+// Type accents on the icon chip
+.info    .icon { border-color: color-mix(in srgb, $accent 40%, transparent); }
+.success .icon { border-color: color-mix(in srgb, $pos 40%, transparent); }
+.warning .icon { border-color: color-mix(in srgb, $warn 45%, transparent); }
+.alert   .icon { border-color: color-mix(in srgb, $neg 45%, transparent); background: $neg-bg; }
+
+.body {
+  flex: 1;
+  min-width: 0;
+}
+
+.titleRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: $space-2;
+}
+
+.title {
+  font-size: $text-base;
+  font-weight: 600;
+  color: $text-primary;
+  @include truncate;
+}
+
+.time {
+  flex-shrink: 0;
+  font-size: $text-2xs;
+  color: $text-tertiary;
+  white-space: nowrap;
+}
+
+.message {
+  margin-top: 2px;
+  font-size: $text-sm;
+  line-height: 1.45;
+  color: $text-secondary;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.action {
+  display: inline-block;
+  margin-top: $space-2;
+  font-size: $text-xs;
+  font-weight: 600;
+  color: $accent;
+}
+
+.dismiss {
+  flex-shrink: 0;
+  align-self: flex-start;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: $radius-sm;
+  color: $text-tertiary;
+  opacity: 0;
+  transition: opacity $motion-fast, background $motion-fast, color $motion-fast;
+
+  .item:hover & { opacity: 1; }
+  &:hover { background: $surface-raised; color: $text-primary; }
+
+  // Always visible on touch devices (no hover)
+  @media (hover: none) { opacity: 1; }
+}

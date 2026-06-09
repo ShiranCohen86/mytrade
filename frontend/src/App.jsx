@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/hooks/useTheme';
 import { buildMuiTheme } from '@/src/theme';
 import { CurrencyProvider } from '@/context/CurrencyContext';
+import { NotificationProvider } from '@/context/NotificationContext';
 import { ToastProvider } from '@/components/Toast/ToastProvider';
 import { PWAUpdatePrompt } from '@/components/PWAUpdatePrompt/PWAUpdatePrompt';
 import { PrivateRoute } from '@/components/PrivateRoute/PrivateRoute';
@@ -25,6 +26,7 @@ const StockDetailClient = lazy(() => import('@/app/stocks/[ticker]/StockDetailCl
 const PortfolioPage = lazy(() => import('@/app/PortfolioPage'));
 const SectorsPage = lazy(() => import('@/app/SectorsPage'));
 const SettingsPage = lazy(() => import('@/app/settings/SettingsPage'));
+const NotificationCenterPage = lazy(() => import('@/app/notifications/NotificationCenterPage'));
 const AdminLayout = lazy(() => import('@/app/admin/AdminLayout'));
 const AdminDashboard = lazy(() => import('@/app/admin/dashboard/AdminDashboard'));
 const AdminUsers = lazy(() => import('@/app/admin/users/AdminUsers'));
@@ -34,6 +36,11 @@ const AdminWatchlists = lazy(() => import('@/app/admin/watchlists/AdminWatchlist
 const AdminAnalytics = lazy(() => import('@/app/admin/analytics/AdminAnalytics'));
 const AdminSupport = lazy(() => import('@/app/admin/support/AdminSupport'));
 const AdminIntelligence = lazy(() => import('@/app/admin/intelligence/AdminIntelligence'));
+const AdminNotifications = lazy(() => import('@/app/admin/notifications/AdminNotifications'));
+const AdminNotificationCompose = lazy(() => import('@/app/admin/notifications/AdminNotificationCompose'));
+const AdminNotificationDetail = lazy(() => import('@/app/admin/notifications/AdminNotificationDetail'));
+const AdminNotificationTemplates = lazy(() => import('@/app/admin/notifications/AdminNotificationTemplates'));
+const AdminNotificationAnalytics = lazy(() => import('@/app/admin/notifications/AdminNotificationAnalytics'));
 
 function DirectionSync() {
   const { i18n } = useTranslation();
@@ -41,6 +48,9 @@ function DirectionSync() {
     const dir = i18n.language === 'he' ? 'rtl' : 'ltr';
     document.documentElement.setAttribute('dir', dir);
     document.documentElement.setAttribute('lang', i18n.language);
+    // Point the manifest at the localized variant so an install reflects the language.
+    const link = document.querySelector('link[rel="manifest"]');
+    if (link) link.setAttribute('href', `/manifest.webmanifest?lang=${i18n.language}`);
   }, [i18n.language]);
   return null;
 }
@@ -87,6 +97,7 @@ export default function App() {
       <CurrencyProvider>
       <ToastProvider>
       <AuthProvider>
+      <NotificationProvider>
         <Suspense fallback={<RouteFallback />}>
         <Routes>
           {/* Public routes — no AppShell */}
@@ -105,6 +116,7 @@ export default function App() {
               <Route path="/portfolio" element={<PortfolioPage />} />
               <Route path="/sectors" element={<SectorsPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/notifications" element={<NotificationCenterPage />} />
             </Route>
           </Route>
 
@@ -119,6 +131,12 @@ export default function App() {
               <Route path="/admin/analytics" element={<AdminAnalytics />} />
               <Route path="/admin/support" element={<AdminSupport />} />
               <Route path="/admin/intelligence" element={<AdminIntelligence />} />
+              <Route path="/admin/notifications" element={<AdminNotifications />} />
+              <Route path="/admin/notifications/new" element={<AdminNotificationCompose />} />
+              <Route path="/admin/notifications/templates" element={<AdminNotificationTemplates />} />
+              <Route path="/admin/notifications/analytics" element={<AdminNotificationAnalytics />} />
+              <Route path="/admin/notifications/:id/edit" element={<AdminNotificationCompose />} />
+              <Route path="/admin/notifications/:id" element={<AdminNotificationDetail />} />
             </Route>
           </Route>
 
@@ -126,6 +144,7 @@ export default function App() {
         </Routes>
         </Suspense>
         <PWAUpdatePrompt />
+      </NotificationProvider>
       </AuthProvider>
       </ToastProvider>
       </CurrencyProvider>

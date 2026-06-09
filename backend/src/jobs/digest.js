@@ -87,8 +87,8 @@ async function sendDailyDigest() {
   return { digest: digestSent, earnings: earningsSent };
 }
 
-// Weekday mornings ~09:35 ET (13:35 UTC); slightly after the US open.
-cron.schedule('35 13 * * 1-5', async () => {
+// Weekday mornings 09:35 ET — slightly after the US open (DST-correct via tz).
+cron.schedule('35 9 * * 1-5', async () => {
   logger.info('[digest] running daily digest');
   try {
     const r = await sendDailyDigest();
@@ -96,8 +96,8 @@ cron.schedule('35 13 * * 1-5', async () => {
   } catch (err) {
     logger.error('[digest] failed', { err: err.message });
   }
-});
+}, { timezone: 'America/New_York' });
 
-logger.info('[digest] Registered — weekdays 13:35 UTC');
+logger.info('[digest] Registered — weekdays 09:35 ET');
 
 module.exports = { sendDailyDigest };

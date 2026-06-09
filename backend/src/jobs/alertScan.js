@@ -79,8 +79,8 @@ cron.schedule('*/5 * * * 1-5', async () => {
   } catch (err) {
     logger.error('[alert-scan] failed', { err: err.message });
   }
-});
+}, { timezone: 'America/New_York' });
 
-logger.info('[alert-scan] Registered — every 5 min on weekdays');
+logger.info('[alert-scan] Registered — every 5 min on weekdays (ET)');
 
 module.exports = { scanAlerts };

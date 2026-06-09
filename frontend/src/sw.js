@@ -79,6 +79,20 @@ setCatchHandler(async ({ request }) => {
 // =======================================================================
 // Web Push (Phase C) — display + click-through
 // =======================================================================
+
+// Token-gated engagement beacon for admin notification campaigns. The SW has no
+// JWT; the campaignId + opaque token come from the push payload (a capability
+// only this device received), so the report endpoint is unauthenticated.
+function reportPushEvent(meta, type) {
+  if (!meta || !meta.campaignId || !meta.token) return Promise.resolve();
+  return fetch('/api/notifications/push/event', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ campaignId: meta.campaignId, token: meta.token, type }),
+    keepalive: true,
+  }).catch(() => {});
+}
+
 self.addEventListener('push', (event) => {
   let data = {};
   try {
@@ -95,6 +109,7 @@ self.addEventListener('push', (event) => {
     tag: data.tag,
     renotify: Boolean(data.tag),
     requireInteraction: Boolean(data.requireInteraction),
+    image: data.image || undefined,
     silent,
     // Vibration nudges Android to surface a heads-up alert and makes the
     // notification noticeable even with the screen off. Payload may override
@@ -107,14 +122,18 @@ self.addEventListener('push', (event) => {
   if (self.navigator && self.navigator.setAppBadge) {
     tasks.push(self.navigator.setAppBadge().catch(() => {}));
   }
+  // Report "shown" for admin campaign analytics (delivered ≈ displayed).
+  tasks.push(reportPushEvent(data.data, 'shown'));
   event.waitUntil(Promise.all(tasks));
 });
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const targetUrl = (event.notification.data && event.notification.data.url) || '/dashboard';
+  const meta = event.notification.data || {};
+  const targetUrl = meta.url || '/dashboard';
   event.waitUntil(
     (async () => {
+      await reportPushEvent(meta, 'click');
       const wins = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
       for (const client of wins) {
         if ('focus' in client) {

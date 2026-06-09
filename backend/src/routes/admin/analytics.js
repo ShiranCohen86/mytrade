@@ -66,7 +66,7 @@ router.get('/overview', adminAuth('logs.read'), async (req, res) => {
 // GET /admin/analytics/signups — daily signup trend (last N days)
 router.get('/signups', adminAuth('logs.read'), async (req, res) => {
   try {
-    const days = Math.min(90, Math.max(7, parseInt(req.query.days) || 30));
+    const days = Math.min(90, Math.max(7, parseInt(req.query.days, 10) || 30));
     const since = new Date(Date.now() - days * 86400_000);
 
     const data = await User.aggregate([
@@ -89,7 +89,7 @@ router.get('/signups', adminAuth('logs.read'), async (req, res) => {
 // GET /admin/analytics/activity — daily active users trend
 router.get('/activity', adminAuth('logs.read'), async (req, res) => {
   try {
-    const days = Math.min(90, Math.max(7, parseInt(req.query.days) || 30));
+    const days = Math.min(90, Math.max(7, parseInt(req.query.days, 10) || 30));
     const since = new Date(Date.now() - days * 86400_000);
 
     const data = await AuditLog.aggregate([
@@ -171,7 +171,7 @@ router.get('/security', adminAuth('audit.read'), async (req, res) => {
 // GET /admin/analytics/product — PWA / growth / activation funnels from client events
 router.get('/product', adminAuth('logs.read'), async (req, res) => {
   try {
-    const days = Math.min(90, Math.max(7, parseInt(req.query.days) || 30));
+    const days = Math.min(90, Math.max(7, parseInt(req.query.days, 10) || 30));
     const since = new Date(Date.now() - days * 86400_000);
 
     const [byEvent, platforms, standaloneTrend] = await Promise.all([

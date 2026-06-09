@@ -7,8 +7,8 @@ const audit = require('../../services/auditService');
 // GET /admin/audit — query audit logs with filters + pagination
 router.get('/', adminAuth('logs.read'), async (req, res) => {
   try {
-    const page = Math.max(1, parseInt(req.query.page) || 1);
-    const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 50));
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = Math.min(200, Math.max(1, parseInt(req.query.limit, 10) || 50));
     const skip = (page - 1) * limit;
 
     const filter = {};

@@ -112,6 +112,7 @@ app.use('/auth/forgot-password', authLimiter);
 // (stocks router has router.use(auth) which would block unauthenticated requests)
 let _overviewCache = null;
 let _overviewCacheAt = 0;
+let _overviewInflight = null;
 const OVERVIEW_TTL_MS = 60 * 1000; // 1 minute — matches frontend poll interval
 
 app.get('/api/market/overview', async (_req, res) => {
@@ -119,28 +120,34 @@ app.get('/api/market/overview', async (_req, res) => {
     if (_overviewCache && Date.now() - _overviewCacheAt < OVERVIEW_TTL_MS) {
       return res.json(_overviewCache);
     }
-    const provider = require('./providers/ProviderFactory');
-    // The volatility index resolves on Yahoo as ^VIX (plain "VIX" returns no data).
-    // Keep the display ticker as 'VIX' so the frontend keying stays unchanged.
-    const tickers = [
-      { symbol: 'SPY', label: 'SPY' },
-      { symbol: 'QQQ', label: 'QQQ' },
-      { symbol: 'DIA', label: 'DIA' },
-      { symbol: '^VIX', label: 'VIX' },
-    ];
-    const quotes = await Promise.all(
-      tickers.map(async ({ symbol, label }) => {
-        try {
-          const q = await provider.getCurrentQuote(symbol);
-          return { ticker: label, price: q.price, change: q.change, changePercent: q.changePercent };
-        } catch {
-          return { ticker: label, price: null, change: null, changePercent: null };
-        }
-      })
-    );
-    _overviewCache = quotes;
-    _overviewCacheAt = Date.now();
-    res.json(quotes);
+    // Single-flight: collapse concurrent cache-miss requests into one upstream fetch.
+    if (!_overviewInflight) {
+      _overviewInflight = (async () => {
+        const provider = require('./providers/ProviderFactory');
+        // The volatility index resolves on Yahoo as ^VIX (plain "VIX" returns no data).
+        // Keep the display ticker as 'VIX' so the frontend keying stays unchanged.
+        const tickers = [
+          { symbol: 'SPY', label: 'SPY' },
+          { symbol: 'QQQ', label: 'QQQ' },
+          { symbol: 'DIA', label: 'DIA' },
+          { symbol: '^VIX', label: 'VIX' },
+        ];
+        const quotes = await Promise.all(
+          tickers.map(async ({ symbol, label }) => {
+            try {
+              const q = await provider.getCurrentQuote(symbol);
+              return { ticker: label, price: q.price, change: q.change, changePercent: q.changePercent };
+            } catch {
+              return { ticker: label, price: null, change: null, changePercent: null };
+            }
+          })
+        );
+        _overviewCache = quotes;
+        _overviewCacheAt = Date.now();
+        return quotes;
+      })().finally(() => { _overviewInflight = null; });
+    }
+    res.json(await _overviewInflight);
   } catch (err) {
     logger.error('GET /api/market/overview', { err: err.message });
     if (_overviewCache) return res.json(_overviewCache); // serve stale on error
@@ -151,6 +158,7 @@ app.get('/api/market/overview', async (_req, res) => {
 // Public top-movers endpoint — cached server-side for 5 minutes to limit Yahoo rate load
 let _moversCache = null;
 let _moversCacheAt = 0;
+let _moversInflight = null;
 const MOVERS_TTL_MS = 5 * 60 * 1000;
 
 app.get('/api/market/movers', async (_req, res) => {
@@ -158,29 +166,35 @@ app.get('/api/market/movers', async (_req, res) => {
     if (_moversCache && Date.now() - _moversCacheAt < MOVERS_TTL_MS) {
       return res.json(_moversCache);
     }
-    // yahoo-finance2 v3: default export is a class that must be instantiated,
-    // and dailyGainers/dailyLosers are deprecated in favour of screener().
-    const YahooFinance = (await import('yahoo-finance2')).default;
-    const yf = new YahooFinance({ suppressNotices: ['yahooSurvey', 'ripHistorical'] });
-    const [gainers, losers] = await Promise.allSettled([
-      yf.screener({ scrIds: 'day_gainers', count: 5, region: 'US' }),
-      yf.screener({ scrIds: 'day_losers', count: 5, region: 'US' }),
-    ]);
-    const pick = (r) => (r.status === 'fulfilled' ? (r.value.quotes || []) : []);
-    const fmt = (q) => ({
-      ticker: q.symbol,
-      name: q.shortName || q.longName || q.symbol,
-      price: q.regularMarketPrice ?? null,
-      change: q.regularMarketChange ?? null,
-      changePercent: q.regularMarketChangePercent ?? null,
-    });
-    const payload = {
-      gainers: pick(gainers).slice(0, 5).map(fmt),
-      losers: pick(losers).slice(0, 5).map(fmt),
-    };
-    _moversCache = payload;
-    _moversCacheAt = Date.now();
-    res.json(payload);
+    // Single-flight: collapse concurrent cache-miss requests into one upstream fetch.
+    if (!_moversInflight) {
+      _moversInflight = (async () => {
+        // yahoo-finance2 v3: default export is a class that must be instantiated,
+        // and dailyGainers/dailyLosers are deprecated in favour of screener().
+        const YahooFinance = (await import('yahoo-finance2')).default;
+        const yf = new YahooFinance({ suppressNotices: ['yahooSurvey', 'ripHistorical'] });
+        const [gainers, losers] = await Promise.allSettled([
+          yf.screener({ scrIds: 'day_gainers', count: 5, region: 'US' }),
+          yf.screener({ scrIds: 'day_losers', count: 5, region: 'US' }),
+        ]);
+        const pick = (r) => (r.status === 'fulfilled' ? (r.value.quotes || []) : []);
+        const fmt = (q) => ({
+          ticker: q.symbol,
+          name: q.shortName || q.longName || q.symbol,
+          price: q.regularMarketPrice ?? null,
+          change: q.regularMarketChange ?? null,
+          changePercent: q.regularMarketChangePercent ?? null,
+        });
+        const payload = {
+          gainers: pick(gainers).slice(0, 5).map(fmt),
+          losers: pick(losers).slice(0, 5).map(fmt),
+        };
+        _moversCache = payload;
+        _moversCacheAt = Date.now();
+        return payload;
+      })().finally(() => { _moversInflight = null; });
+    }
+    res.json(await _moversInflight);
   } catch (err) {
     logger.error('GET /api/market/movers', { err: err.message });
     if (_moversCache) return res.json(_moversCache); // serve stale on error
@@ -214,6 +228,13 @@ app.use('/api/admin/analytics', adminLimiter, require('./routes/admin/analytics'
 app.use('/api/admin/watchlists', adminLimiter, require('./routes/admin/watchlist'));
 app.use('/api/admin/support', adminLimiter, require('./routes/admin/support'));
 app.use('/api/admin/intelligence', adminLimiter, require('./routes/admin/intelligence'));
+app.use('/api/admin/notifications', adminLimiter, require('./routes/admin/notifications'));
+app.use('/api/admin/notification-templates', adminLimiter, require('./routes/admin/notificationTemplates'));
+
+// Recipient (any authenticated user) in-app notification API + the public,
+// token-gated push-event reporting endpoint. Mounted BEFORE the '/api' stocks
+// router so it isn't blanket-wrapped by that router's user `auth` middleware.
+app.use('/api/notifications', require('./routes/notifications'));
 
 app.use('/api', require('./routes/stocks'));
 app.use('/api/timeline', require('./routes/timeline'));
@@ -236,7 +257,8 @@ app.get('/health', async (_req, res) => {
   res.status(dbOk ? 200 : 503).json({
     status,
     db: dbOk ? 'connected' : 'disconnected',
-    provider: providerStatus,
+    // Expose only the coarse provider status publicly, not internal timestamps.
+    provider: providerStatus.status,
   });
 });
 
@@ -244,6 +266,27 @@ app.get('/health', async (_req, res) => {
 // HTML in production or Express's default HTML 404 in dev).
 app.use(['/api', '/auth'], (_req, res) => {
   res.status(404).json({ error: 'Not found.' });
+});
+
+// Localized PWA manifest — serve a Hebrew (RTL) variant when the client requests
+// it (?lang=he or Accept-Language), else the default. Registered before the static
+// handler so it takes precedence in production (where the backend serves the SPA).
+app.get('/manifest.webmanifest', (req, res) => {
+  try {
+    const p = path.join(__dirname, '../../frontend/dist/manifest.webmanifest');
+    const m = JSON.parse(require('fs').readFileSync(p, 'utf8'));
+    const lang = String(req.query.lang || req.headers['accept-language'] || '').toLowerCase();
+    if (lang.startsWith('he')) {
+      m.lang = 'he';
+      m.dir = 'rtl';
+      m.name = 'MyTrade — אינטליגנציית מניות';
+      m.short_name = 'MyTrade';
+      m.description = 'ציוני סיכון, תרחישי דוחות, ניתוח מצב שוק והתראות מחיר — בדשבורד מניות חכם אחד.';
+    }
+    res.type('application/manifest+json').send(JSON.stringify(m));
+  } catch {
+    res.status(404).end();
+  }
 });
 
 // Serve Vite build + SPA fallback in production
@@ -302,7 +345,25 @@ async function start() {
       logger.error('Failed to load daily digest job', { err: cronErr.message });
     }
 
-    server = app.listen(config.PORT, () => {
+    try {
+      require('./jobs/notificationScheduler');
+    } catch (cronErr) {
+      logger.error('Failed to load notification scheduler job', { err: cronErr.message });
+    }
+
+    // Seed the built-in notification templates (idempotent, fire-and-forget).
+    require('./services/templateSeeder').seedTemplates();
+
+    // Wrap Express in an HTTP server so socket.io can share the port, then start
+    // real-time notification delivery.
+    server = http.createServer(app);
+    try {
+      require('./services/realtimeService').init(server);
+    } catch (rtErr) {
+      logger.error('Failed to initialize realtime service', { err: rtErr.message });
+    }
+
+    server.listen(config.PORT, () => {
       logger.info(`Server running on port ${config.PORT}`, {
         storage: db.mode,
         googleOAuth: googleOAuthEnabled ? 'enabled' : 'disabled — GOOGLE_CLIENT_ID/SECRET not set',

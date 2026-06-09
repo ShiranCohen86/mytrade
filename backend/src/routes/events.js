@@ -1,5 +1,5 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
+const { bearerPayload } = require('../utils/jwt');
 const AnalyticsEvent = require('../models/AnalyticsEvent');
 const logger = require('../utils/logger');
 
@@ -22,13 +22,7 @@ function sanitizeProps(p) {
 
 /** Server-trusted user id from the Bearer token, if present (best-effort). */
 function tokenUserId(req) {
-  const header = req.headers.authorization;
-  if (!header || !header.startsWith('Bearer ')) return null;
-  try {
-    return jwt.verify(header.slice(7), process.env.JWT_SECRET).sub || null;
-  } catch {
-    return null;
-  }
+  return bearerPayload(req)?.sub || null;
 }
 
 /**

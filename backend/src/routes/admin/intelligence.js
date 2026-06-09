@@ -123,8 +123,8 @@ router.get('/overview', adminAuth('logs.read'), requireIntelligenceRole, async (
 // ── GET /admin/intelligence/hot-stocks ────────────────────────────────────────
 router.get('/hot-stocks', adminAuth('logs.read'), requireIntelligenceRole, async (req, res) => {
   try {
-    const page = Math.max(1, parseInt(req.query.page) || 1);
-    const limit = Math.min(100, Math.max(10, parseInt(req.query.limit) || 25));
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = Math.min(100, Math.max(10, parseInt(req.query.limit, 10) || 25));
     const skip = (page - 1) * limit;
 
     // Default: show VERY_HIGH, HIGH, MODERATE (exclude LOW noise).
@@ -136,7 +136,7 @@ router.get('/hot-stocks', adminAuth('logs.read'), requireIntelligenceRole, async
     if (req.query.label) filter['analysis.expectationLabel'] = req.query.label;
     if (req.query.sector) filter.sector = { $regex: req.query.sector, $options: 'i' };
     if (req.query.minScore) {
-      const min = parseInt(req.query.minScore);
+      const min = parseInt(req.query.minScore, 10);
       if (!isNaN(min)) filter['analysis.expectationScore'] = { $gte: min };
     }
 

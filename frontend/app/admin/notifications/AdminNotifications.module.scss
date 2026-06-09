@@ -1,0 +1,488 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+// ─── Page shell ───────────────────────────────────────────────────────────────
+.page { padding: $space-2 0 $space-12; }
+
+.pageHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $space-4;
+  flex-wrap: wrap;
+  margin-bottom: $space-4;
+}
+
+.headTitle {
+  font-size: $text-2xl;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: $text-primary;
+}
+
+.headSub {
+  margin-top: 2px;
+  font-size: $text-sm;
+  color: $text-tertiary;
+}
+
+.headActions { display: flex; gap: $space-2; flex-wrap: wrap; }
+
+// ─── Sub-navigation ───────────────────────────────────────────────────────────
+.subnav {
+  display: flex;
+  gap: $space-1;
+  margin-bottom: $space-5;
+  border-bottom: 1px solid $chrome-dim;
+}
+
+.subnavLink {
+  padding: $space-2 $space-3;
+  font-size: $text-sm;
+  font-weight: 600;
+  color: $text-tertiary;
+  border-bottom: 2px solid transparent;
+  transition: color $motion-fast, border-color $motion-fast;
+  &:hover { color: $text-secondary; }
+}
+
+.subnavActive { color: $accent; border-bottom-color: $accent; }
+
+// ─── Filters ──────────────────────────────────────────────────────────────────
+.filters {
+  display: flex;
+  gap: $space-2;
+  flex-wrap: wrap;
+  margin-bottom: $space-4;
+}
+
+.searchBox { flex: 1; min-width: 200px; }
+
+// ─── Card / table ─────────────────────────────────────────────────────────────
+.card { @include card-elevated; overflow: hidden; }
+
+.tableWrap { overflow-x: auto; }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: $text-sm;
+
+  th {
+    @include section-label;
+    text-align: start;
+    padding: $space-3 $space-4;
+    border-bottom: 1px solid $chrome-dim;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: $space-3 $space-4;
+    border-bottom: 1px solid $chrome-dim;
+    color: $text-secondary;
+    vertical-align: middle;
+  }
+
+  tbody tr {
+    cursor: pointer;
+    transition: background $motion-fast;
+    &:hover { background: $surface-hover; }
+    &:last-child td { border-bottom: none; }
+  }
+}
+
+.cellTitle { font-weight: 600; color: $text-primary; @include truncate; max-width: 280px; }
+.cellMuted { color: $text-tertiary; @include mono-value(12px); }
+
+// ─── Badges ───────────────────────────────────────────────────────────────────
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: $radius-pill;
+  font-size: $text-2xs;
+  font-weight: 700;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.statusDraft     { background: $surface-raised; color: $text-tertiary; }
+.statusScheduled { background: $warn-bg; color: $warn; }
+.statusSending   { background: $accent-faint; color: $accent; }
+.statusSent      { background: $pos-bg; color: $pos; }
+.statusFailed    { background: $neg-bg; color: $neg; }
+.statusCanceled  { background: $surface-raised; color: $text-disabled; }
+
+.chanBadges { display: inline-flex; gap: 4px; }
+.chPush  { background: $accent-faint; color: $accent; }
+.chInApp { background: color-mix(in srgb, $accent-secondary 14%, transparent); color: $accent-secondary; }
+
+// ─── Pagination ───────────────────────────────────────────────────────────────
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+  padding: $space-3 $space-4;
+  border-top: 1px solid $chrome-dim;
+  font-size: $text-xs;
+  color: $text-tertiary;
+}
+
+.pageBtns { display: flex; gap: $space-2; }
+
+// ─── States ───────────────────────────────────────────────────────────────────
+.loading, .empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-16 $space-4;
+  color: $text-tertiary;
+  font-size: $text-sm;
+}
+.emptyIcon { font-size: 38px; opacity: 0.5; }
+
+// ─── Compose layout ───────────────────────────────────────────────────────────
+.composeGrid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: $space-6;
+  align-items: start;
+
+  @include below-lg { grid-template-columns: 1fr; }
+}
+
+.form { display: flex; flex-direction: column; gap: $space-5; min-width: 0; }
+
+.section { @include card-elevated; padding: $space-4 $space-5; }
+
+.sectionTitle {
+  font-size: $text-md;
+  font-weight: 700;
+  color: $text-primary;
+  margin-bottom: $space-3;
+}
+
+.field { margin-bottom: $space-3; &:last-child { margin-bottom: 0; } }
+
+.label {
+  display: block;
+  font-size: $text-xs;
+  font-weight: 600;
+  color: $text-secondary;
+  margin-bottom: 6px;
+}
+
+.textInput, .textarea, .select {
+  width: 100%;
+  padding: 9px 12px;
+  background: $surface-panel;
+  border: 1px solid $chrome-mid;
+  border-radius: $radius-md;
+  color: $text-primary;
+  font-family: $font-ui;
+  font-size: $text-sm;
+  transition: border-color $motion-fast, box-shadow $motion-fast;
+
+  &:focus { outline: none; border-color: $accent; box-shadow: $shadow-glow; }
+  &::placeholder { color: $text-disabled; }
+}
+.textarea { resize: vertical; min-height: 76px; line-height: 1.5; }
+.charCount { float: inline-end; font-size: $text-2xs; color: $text-tertiary; }
+
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: $space-3; @include below-sm { grid-template-columns: 1fr; } }
+
+// Type selector
+.typeRow { display: flex; gap: $space-2; flex-wrap: wrap; }
+.typeBtn {
+  flex: 1;
+  min-width: 70px;
+  padding: 8px;
+  font-size: $text-xs;
+  font-weight: 600;
+  text-transform: capitalize;
+  color: $text-tertiary;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-md;
+  background: $surface-panel;
+  transition: all $motion-fast;
+  &:hover { border-color: $chrome-mid; }
+}
+.typeBtnActive { color: $accent; border-color: $accent; background: $accent-faint; }
+
+// Channel cards
+.channelCards { display: grid; grid-template-columns: 1fr 1fr; gap: $space-3; @include below-sm { grid-template-columns: 1fr; } }
+.channelCard {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-3;
+  border: 1.5px solid $chrome-dim;
+  border-radius: $radius-lg;
+  cursor: pointer;
+  transition: all $motion-fast;
+  &:hover { border-color: $chrome-mid; }
+}
+.channelCardActive { border-color: $accent; background: $accent-faint; }
+.channelIcon { font-size: 20px; }
+.channelText { display: flex; flex-direction: column; }
+.channelName { font-size: $text-sm; font-weight: 700; color: $text-primary; }
+.channelDesc { font-size: $text-2xs; color: $text-tertiary; }
+.channelCheck { margin-inline-start: auto; }
+
+// Icon picker
+.iconRow { display: flex; gap: 6px; flex-wrap: wrap; }
+.iconBtn {
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  font-size: 18px;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-md;
+  background: $surface-panel;
+  transition: all $motion-fast;
+  &:hover { border-color: $chrome-mid; }
+}
+.iconBtnActive { border-color: $accent; background: $accent-faint; }
+
+// ─── Targeting ────────────────────────────────────────────────────────────────
+.modeTabs { display: flex; gap: $space-2; margin-bottom: $space-3; flex-wrap: wrap; }
+.modeTab {
+  padding: 7px 14px;
+  font-size: $text-sm;
+  font-weight: 600;
+  color: $text-tertiary;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-pill;
+  transition: all $motion-fast;
+  &:hover { border-color: $chrome-mid; }
+}
+.modeTabActive { color: $accent; border-color: $accent; background: $accent-faint; }
+
+.segmentGrid { display: grid; grid-template-columns: 1fr 1fr; gap: $space-2; @include below-sm { grid-template-columns: 1fr; } }
+.segmentCard {
+  padding: $space-3;
+  border: 1.5px solid $chrome-dim;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: all $motion-fast;
+  &:hover { border-color: $chrome-mid; }
+}
+.segmentCardActive { border-color: $accent; background: $accent-faint; }
+.segmentName { font-size: $text-sm; font-weight: 700; color: $text-primary; }
+.segmentDesc { font-size: $text-2xs; color: $text-tertiary; margin-top: 2px; }
+
+.userSearch { position: relative; }
+.userResults {
+  margin-top: $space-2;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-md;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.userResult {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  font-size: $text-sm;
+  cursor: pointer;
+  &:hover { background: $surface-hover; }
+}
+.userEmail { color: $text-primary; @include truncate; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: $space-2; }
+.userChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px 4px 10px;
+  background: $surface-raised;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-pill;
+  font-size: $text-xs;
+}
+.userChipX { display: grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; color: $text-tertiary; &:hover { background: $neg-bg; color: $neg; } }
+
+.countPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: $space-3;
+  padding: 6px 12px;
+  background: $accent-faint;
+  color: $accent;
+  border-radius: $radius-pill;
+  font-size: $text-sm;
+  font-weight: 700;
+}
+
+// ─── Schedule ─────────────────────────────────────────────────────────────────
+.radioRow { display: flex; gap: $space-3; flex-wrap: wrap; margin-bottom: $space-3; }
+.radioCard {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-4;
+  border: 1.5px solid $chrome-dim;
+  border-radius: $radius-md;
+  cursor: pointer;
+  font-size: $text-sm;
+  font-weight: 600;
+  color: $text-secondary;
+  &:hover { border-color: $chrome-mid; }
+}
+.radioCardActive { border-color: $accent; background: $accent-faint; color: $accent; }
+
+// ─── Footer actions ───────────────────────────────────────────────────────────
+.formActions {
+  display: flex;
+  gap: $space-2;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  padding-top: $space-2;
+}
+
+// ─── Live preview panel ───────────────────────────────────────────────────────
+.previewPanel {
+  position: sticky;
+  top: $space-2;
+  @include card-elevated;
+  padding: $space-4;
+  @include below-lg { position: static; }
+}
+.previewTitle { @include section-label; margin-bottom: $space-3; }
+.deviceToggle { display: flex; gap: $space-1; margin-bottom: $space-4; background: $surface-raised; padding: 3px; border-radius: $radius-md; }
+.deviceBtn {
+  flex: 1; padding: 6px; font-size: $text-xs; font-weight: 600; color: $text-tertiary; border-radius: $radius-sm;
+  &:hover { color: $text-secondary; }
+}
+.deviceBtnActive { background: $surface-elevated; color: $text-primary; box-shadow: $shadow-xs; }
+
+// Push preview frames
+.pushAndroid, .pushIos {
+  border-radius: $radius-lg;
+  padding: $space-3;
+  font-size: $text-sm;
+}
+.pushAndroid {
+  background: #1f1f23;
+  color: #eee;
+  display: flex;
+  gap: $space-3;
+}
+.pushAndroidIcon { width: 30px; height: 30px; border-radius: 8px; background: $accent; display: grid; place-items: center; flex-shrink: 0; font-size: 16px; }
+.pushAndroidBody { min-width: 0; flex: 1; }
+.pushAndroidApp { font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; opacity: 0.6; }
+.pushTitle { font-weight: 700; margin-top: 2px; @include truncate; }
+.pushMsg { opacity: 0.85; margin-top: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+.pushIos {
+  background: rgba(245, 245, 247, 0.85);
+  backdrop-filter: blur(10px);
+  color: #111;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: $shadow-lg;
+}
+.pushIosHead { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.pushIosApp { font-size: 12px; font-weight: 600; }
+.pushIosTime { margin-inline-start: auto; font-size: 11px; opacity: 0.5; }
+
+// In-app preview card
+.inAppPreview {
+  display: flex;
+  gap: $space-3;
+  padding: $space-3;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-lg;
+  background: $surface-panel;
+}
+.inAppIcon { width: 34px; height: 34px; border-radius: $radius-md; display: grid; place-items: center; font-size: 17px; background: $surface-raised; border: 1px solid $chrome-dim; flex-shrink: 0; }
+.inAppTitle { font-size: $text-base; font-weight: 600; color: $text-primary; }
+.inAppMsg { font-size: $text-sm; color: $text-secondary; margin-top: 2px; line-height: 1.45; }
+.inAppAction { display: inline-block; margin-top: $space-2; font-size: $text-xs; font-weight: 600; color: $accent; }
+
+.previewLabel { @include section-label; font-size: 10px; margin: $space-4 0 $space-2; }
+
+// ─── Confirm modal ────────────────────────────────────────────────────────────
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: $surface-overlay;
+  backdrop-filter: blur(6px);
+  display: grid;
+  place-items: center;
+  padding: $space-4;
+  animation: fadeIn 160ms ease;
+}
+.modal {
+  width: 100%;
+  max-width: 460px;
+  @include card-popup;
+  padding: $space-5;
+  animation: scaleIn 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.modalTitle { font-size: $text-xl; font-weight: 800; color: $text-primary; }
+.modalSub { font-size: $text-sm; color: $text-tertiary; margin-top: 4px; margin-bottom: $space-4; }
+.recipientBig {
+  display: flex;
+  align-items: baseline;
+  gap: $space-2;
+  padding: $space-3 $space-4;
+  background: $accent-faint;
+  border-radius: $radius-lg;
+  margin-bottom: $space-4;
+}
+.recipientNum { font-family: $font-data; font-size: $text-3xl; font-weight: 800; color: $accent; }
+.recipientWord { font-size: $text-sm; color: $text-secondary; }
+.warnBox {
+  display: flex;
+  gap: $space-2;
+  padding: $space-3;
+  background: $warn-bg;
+  border-radius: $radius-md;
+  font-size: $text-sm;
+  color: $warn;
+  margin-bottom: $space-4;
+}
+.confirmCheck { display: flex; align-items: flex-start; gap: $space-2; font-size: $text-sm; color: $text-secondary; margin-bottom: $space-4; cursor: pointer; }
+.modalActions { display: flex; gap: $space-2; justify-content: flex-end; }
+
+// ─── Detail / stats ───────────────────────────────────────────────────────────
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: $space-3;
+  margin-bottom: $space-5;
+}
+.statCard { @include card-elevated; padding: $space-4; }
+.statValue { font-family: $font-data; font-size: $text-2xl; font-weight: 800; color: $text-primary; }
+.statLabel { @include section-label; margin-top: 4px; }
+.statSub { font-size: $text-2xs; color: $text-tertiary; margin-top: 2px; }
+
+.detailGrid { display: grid; grid-template-columns: 1fr 1fr; gap: $space-4; margin-bottom: $space-5; @include below-md { grid-template-columns: 1fr; } }
+.metaRow { display: flex; justify-content: space-between; padding: $space-2 0; border-bottom: 1px solid $chrome-dim; font-size: $text-sm; &:last-child { border-bottom: none; } }
+.metaKey { color: $text-tertiary; }
+.metaVal { color: $text-primary; font-weight: 600; }
+
+// ─── Analytics charts ─────────────────────────────────────────────────────────
+.chartGrid { display: grid; grid-template-columns: 1fr 1fr; gap: $space-4; @include below-md { grid-template-columns: 1fr; } }
+.chartCard { @include card-elevated; padding: $space-4; }
+.chartTitle { font-size: $text-md; font-weight: 700; color: $text-primary; margin-bottom: $space-3; }
+.chartBox { height: 220px; }
+
+// ─── Templates ────────────────────────────────────────────────────────────────
+.templateGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: $space-3; }
+.templateCard { @include card-elevated; padding: $space-4; display: flex; flex-direction: column; gap: $space-2; }
+.templateHead { display: flex; align-items: center; gap: $space-2; }
+.templateIcon { font-size: 20px; }
+.templateName { font-size: $text-md; font-weight: 700; color: $text-primary; }
+.templateMsg { font-size: $text-xs; color: $text-tertiary; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.templateActions { display: flex; gap: $space-1; margin-top: auto; flex-wrap: wrap; }
+.iconAction {
+  display: grid; place-items: center; width: 30px; height: 30px; border-radius: $radius-sm;
+  color: $text-tertiary; border: 1px solid $chrome-dim;
+  &:hover { background: $surface-raised; color: $text-primary; }
+}
+.sysTag { font-size: $text-2xs; color: $text-tertiary; background: $surface-raised; padding: 1px 6px; border-radius: $radius-pill; }

@@ -14,9 +14,11 @@ A few clear, low-risk bugs were **fixed in place** (marked ✅ Fixed). Higher-ri
 |----------|-------|-------|---------|
 | Critical | 0     | 0     | 0       |
 | High     | 5     | 5     | 0       |
-| Medium   | 15    | 14    | 1       |
-| Low      | 30    | 11    | 19      |
-| **Total**| **50**| **30**| **20**  |
+| Medium   | 15    | 15    | 0       |
+| Low      | 30    | 21    | 9       |
+| **Total**| **50**| **41**| **9**   |
+
+> Plus **1 bonus bug** found while fixing L16: `/auth/forgot-password` selected `+resetToken +resetTokenExpiry` but **not** `+passwordHash`, so `user.passwordHash` was always `undefined` → the eligibility guard early-returned for **every** user and **no reset email was ever sent**. Fixed (added `+passwordHash` to the select).
 
 > Update: **all 5 High (H1–H5)**, **14 of 15 Medium**, and **11 of 30 Low** are implemented and verified. Frontend build (incl. service worker) passes; backend boots clean; live checks pass (VIX tile returns data, `tokenVersion` added without schema warnings). A latent bug was also caught & fixed while wiring M4: `AdminIntelligence`'s CSV export still used the pre-H3 `/admin/...` path inline.
 > **Remaining (20):** Medium — **M15** only (manifest i18n; static-file limitation). Low — 19 perf/architectural/by-design items that are correct as-is or need infra/dep decisions. Plus one manual test: **H5 Google OAuth**, and a browser smoke-test of the **M4** in-memory-token reload flow.
@@ -169,7 +171,8 @@ A few clear, low-risk bugs were **fixed in place** (marked ✅ Fixed). Higher-ri
 - **Why it's a bug:** If no `googleId` match, it links by email to any existing local account. It doesn't check `profile.emails[0].verified`. Google normally only returns verified emails, but relying on that implicitly is fragile for account-takeover scenarios.
 - **Recommendation:** Require the Google email to be verified before auto-linking, or require an explicit link step.
 
-### M15 — Manifest hardcodes `dir:"ltr"` / `lang:"en"` despite Hebrew/RTL support
+### M15 ✅ Fixed — Manifest hardcodes `dir:"ltr"` / `lang:"en"` despite Hebrew/RTL support
+*Fix: the backend now serves `/manifest.webmanifest` dynamically (registered before `express.static`), returning a Hebrew RTL variant for `?lang=he`/`Accept-Language: he` and the default otherwise; `DirectionSync` points the manifest `<link>` at `?lang=<current>`. Verified live: default → `en/ltr`, `?lang=he` → `he/rtl` + Hebrew name.*
 - **Location:** [frontend/public/manifest.webmanifest:7](frontend/public/manifest.webmanifest#L7)
 - **Category:** RTL / PWA / i18n
 - **Why it's a bug:** The app fully supports Hebrew and flips `dir` at runtime ([App.jsx DirectionSync](frontend/src/App.jsx#L38)), but the installed-app metadata (name/description/dir/lang) is always English-LTR. Hebrew users get an LTR-labelled install.
@@ -180,7 +183,18 @@ A few clear, low-risk bugs were **fixed in place** (marked ✅ Fixed). Higher-ri
 ## Low
 
 > Polish, code smells, and rare edge cases. Grouped for brevity.
-> **✅ Fixed:** L2, L3, L5, L6, L7, L11, L14, L15, L19, L30 (see the *Fixes applied* table). The rest remain open as documented below (perf/architectural or by-design).
+> **✅ Fixed (20):** L2, L3, L4, L5, L6, L7, L8, L10, L11, L13, L14, L15, L16, L17, L18, L19, L20, L23, L24, L30.
+> **Still open (9) — these are deliberately NOT changed because doing so would be a regression, a no-op, or harmful, not an improvement:**
+> - **L1** — the uuid advisory is non-exploitable in this code; its only fix is a breaking `node-cron@4` bump that endangers the live notification scheduler.
+> - **L9** — `safeError` works; the only refactor is a no-op (constants) or a risky code-coupling change.
+> - **L12** — *(now fixed: `/health` trimmed to a coarse provider status; no internal timestamps).* 
+> - **L21** — state-update-after-unmount is a benign no-op in React 18.
+> - **L22** — the client price-alert toast only fires in the foreground; real overlap with a background push is negligible.
+> - **L25** — dropping unknown tickers on reorder is *correct* (you can only reorder symbols you own).
+> - **L26** — the toolbar buttons have visible text labels, so adding `aria-label` would override (worsen) the accessible name.
+> - **L27** — the outside-click `contains()` check already protects menu items, so the menu works on touch.
+> - **L28** — lives in `sw.js`, your active notification area — not touched to avoid colliding with your work.
+> - **L29** — `createHandlerBoundToURL('index.html')` is verified working by every production build; changing the key risks breaking precache lookup.
 
 **Dependencies & config**
 - **L1** `npm audit`: `uuid <11.1.1` (moderate) pulled in via `node-cron@3` — 2 moderate advisories. Fix requires `node-cron@4` (breaking). ([backend/package.json](backend/package.json))
@@ -276,5 +290,17 @@ Only one code finding remains open, plus by-design/architectural items:
 | L17 | `backend/src/routes/auth.js` | Password-reset email is now fire-and-forget (flattens timing, no SMTP-bound latency) |
 | M4 | `frontend/lib/authToken.js` (new), `apiClient.js`, `context/AuthContext.jsx`, `lib/analytics.js`, `app/admin/intelligence/AdminIntelligence.jsx` | Access token moved to in-memory store; session rehydrates from the refresh cookie on load |
 | H3+ | `frontend/app/admin/intelligence/AdminIntelligence.jsx` | Follow-up: inline CSV-export URL updated to the `/api/admin/...` path |
+| L4 | many (timeline, admin/*, auth, emailService) | Explicit radix on all `parseInt` calls |
+| L8 | `backend/src/index.js` | Single-flight on the overview & movers caches (collapse concurrent cache-miss fetches) |
+| L10 | `backend/src/utils/jwt.js` (new), `routes/events.js` | Shared `verifyAccessToken`/`bearerPayload` helper (de-dup token verification) |
+| L13 | `backend/src/jobs/alertScan.js`, `digest.js` | Crons pinned to `America/New_York` (digest also DST-corrected: 09:35 ET) |
+| L16 | `backend/src/routes/auth.js` | Throwaway bcrypt for non-existent accounts (flattens forgot-password timing) |
+| L18 | `backend/src/routes/stocks.js` | Search audit logs result count only, not the raw query text |
+| L20 | `frontend/hooks/useStocks.js` | Accurate activation count on rapid successive adds (sync the ref) |
+| L23 | `backend/src/providers/*`, `routes/stocks.js` | Batched `/api/quotes` via `yf.quote([...])` (1 upstream call, per-ticker fallback) |
+| L24 | `frontend/app/page.jsx` | A new analysis run clears the prior error dismissal so a recurring error reshows |
+| +bug | `backend/src/routes/auth.js` | forgot-password now selects `+passwordHash` (was silently never sending reset emails) |
+| M15 | `backend/src/index.js`, `frontend/src/App.jsx` | Backend serves a localized `/manifest.webmanifest` (he→RTL); `DirectionSync` points the link at the current language |
+| L12 | `backend/src/index.js` | `/health` exposes only a coarse provider status string (no internal timestamps) |
 
 **Verification:** all backend files pass `node --check`; the **frontend production build succeeds** (incl. the service-worker rebuild and locale JSON). The backend was booted twice against the live MongoDB Atlas cluster and both instances were stopped afterward; the second boot confirmed a clean startup and that the movers fix works (`[news-scan] Yahoo movers: 20 tickers`). The only item that still needs manual exercise is the **Google OAuth** end-to-end flow (H5).

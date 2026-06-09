@@ -361,3 +361,60 @@ export const adminIntelligenceExportUrl = (params = {}) => {
   ).toString();
   return `${EXPRESS}/api/admin/intelligence/export${qs ? `?${qs}` : ''}`;
 };
+
+// ─── In-app notifications (recipient — any authenticated user) ────────────────
+
+const notifQs = (params = {}) =>
+  new URLSearchParams(
+    Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== ''))
+  ).toString();
+
+export const getNotifications = (params = {}) => {
+  const qs = notifQs(params);
+  return request(`${EXPRESS}/api/notifications${qs ? `?${qs}` : ''}`);
+};
+export const getNotificationUnreadCount = () => request(`${EXPRESS}/api/notifications/unread-count`);
+export const markNotificationRead = (id) => request(`${EXPRESS}/api/notifications/${id}/read`, { method: 'POST' });
+export const markAllNotificationsRead = () => request(`${EXPRESS}/api/notifications/read-all`, { method: 'POST' });
+export const deleteNotification = (id) => request(`${EXPRESS}/api/notifications/${id}`, { method: 'DELETE' });
+export const clickNotification = (id) => request(`${EXPRESS}/api/notifications/${id}/click`, { method: 'POST' });
+export const markNotificationsSeen = (ids) =>
+  request(`${EXPRESS}/api/notifications/seen`, { method: 'POST', body: JSON.stringify({ ids }) });
+
+// ─── Admin: Notification console (notifications.read / notifications.send) ─────
+
+export const adminListCampaigns = (params = {}) => {
+  const qs = notifQs(params);
+  return request(`${EXPRESS}/api/admin/notifications${qs ? `?${qs}` : ''}`);
+};
+export const adminGetCampaign = (id) => request(`${EXPRESS}/api/admin/notifications/${id}`);
+export const adminCreateCampaign = (dto) =>
+  request(`${EXPRESS}/api/admin/notifications`, { method: 'POST', body: JSON.stringify(dto) });
+export const adminUpdateCampaign = (id, dto) =>
+  request(`${EXPRESS}/api/admin/notifications/${id}`, { method: 'PUT', body: JSON.stringify(dto) });
+export const adminSendCampaign = (id) =>
+  request(`${EXPRESS}/api/admin/notifications/${id}/send`, { method: 'POST' });
+export const adminCancelCampaign = (id) =>
+  request(`${EXPRESS}/api/admin/notifications/${id}/cancel`, { method: 'POST' });
+export const adminPreviewRecipients = (audience) =>
+  request(`${EXPRESS}/api/admin/notifications/preview-count`, { method: 'POST', body: JSON.stringify({ audience }) });
+export const adminCampaignDeliveries = (id, params = {}) => {
+  const qs = notifQs(params);
+  return request(`${EXPRESS}/api/admin/notifications/${id}/deliveries${qs ? `?${qs}` : ''}`);
+};
+export const adminNotificationAnalytics = (days = 30) =>
+  request(`${EXPRESS}/api/admin/notifications/analytics?days=${days}`);
+
+export const adminListTemplates = (status) =>
+  request(`${EXPRESS}/api/admin/notification-templates${status ? `?status=${status}` : ''}`);
+export const adminCreateTemplate = (dto) =>
+  request(`${EXPRESS}/api/admin/notification-templates`, { method: 'POST', body: JSON.stringify(dto) });
+export const adminUpdateTemplate = (id, dto) =>
+  request(`${EXPRESS}/api/admin/notification-templates/${id}`, { method: 'PUT', body: JSON.stringify(dto) });
+export const adminDuplicateTemplate = (id) =>
+  request(`${EXPRESS}/api/admin/notification-templates/${id}/duplicate`, { method: 'POST' });
+export const adminArchiveTemplate = (id, archived = true) =>
+  request(`${EXPRESS}/api/admin/notification-templates/${id}/archive`, { method: 'POST', body: JSON.stringify({ archived }) });
+
+// Socket.io base — '' (same origin) in prod, the Express URL in dev.
+export const SOCKET_URL = EXPRESS || undefined;

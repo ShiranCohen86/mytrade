@@ -75,6 +75,41 @@ class YahooFinanceProvider extends BaseProvider {
     }
   }
 
+  // Batched live quotes — one upstream call for many tickers (used by /api/quotes
+  // polling). Returns a map keyed by symbol; callers fall back to per-ticker.
+  async getQuotesBatch(tickers) {
+    if (!tickers || !tickers.length) return {};
+    try {
+      const yf = await getYF();
+      const list = await withTimeout(
+        sig => yf.quote(tickers, {}, { fetchOptions: { signal: sig } }),
+        YF_TIMEOUT_MS
+      );
+      const arr = Array.isArray(list) ? list : [list];
+      const out = {};
+      for (const q of arr) {
+        if (!q || !q.symbol) continue;
+        out[q.symbol] = {
+          price: q.regularMarketPrice ?? null,
+          change: q.regularMarketChange ?? null,
+          changePercent: q.regularMarketChangePercent ?? null,
+          marketState: q.marketState ?? null,
+          preMarketPrice: q.preMarketPrice ?? null,
+          preMarketChange: q.preMarketChange ?? null,
+          preMarketChangePercent: q.preMarketChangePercent ?? null,
+          postMarketPrice: q.postMarketPrice ?? null,
+          postMarketChange: q.postMarketChange ?? null,
+          postMarketChangePercent: q.postMarketChangePercent ?? null,
+        };
+      }
+      this._markSuccess();
+      return out;
+    } catch (err) {
+      this._markError();
+      throw this._wrap(err, tickers.join(','), 'getQuotesBatch');
+    }
+  }
+
   async getHistoricalData(ticker, days) {
     try {
       const yf = await getYF();

@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { MarketHoursIndicator } from '@/components/MarketHoursIndicator/MarketHoursIndicator';
+import { NotificationBell } from '@/components/NotificationBell/NotificationBell';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuth } from '@/context/AuthContext';
 import { useCurrency } from '@/context/CurrencyContext';
@@ -210,6 +211,8 @@ export function TopBar({ onToggleSidebar }) {
         >
           {pref === 'system' ? '◑' : theme === 'light' ? '☽' : '☀'}
         </button>
+
+        {isAuthenticated && <NotificationBell />}
 
         {isAuthenticated && user && (
           <div ref={menuRef} className={styles.userWrap}>

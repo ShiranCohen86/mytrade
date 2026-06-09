@@ -213,6 +213,9 @@ export default function DashboardPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stocks, priceAlerts]);
 
+  // A new analysis run clears any prior dismissal so a recurring error reshows.
+  useEffect(() => { if (isAnalyzing) setDismissedError(null); }, [isAnalyzing]);
+
   const showError = error && error !== dismissedError;
 
   const handleAdd = useCallback(async (ticker) => {

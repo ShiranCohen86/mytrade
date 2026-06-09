@@ -45,7 +45,8 @@ router.get('/search', async (req, res) => {
     const results = await provider.search(q);
     // Log search events for queries of meaningful length (avoids single-char noise)
     if (q.length >= 2) {
-      audit.logUser(req, 'stock.searched', { query: q, resultCount: results.length });
+      // Privacy: log only the result count, not the raw query text.
+      audit.logUser(req, 'stock.searched', { resultCount: results.length });
     }
     res.json(results);
   } catch {
@@ -230,8 +231,17 @@ router.get('/quotes', async (req, res) => {
     const user = await getUser(req.user.id);
     if (!user.watchlist.length) return res.json([]);
 
+    // One batched provider call for the whole watchlist; fall back to per-ticker
+    // for any symbol the batch didn't return.
+    let batch = null;
+    try {
+      batch = await provider.getQuotesBatch(user.watchlist);
+    } catch { batch = null; }
+
     const quotes = await Promise.all(
       user.watchlist.map(async (ticker) => {
+        const b = batch && batch[ticker];
+        if (b && b.price != null) return { ticker, ...b };
         try {
           const q = await provider.getCurrentQuote(ticker);
           return {

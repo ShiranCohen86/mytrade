@@ -11,8 +11,8 @@ router.use(auth);
 // GET /api/timeline — paginated, filterable personal activity feed
 router.get('/', async (req, res) => {
   try {
-    const page  = Math.max(1, parseInt(req.query.page)  || 1);
-    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 50));
+    const page  = Math.max(1, parseInt(req.query.page, 10)  || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 50));
     const skip  = (page - 1) * limit;
 
     const filter = { userId: req.user.id };
@@ -54,7 +54,7 @@ router.get('/', async (req, res) => {
 // GET /api/timeline/insights — personal behavioral analytics
 router.get('/insights', async (req, res) => {
   try {
-    const days  = Math.min(365, Math.max(7, parseInt(req.query.days) || 90));
+    const days  = Math.min(365, Math.max(7, parseInt(req.query.days, 10) || 90));
     const since = new Date(Date.now() - days * 86400_000);
 
     let userId;

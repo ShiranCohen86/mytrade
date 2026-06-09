@@ -10,8 +10,8 @@ const audit = require('../../services/auditService');
 // GET /admin/users — paginated user list with search + filter
 router.get('/', adminAuth('users.read'), async (req, res) => {
   try {
-    const page = Math.max(1, parseInt(req.query.page) || 1);
-    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 25));
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 25));
     const skip = (page - 1) * limit;
 
     const filter = {};
@@ -86,7 +86,7 @@ router.get('/:id', adminAuth('users.read'), async (req, res) => {
 // GET /admin/users/:id/insights — behavioral analytics for a specific user
 router.get('/:id/insights', adminAuth('users.read'), async (req, res) => {
   try {
-    const days  = Math.min(365, Math.max(7, parseInt(req.query.days) || 90));
+    const days  = Math.min(365, Math.max(7, parseInt(req.query.days, 10) || 90));
     const since = new Date(Date.now() - days * 86400_000);
 
     let userId;

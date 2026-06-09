@@ -38,8 +38,7 @@ const userNotificationSchema = new mongoose.Schema(
 // Feed + unread queries
 userNotificationSchema.index({ userId: 1, read: 1 });
 userNotificationSchema.index({ userId: 1, createdAt: -1 });
-// Per-campaign delivery-log aggregation
-userNotificationSchema.index({ campaignId: 1 });
+// (campaignId already indexed at field level for delivery-log aggregation)
 // MongoDB TTL — documents auto-delete once expiresAt passes (only when set)
 userNotificationSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 

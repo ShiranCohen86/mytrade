@@ -252,9 +252,12 @@ router.post('/forgot-password', async (req, res) => {
     const { email } = req.body;
     if (!email) return res.status(400).json({ error: 'Email is required.' });
 
-    const user = await User.findOne({ email: email.toLowerCase() }).select('+resetToken +resetTokenExpiry');
-    // Always return 200 to prevent user enumeration
+    const user = await User.findOne({ email: email.toLowerCase() }).select('+passwordHash +resetToken +resetTokenExpiry');
+    // Always return 200 to prevent user enumeration. When there's no eligible
+    // (password-based) account, do equivalent throwaway hashing so the response
+    // time doesn't reveal whether the account exists.
     if (!user || !user.passwordHash) {
+      await bcrypt.hash(crypto.randomBytes(16).toString('hex'), SALT_ROUNDS).catch(() => {});
       return res.json({ ok: true });
     }
 
@@ -269,7 +272,7 @@ router.post('/forgot-password', async (req, res) => {
       const nodemailer = require('nodemailer');
       const transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
-        port: parseInt(process.env.SMTP_PORT || '587'),
+        port: parseInt(process.env.SMTP_PORT || '587', 10),
         auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
       });
       // Fire-and-forget: don't tie the response time to SMTP latency (which would

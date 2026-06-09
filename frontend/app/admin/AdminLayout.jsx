@@ -5,6 +5,8 @@ import styles from './AdminLayout.module.scss';
 
 // Roles that may access the AI intelligence feature
 const INTELLIGENCE_ROLES = new Set(['admin', 'super_admin']);
+// Roles that may access the notification console (matches notifications.read)
+const NOTIFICATION_ROLES = new Set(['admin', 'super_admin', 'analyst']);
 
 const BASE_NAV = [
   {
@@ -70,6 +72,18 @@ const BASE_NAV = [
   },
 ];
 
+// Notifications nav entry — rendered for roles with notification access
+const NOTIFICATION_NAV = {
+  to: '/admin/notifications',
+  label: 'Notifications',
+  icon: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+    </svg>
+  ),
+};
+
 // AI Intelligence nav entry — only rendered for admin / super_admin
 const INTELLIGENCE_NAV = {
   to: '/admin/intelligence',
@@ -96,10 +110,10 @@ export default function AdminLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const [searchVal, setSearchVal] = useState('');
 
-  // Build nav: base items + intelligence entry only for eligible roles
-  const NAV = INTELLIGENCE_ROLES.has(user?.role)
-    ? [...BASE_NAV, INTELLIGENCE_NAV]
-    : BASE_NAV;
+  // Build nav: base items + role-gated entries
+  const NAV = [...BASE_NAV];
+  if (NOTIFICATION_ROLES.has(user?.role)) NAV.push(NOTIFICATION_NAV);
+  if (INTELLIGENCE_ROLES.has(user?.role)) NAV.push(INTELLIGENCE_NAV);
 
   const handleLogout = useCallback(async () => {
     await logout();

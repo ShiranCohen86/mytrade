@@ -57,7 +57,7 @@ router.post('/impersonate/:userId', adminAuth('system.config'), async (req, res)
 // GET /admin/support/users/:userId/activity — recent activity timeline for a user
 router.get('/users/:userId/activity', adminAuth('users.read'), async (req, res) => {
   try {
-    const limit = Math.min(200, parseInt(req.query.limit) || 100);
+    const limit = Math.min(200, parseInt(req.query.limit, 10) || 100);
     const logs = await AuditLog.find({ userId: req.params.userId })
       .sort({ timestamp: -1 })
       .limit(limit)

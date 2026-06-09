@@ -32,6 +32,11 @@ class ProviderFactory {
     return this._withFallback('getCurrentQuote', ticker);
   }
 
+  // Primary-only (Stooq has no batch endpoint); callers fall back per-ticker.
+  getQuotesBatch(tickers) {
+    return this.primary.getQuotesBatch(tickers);
+  }
+
   getHistoricalData(ticker, days) {
     return this._withFallback('getHistoricalData', ticker, days);
   }
