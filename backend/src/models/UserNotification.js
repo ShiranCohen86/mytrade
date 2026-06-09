@@ -12,6 +12,9 @@ const userNotificationSchema = new mongoose.Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
     campaignId: { type: mongoose.Schema.Types.ObjectId, ref: 'NotificationCampaign', default: null, index: true },
+    // Set when this notification was produced by an automation rule — enables
+    // per-rule in-app engagement analytics (read/click attribution).
+    automationRuleId: { type: mongoose.Schema.Types.ObjectId, ref: 'AutomationRule', default: null, index: true },
 
     // ── Content (denormalized snapshot) ──────────────────────────────────────
     title: { type: String, required: true },

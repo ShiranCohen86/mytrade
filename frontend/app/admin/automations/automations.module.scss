@@ -1,0 +1,57 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+// Trigger picker
+.triggerGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: $space-2;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 2px;
+}
+.triggerCard {
+  text-align: start;
+  padding: $space-3;
+  border: 1.5px solid $chrome-dim;
+  border-radius: $radius-md;
+  background: $surface-panel;
+  cursor: pointer;
+  transition: all $motion-fast;
+  &:hover { border-color: $chrome-mid; }
+}
+.triggerCardActive { border-color: $accent; background: $accent-faint; }
+.triggerCardDisabled { opacity: 0.5; cursor: not-allowed; }
+.triggerName { font-size: $text-sm; font-weight: 700; color: $text-primary; }
+.triggerDesc { font-size: $text-2xs; color: $text-tertiary; margin-top: 2px; }
+.feasBadge { font-size: 9px; font-weight: 700; color: $warn; background: $warn-bg; padding: 1px 6px; border-radius: $radius-pill; margin-inline-start: 6px; }
+
+.catTabs { display: flex; gap: $space-1; flex-wrap: wrap; margin-bottom: $space-3; }
+.catTab {
+  padding: 5px 10px; font-size: $text-xs; font-weight: 600; color: $text-tertiary;
+  border: 1px solid $chrome-dim; border-radius: $radius-pill; text-transform: capitalize; transition: all $motion-fast;
+  &:hover { border-color: $chrome-mid; }
+}
+.catTabActive { color: $accent; border-color: $accent; background: $accent-faint; }
+
+// Param + condition rows
+.paramGrid { display: grid; grid-template-columns: 1fr 1fr; gap: $space-3; @include below-sm { grid-template-columns: 1fr; } }
+.condRow { display: grid; grid-template-columns: 1.4fr 1fr 1fr auto; gap: $space-2; align-items: center; margin-bottom: $space-2; }
+.opToggle { display: inline-flex; border: 1px solid $chrome-dim; border-radius: $radius-md; overflow: hidden; margin-bottom: $space-3; }
+.opBtn { padding: 5px 14px; font-size: $text-xs; font-weight: 700; color: $text-tertiary; }
+.opBtnActive { background: $accent; color: #fff; }
+.removeBtn { display: grid; place-items: center; width: 30px; height: 30px; border-radius: $radius-sm; color: $text-tertiary; &:hover { background: $neg-bg; color: $neg; } }
+.addCond { font-size: $text-xs; font-weight: 600; color: $accent; padding: 4px 8px; border-radius: $radius-sm; &:hover { background: $accent-faint; } }
+
+// Anti-spam grid
+.antiGrid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: $space-3; @include below-sm { grid-template-columns: 1fr; } }
+.switchRow { display: flex; align-items: center; gap: $space-2; font-size: $text-sm; color: $text-secondary; margin-top: $space-2; }
+
+// Status pill (list)
+.statusActive { background: $pos-bg; color: $pos; }
+.statusPaused { background: $surface-raised; color: $text-tertiary; }
+.statusInactive { background: $warn-bg; color: $warn; }
+
+// Simulate result
+.simResult { margin-top: $space-3; padding: $space-3; border: 1px dashed $chrome-mid; border-radius: $radius-md; background: $surface-subtle; }
+.matchRow { display: flex; justify-content: space-between; font-size: $text-xs; padding: 4px 0; border-bottom: 1px solid $chrome-dim; &:last-child { border-bottom: none; } }

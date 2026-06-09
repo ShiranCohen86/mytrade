@@ -416,5 +416,36 @@ export const adminDuplicateTemplate = (id) =>
 export const adminArchiveTemplate = (id, archived = true) =>
   request(`${EXPRESS}/api/admin/notification-templates/${id}/archive`, { method: 'POST', body: JSON.stringify({ archived }) });
 
+// ─── Admin: Automation engine (notifications.read / notifications.send) ───────
+
+export const adminAutomationRegistry = () => request(`${EXPRESS}/api/admin/automations/registry`);
+export const adminListAutomations = (params = {}) => {
+  const qs = notifQs(params);
+  return request(`${EXPRESS}/api/admin/automations${qs ? `?${qs}` : ''}`);
+};
+export const adminGetAutomation = (id) => request(`${EXPRESS}/api/admin/automations/${id}`);
+export const adminCreateAutomation = (dto) =>
+  request(`${EXPRESS}/api/admin/automations`, { method: 'POST', body: JSON.stringify(dto) });
+export const adminUpdateAutomation = (id, dto) =>
+  request(`${EXPRESS}/api/admin/automations/${id}`, { method: 'PUT', body: JSON.stringify(dto) });
+export const adminDeleteAutomation = (id) =>
+  request(`${EXPRESS}/api/admin/automations/${id}`, { method: 'DELETE' });
+export const adminPauseAutomation = (id) =>
+  request(`${EXPRESS}/api/admin/automations/${id}/pause`, { method: 'POST' });
+export const adminResumeAutomation = (id) =>
+  request(`${EXPRESS}/api/admin/automations/${id}/resume`, { method: 'POST' });
+export const adminDuplicateAutomation = (id) =>
+  request(`${EXPRESS}/api/admin/automations/${id}/duplicate`, { method: 'POST' });
+export const adminTestAutomation = (id) =>
+  request(`${EXPRESS}/api/admin/automations/${id}/test`, { method: 'POST' });
+export const adminRunAutomation = (id) =>
+  request(`${EXPRESS}/api/admin/automations/${id}/run`, { method: 'POST' });
+export const adminAutomationLogs = (id, params = {}) => {
+  const qs = notifQs(params);
+  return request(`${EXPRESS}/api/admin/automations/${id}/logs${qs ? `?${qs}` : ''}`);
+};
+export const adminAutomationAnalytics = (days = 30) =>
+  request(`${EXPRESS}/api/admin/automations/analytics?days=${days}`);
+
 // Socket.io base — '' (same origin) in prod, the Express URL in dev.
 export const SOCKET_URL = EXPRESS || undefined;

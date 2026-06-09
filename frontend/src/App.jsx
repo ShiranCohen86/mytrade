@@ -41,6 +41,10 @@ const AdminNotificationCompose = lazy(() => import('@/app/admin/notifications/Ad
 const AdminNotificationDetail = lazy(() => import('@/app/admin/notifications/AdminNotificationDetail'));
 const AdminNotificationTemplates = lazy(() => import('@/app/admin/notifications/AdminNotificationTemplates'));
 const AdminNotificationAnalytics = lazy(() => import('@/app/admin/notifications/AdminNotificationAnalytics'));
+const AdminAutomations = lazy(() => import('@/app/admin/automations/AdminAutomations'));
+const AdminAutomationBuilder = lazy(() => import('@/app/admin/automations/AdminAutomationBuilder'));
+const AdminAutomationDetail = lazy(() => import('@/app/admin/automations/AdminAutomationDetail'));
+const AdminAutomationAnalytics = lazy(() => import('@/app/admin/automations/AdminAutomationAnalytics'));
 
 function DirectionSync() {
   const { i18n } = useTranslation();
@@ -137,6 +141,11 @@ export default function App() {
               <Route path="/admin/notifications/analytics" element={<AdminNotificationAnalytics />} />
               <Route path="/admin/notifications/:id/edit" element={<AdminNotificationCompose />} />
               <Route path="/admin/notifications/:id" element={<AdminNotificationDetail />} />
+              <Route path="/admin/automations" element={<AdminAutomations />} />
+              <Route path="/admin/automations/new" element={<AdminAutomationBuilder />} />
+              <Route path="/admin/automations/analytics" element={<AdminAutomationAnalytics />} />
+              <Route path="/admin/automations/:id/edit" element={<AdminAutomationBuilder />} />
+              <Route path="/admin/automations/:id" element={<AdminAutomationDetail />} />
             </Route>
           </Route>
 

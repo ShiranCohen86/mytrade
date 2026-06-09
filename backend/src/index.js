@@ -230,6 +230,7 @@ app.use('/api/admin/support', adminLimiter, require('./routes/admin/support'));
 app.use('/api/admin/intelligence', adminLimiter, require('./routes/admin/intelligence'));
 app.use('/api/admin/notifications', adminLimiter, require('./routes/admin/notifications'));
 app.use('/api/admin/notification-templates', adminLimiter, require('./routes/admin/notificationTemplates'));
+app.use('/api/admin/automations', adminLimiter, require('./routes/admin/automations'));
 
 // Recipient (any authenticated user) in-app notification API + the public,
 // token-gated push-event reporting endpoint. Mounted BEFORE the '/api' stocks
@@ -349,6 +350,15 @@ async function start() {
       require('./jobs/notificationScheduler');
     } catch (cronErr) {
       logger.error('Failed to load notification scheduler job', { err: cronErr.message });
+    }
+
+    // Automation engine evaluation jobs (market / user / digest)
+    for (const job of ['automationMarketScan', 'automationUserScan', 'automationDigestFlush']) {
+      try {
+        require(`./jobs/${job}`);
+      } catch (cronErr) {
+        logger.error(`Failed to load ${job} job`, { err: cronErr.message });
+      }
     }
 
     // Seed the built-in notification templates (idempotent, fire-and-forget).

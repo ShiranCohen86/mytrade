@@ -85,6 +85,11 @@ router.post('/register', async (req, res) => {
       { email: user.email, displayName: user.displayName }
     );
 
+    // Fire any 'user_registered' automation rules (welcome sequence). Fire-and-forget.
+    try {
+      require('../automation/automationEngine').handleEvent('user_registered', { user: user.toObject ? user.toObject() : user });
+    } catch { /* never block signup */ }
+
     res.status(201).json({ user: safeUserResponse(user), accessToken });
   } catch (err) {
     logger.error('POST /auth/register', { err: err.message });

@@ -8,12 +8,14 @@ const SEGMENTS = ['active', 'inactive', 'new', 'returning', 'pwa_installed', 'no
 function uiModeOf(mode) {
   if (mode === 'all') return 'all';
   if (mode === 'segment') return 'segment';
+  if (mode === 'watchlist_holders') return 'watchlist';
   return 'specific';
 }
 
-export function TargetingSelector({ value, onChange }) {
+export function TargetingSelector({ value, onChange, showWatchlistHolders = false }) {
   const { t } = useTranslation();
   const uiMode = uiModeOf(value.mode);
+  const modes = showWatchlistHolders ? ['all', 'watchlist', 'segment', 'specific'] : ['all', 'segment', 'specific'];
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [selected, setSelected] = useState([]); // {id, email}
@@ -21,6 +23,7 @@ export function TargetingSelector({ value, onChange }) {
 
   const setMode = (m) => {
     if (m === 'all') onChange({ mode: 'all', userIds: [], segment: null });
+    else if (m === 'watchlist') onChange({ mode: 'watchlist_holders', userIds: [], segment: null });
     else if (m === 'segment') onChange({ mode: 'segment', userIds: [], segment: value.segment || null });
     else onChange({ mode: 'multiple', userIds: selected.map((u) => u.id), segment: null });
   };
@@ -54,17 +57,20 @@ export function TargetingSelector({ value, onChange }) {
   return (
     <div>
       <div className={styles.modeTabs}>
-        {['all', 'segment', 'specific'].map((m) => (
-          <button key={m} type="button"
-            className={`${styles.modeTab} ${uiMode === m ? styles.modeTabActive : ''}`}
-            onClick={() => setMode(m)}>
-            {t(`adminNotif.mode.${m}`)}
+        {modes.map((mode) => (
+          <button key={mode} type="button"
+            className={`${styles.modeTab} ${uiMode === mode ? styles.modeTabActive : ''}`}
+            onClick={() => setMode(mode)}>
+            {t(`adminNotif.mode.${mode}`)}
           </button>
         ))}
       </div>
 
       {uiMode === 'all' && (
         <p className={styles.headSub}>{t('adminNotif.allUsersHint')}</p>
+      )}
+      {uiMode === 'watchlist' && (
+        <p className={styles.headSub}>{t('adminNotif.watchlistHoldersHint')}</p>
       )}
 
       {uiMode === 'segment' && (

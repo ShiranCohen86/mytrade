@@ -11,6 +11,7 @@ import {
 import { useToast } from '@/components/Toast/ToastProvider';
 import TimelinePanel from './TimelinePanel';
 import InsightsPanel from './InsightsPanel';
+import TriggersPanel from './TriggersPanel';
 import styles from './AdminUserDetail.module.scss';
 
 const ROLES = ['user', 'analyst', 'support_agent', 'admin', 'super_admin'];
@@ -238,12 +239,19 @@ export default function AdminUserDetail() {
               >
                 Behavioral Insights
               </button>
+              <button
+                className={`${styles.tab} ${rightTab === 'triggers' ? styles.tabActive : ''}`}
+                onClick={() => setRightTab('triggers')}
+              >
+                Triggers
+              </button>
             </div>
 
             {/* Panel body */}
             <div className={styles.tabBody}>
               {rightTab === 'timeline' && <TimelinePanel userId={id} />}
               {rightTab === 'insights' && <InsightsPanel userId={id} />}
+              {rightTab === 'triggers' && <TriggersPanel userId={id} />}
             </div>
           </div>
         </div>

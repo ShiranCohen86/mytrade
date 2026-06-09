@@ -264,8 +264,56 @@ async function recordPushEvent(campaignId, token, type) {
   return false;
 }
 
+/**
+ * Per-user delivery primitive used by the automation engine (and any future
+ * per-user, dynamic-content sender). Creates the in-app notification (+ realtime
+ * socket emit) and/or sends push, attributing to a campaign or automation rule.
+ * @returns {Promise<{notificationId, inApp:boolean, push:number}>}
+ */
+async function deliverToUser(userId, content, channels = {}, meta = {}) {
+  const result = { notificationId: null, inApp: false, push: 0 };
+
+  if (channels.inApp) {
+    const doc = await UserNotification.create({
+      userId,
+      campaignId: meta.campaignId || null,
+      automationRuleId: meta.automationRuleId || null,
+      title: content.title,
+      message: content.message,
+      type: content.type || 'info',
+      icon: content.icon || '',
+      imageUrl: content.imageUrl || '',
+      deepLink: content.deepLink || '',
+      actionText: content.actionText || '',
+      expiresAt: content.expiresAt || null,
+    });
+    result.notificationId = doc._id;
+    result.inApp = true;
+    if (realtimeService.isUserConnected(userId)) {
+      realtimeService.emitToUser(userId, 'notification:new', toClient(doc));
+    }
+  }
+
+  if (channels.push) {
+    try {
+      const res = await pushService.sendToUser(userId, 'product', {
+        title: content.title,
+        body: content.message,
+        url: content.deepLink || '/dashboard',
+        tag: meta.tag || `auto-${meta.automationRuleId || 'n'}`,
+        urgency: meta.urgency || 'high',
+        requireInteraction: content.type === 'alert',
+      });
+      result.push = res.sent;
+    } catch { /* best-effort */ }
+  }
+
+  return result;
+}
+
 module.exports = {
   dispatch,
+  deliverToUser,
   toClient,
   unreadCount,
   markRead,

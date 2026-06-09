@@ -59,6 +59,10 @@ const stockSchema = new mongoose.Schema(
       analystHighPrice: Number,
       numberOfAnalysts: Number,
       recommendationKey: String,
+      // Previous-snapshot fields — written before overwrite on refresh so the
+      // automation engine can delta-detect analyst upgrade/downgrade & new target.
+      prevRecommendationKey: String,
+      prevAnalystTargetPrice: Number,
       beta: Number,
       historical: [historicalPointSchema],
       earningsDate: Date,

@@ -281,9 +281,10 @@
 .userDropdown {
   position: absolute;
   top: calc(100% + 10px);
-  right: 0;
+  inset-inline-end: 0;
   z-index: 300;
   min-width: 224px;
+  max-width: calc(100vw - #{$space-4});
   background: $surface-elevated;
   border: 1px solid $chrome-mid;
   border-radius: $radius-lg;

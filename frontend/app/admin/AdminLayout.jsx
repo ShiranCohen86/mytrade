@@ -84,6 +84,20 @@ const NOTIFICATION_NAV = {
   ),
 };
 
+// Roles that may access the automation engine
+const AUTOMATION_ROLES = new Set(['admin', 'super_admin']);
+
+// Automations nav entry
+const AUTOMATION_NAV = {
+  to: '/admin/automations',
+  label: 'Automations',
+  icon: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+    </svg>
+  ),
+};
+
 // AI Intelligence nav entry — only rendered for admin / super_admin
 const INTELLIGENCE_NAV = {
   to: '/admin/intelligence',
@@ -114,6 +128,7 @@ export default function AdminLayout() {
   // Build nav: base items + role-gated entries
   const NAV = [...BASE_NAV];
   if (NOTIFICATION_ROLES.has(user?.role)) NAV.push(NOTIFICATION_NAV);
+  if (AUTOMATION_ROLES.has(user?.role)) NAV.push(AUTOMATION_NAV);
   if (INTELLIGENCE_ROLES.has(user?.role)) NAV.push(INTELLIGENCE_NAV);
 
   const closeMobile = useCallback(() => setMobileOpen(false), []);
