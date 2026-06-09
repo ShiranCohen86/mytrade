@@ -77,6 +77,7 @@ export function WatchlistTable({
   };
 
   return (
+    <div className={styles.scrollOuter}>
     <div className={styles.scrollWrapper}>
     <div className={styles.table} role="table" aria-label={t('dashboard.watchlist')}>
       {/* Column headers */}
@@ -185,6 +186,7 @@ export function WatchlistTable({
           ))
         )}
       </div>
+    </div>
     </div>
     </div>
   );

@@ -12,6 +12,33 @@ $cols-mobile:       56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 56px 60px 3
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  // Hide native scrollbar — swipe gesture still works; fade hint shows more content
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+// Wraps scrollWrapper + adds a right-edge fade on mobile to hint at more columns
+.scrollOuter {
+  position: relative;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 32px;
+      height: 100%;
+      background: linear-gradient(to left, var(--surface-base, #fff) 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 2;
+      [data-theme='dark'] & {
+        background: linear-gradient(to left, #0f1117 0%, transparent 100%);
+      }
+    }
+  }
 }
 
 .table {
