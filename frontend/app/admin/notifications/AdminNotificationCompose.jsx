@@ -37,6 +37,7 @@ export default function AdminNotificationCompose() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const debounceRef = useRef(null);
+  const appliedTemplateRef = useRef(false);
 
   const set = (patch) => setForm((f) => ({ ...f, ...patch }));
 
@@ -69,12 +70,14 @@ export default function AdminNotificationCompose() {
     toast.info(t('adminNotif.templateApplied', { name: tpl.name }));
   }, [toast, t]);
 
-  // Prefill from ?template=ID once templates are loaded.
+  // Prefill from ?template=ID once templates are loaded — apply exactly once
+  // so a re-run never re-fires applyTemplate (which would toast/vibrate again).
   useEffect(() => {
+    if (appliedTemplateRef.current) return;
     const tid = params.get('template');
     if (tid && templates.length) {
       const tpl = templates.find((x) => x._id === tid);
-      if (tpl) applyTemplate(tpl);
+      if (tpl) { appliedTemplateRef.current = true; applyTemplate(tpl); }
     }
   }, [params, templates, applyTemplate]);
 

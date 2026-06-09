@@ -1,5 +1,5 @@
 
-import { createContext, useContext, useCallback, useState } from 'react';
+import { createContext, useContext, useCallback, useMemo, useState } from 'react';
 import { tapSuccess, tapError, tapWarning, tapLight } from '@/lib/haptics';
 import styles from './Toast.module.scss';
 
@@ -23,13 +23,17 @@ export function ToastProvider({ children }) {
     return id;
   }, [dismiss]);
 
-  const toast = {
+  // Memoized so the context value keeps a stable identity across renders.
+  // (`add`/`dismiss` are stable useCallbacks.) An unstable value here re-runs
+  // every consumer effect that depends on a toast-derived callback — which
+  // otherwise causes an infinite toast→re-render→effect loop.
+  const toast = useMemo(() => ({
     success: (msg, dur) => add('success', msg, dur),
     error:   (msg, dur) => add('error',   msg, dur),
     warning: (msg, dur) => add('warning', msg, dur),
     info:    (msg, dur) => add('info',    msg, dur),
     dismiss,
-  };
+  }), [add, dismiss]);
 
   return (
     <ToastCtx.Provider value={toast}>
