@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/components/Toast/ToastProvider';
@@ -77,6 +77,27 @@ export default function AdminAutomationBuilder() {
   const toggleChannel = (ch) => set({ actions: { ...form.actions, channels: { ...form.actions.channels, [ch]: !form.actions.channels[ch] } } });
   const setContent = (k, v) => set({ actions: { ...form.actions, content: { ...form.actions.content, [k]: v } } });
   const setAnti = (patch) => set({ antiSpam: { ...form.antiSpam, ...patch } });
+
+  // Insert a {{token}} into whichever content field (title/message) was last focused, at the caret.
+  const titleRef = useRef(null);
+  const msgRef = useRef(null);
+  const [focusedField, setFocusedField] = useState('message');
+  const insertToken = useCallback((token) => {
+    const field = focusedField === 'title' ? 'title' : 'message';
+    const el = field === 'title' ? titleRef.current : msgRef.current;
+    const snippet = `{{${token}}}`;
+    setForm((f) => {
+      const cur = f.actions.content[field] || '';
+      let next; let caret;
+      if (el && typeof el.selectionStart === 'number') {
+        const s = el.selectionStart; const e = el.selectionEnd;
+        next = cur.slice(0, s) + snippet + cur.slice(e);
+        caret = s + snippet.length;
+      } else { next = cur + snippet; caret = next.length; }
+      requestAnimationFrame(() => { if (el) { el.focus(); try { el.setSelectionRange(caret, caret); } catch { /* noop */ } } });
+      return { ...f, actions: { ...f.actions, content: { ...f.actions.content, [field]: next } } };
+    });
+  }, [focusedField]);
 
   const validate = () => {
     if (!form.name.trim()) return t('autom.errName');
@@ -228,12 +249,27 @@ export default function AdminAutomationBuilder() {
             <p className={styles.headSub} style={{ margin: '14px 0 8px' }}>{t('autom.contentHint')}</p>
             <div className={styles.field}>
               <label className={styles.label}>{t('adminNotif.fieldTitle')}</label>
-              <input className={styles.textInput} value={form.actions.content.title} onChange={(e) => setContent('title', e.target.value)} placeholder="{{ticker}} is up {{changePercent}}%" />
+              <input ref={titleRef} className={styles.textInput} value={form.actions.content.title} onFocus={() => setFocusedField('title')} onChange={(e) => setContent('title', e.target.value)} placeholder="{{ticker}} is up {{changePercent}}%" />
             </div>
             <div className={styles.field}>
               <label className={styles.label}>{t('adminNotif.fieldMessage')}</label>
-              <textarea className={styles.textarea} value={form.actions.content.message} onChange={(e) => setContent('message', e.target.value)} />
+              <textarea ref={msgRef} className={styles.textarea} value={form.actions.content.message} onFocus={() => setFocusedField('message')} onChange={(e) => setContent('message', e.target.value)} />
             </div>
+
+            {/* Insertable variables — populated from the selected trigger's available tokens */}
+            {selectedDef && (selectedDef.tokens || []).length > 0 && (
+              <div className={styles.field}>
+                <label className={styles.label}>{t('autom.variablesLabel')}</label>
+                <div className={auto.tokenRow}>
+                  {selectedDef.tokens.map((tk) => (
+                    <button key={tk.token} type="button" className={auto.tokenChip} title={tk.label} onClick={() => insertToken(tk.token)}>
+                      {`{{${tk.token}}}`}
+                    </button>
+                  ))}
+                </div>
+                <p className={styles.headSub} style={{ marginTop: 6 }}>{t('autom.variablesHint')}</p>
+              </div>
+            )}
             <div className={styles.row2}>
               <div className={styles.field}>
                 <label className={styles.label}>{t('adminNotif.fieldType')}</label>

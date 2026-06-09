@@ -18,6 +18,15 @@ const logger = require('../utils/logger');
 
 const round = (n, d = 2) => (n == null || Number.isNaN(Number(n)) ? null : Math.round(Number(n) * 10 ** d) / 10 ** d);
 
+/** Recipient's first name from displayName, falling back to the email local-part. */
+function firstNameOf(user) {
+  if (!user) return '';
+  const dn = String(user.displayName || '').trim();
+  if (dn) return dn.split(/\s+/)[0];
+  const local = String(user.email || '').split('@')[0];
+  return local ? local.charAt(0).toUpperCase() + local.slice(1) : '';
+}
+
 // ── Content / tokens ──────────────────────────────────────────────────────────
 function buildTokens(ctx, rule) {
   const t = {};
@@ -44,6 +53,13 @@ function buildTokens(ctx, rule) {
   }
   if (ctx.recommendation) t.ticker = ctx.recommendation.ticker;
   if (ctx.summary) t.summary = ctx.summary;
+
+  // Recipient tokens — always available (every eval context carries the user).
+  if (ctx.user) {
+    t.firstName = firstNameOf(ctx.user);
+    t.userName = String(ctx.user.displayName || '').trim() || t.firstName;
+    t.email = ctx.user.email || '';
+  }
   return t;
 }
 

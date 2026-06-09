@@ -8,7 +8,7 @@ const daily = (key) => () => `${key}:${new Date().toISOString().slice(0, 10)}`;
 module.exports = [
   mk('user_registered', 'New registration / welcome', 'Fires once when a user signs up',
     [], () => true,
-    () => ({ title: 'Welcome to MyTrade 👋', message: 'Add your first ticker to start tracking the market.', type: 'success', icon: '👋', deepLink: '/dashboard', actionText: 'Get started' }),
+    () => ({ title: 'Welcome to MyTrade 👋', message: 'Hi {{firstName}}! Add your first ticker to start tracking the market.', type: 'success', icon: '👋', deepLink: '/dashboard', actionText: 'Get started' }),
     (c) => `welcome:${c.user && c.user._id}`, 'event'),
 
   mk('user_inactive', 'User inactive N days', 'No activity for N+ days',
@@ -19,7 +19,7 @@ module.exports = [
 
   mk('user_returned', 'User returned after inactivity', 'Came back after a gap',
     [], (c) => c.returned === true,
-    () => ({ title: 'Welcome back!', message: 'Here’s what changed while you were away.', type: 'success', icon: '🎉', deepLink: '/dashboard', actionText: 'Catch up' }),
+    () => ({ title: 'Welcome back!', message: 'Good to see you again, {{firstName}} — here’s what changed while you were away.', type: 'success', icon: '🎉', deepLink: '/dashboard', actionText: 'Catch up' }),
     (c) => `returned:${c.user && c.user._id}:${new Date().toISOString().slice(0, 10)}`),
 
   mk('no_watchlist', 'No watchlist created', 'Empty watchlist after signup',
