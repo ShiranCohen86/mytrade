@@ -242,6 +242,12 @@ async function start() {
       logger.error('Failed to load universe sync cron job', { err: cronErr.message });
     }
 
+    try {
+      require('./jobs/newsTickerScan');
+    } catch (cronErr) {
+      logger.error('Failed to load news ticker scan job', { err: cronErr.message });
+    }
+
     server = app.listen(config.PORT, () => {
       logger.info(`Server running on port ${config.PORT}`, {
         storage: db.mode,

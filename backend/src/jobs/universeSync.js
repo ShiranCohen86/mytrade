@@ -11,7 +11,7 @@ const cron = require('node-cron');
 const Stock = require('../models/Stock');
 const stockService = require('../services/stockService');
 const logger = require('../utils/logger');
-const UNIVERSE = require('../data/stockUniverse');
+const tickerDiscovery = require('../services/tickerDiscovery');
 
 const MAX_PER_RUN = 60;
 const STALE_MS = 7 * 24 * 60 * 60 * 1000;
@@ -22,6 +22,10 @@ async function pLimit(concurrency) {
 }
 
 async function syncUniverseStocks() {
+  // Dynamic universe: static list + user watchlists + audit log + validated discoveries
+  const universeSet = await tickerDiscovery.getAllTickers();
+  const UNIVERSE = [...universeSet];
+
   const existing = await Stock.find({ ticker: { $in: UNIVERSE } })
     .select('ticker analysis.analyzedAt')
     .lean();
@@ -90,10 +94,12 @@ cron.schedule('0 2 * * *', async () => {
 });
 
 // On startup: log coverage diagnostics without triggering any analysis
-Stock.countDocuments({ ticker: { $in: UNIVERSE } })
-  .then((found) => {
-    logger.info(`[universe-sync] Coverage: ${found}/${UNIVERSE.length} universe stocks in DB`);
-  })
+tickerDiscovery.getAllTickers()
+  .then((set) => Stock.countDocuments({ ticker: { $in: [...set] } })
+    .then((found) => {
+      logger.info(`[universe-sync] Coverage: ${found}/${set.size} universe stocks in DB`);
+    })
+  )
   .catch(() => {});
 
 logger.info('[universe-sync] Registered — runs daily at 02:00 UTC');
