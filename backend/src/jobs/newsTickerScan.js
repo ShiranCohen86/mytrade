@@ -171,6 +171,9 @@ cron.schedule('*/30 * * * *', () => {
   runScan();
 });
 
+// Export for on-demand use (e.g. admin intelligence refresh)
+module.exports = { runScan };
+
 // Run once on startup (after a short delay to let DB connect)
 setTimeout(() => {
   logger.info('[news-scan] Running startup scan');

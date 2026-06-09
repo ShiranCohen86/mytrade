@@ -103,3 +103,6 @@ tickerDiscovery.getAllTickers()
   .catch(() => {});
 
 logger.info('[universe-sync] Registered — runs daily at 02:00 UTC');
+
+// Export for on-demand use (e.g. admin intelligence refresh)
+module.exports = { syncUniverseStocks };

@@ -15,6 +15,8 @@ const adminAuth = require('../../middleware/adminAuth');
 const Stock = require('../../models/Stock');
 const expectationEngine = require('../../engines/expectationEngine');
 const audit = require('../../services/auditService');
+const { runScan } = require('../../jobs/newsTickerScan');
+const { syncUniverseStocks } = require('../../jobs/universeSync');
 
 // ── RBAC guard ─────────────────────────────────────────────────────────────────
 const INTELLIGENCE_ROLES = new Set(['admin', 'super_admin']);
@@ -244,11 +246,21 @@ router.get(
 );
 
 // ── POST /admin/intelligence/refresh ──────────────────────────────────────────
-// Recomputes expectation scores from cached data (no external API calls).
+// Full pipeline: discover new tickers → analyze unscored → recompute all scores.
 router.post('/refresh', adminAuth('audit.read'), requireIntelligenceRole, async (req, res) => {
   try {
     audit.logAdmin(req, 'admin.intelligence.refresh', null, {}, 'info');
 
+    // Step 1: scan news + movers + watchlists for new ticker candidates (async, don't block response)
+    // runScan handles its own concurrency guard so calling it here is safe
+    const scanPromise = runScan().catch((err) =>
+      require('../../utils/logger').warn('[intelligence/refresh] scan error', { err: err.message })
+    );
+
+    // Step 2: analyze any newly discovered / stale universe tickers (runs concurrently with scan)
+    const analyzed = await syncUniverseStocks().catch(() => 0);
+
+    // Step 3: recompute expectation scores for all stocks that have price data
     const stocks = await Stock.find({ 'cachedData.price': { $gt: 0 } })
       .select('ticker sector cachedData.price cachedData.analystTargetPrice cachedData.peRatio cachedData.recommendationKey cachedData.historical')
       .lean();
@@ -277,7 +289,10 @@ router.post('/refresh', adminAuth('audit.read'), requireIntelligenceRole, async 
 
     if (ops.length > 0) await Stock.bulkWrite(ops);
 
-    res.json({ computed: ops.length, computedAt: new Date() });
+    // Let the scan finish in background — don't block the response for it
+    scanPromise.catch(() => {});
+
+    res.json({ computed: ops.length, analyzed, computedAt: new Date() });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
