@@ -7,6 +7,7 @@ import { BottomSheet } from '@/components/BottomSheet/BottomSheet';
 import { fmtVolume, scoreClass } from '@/lib/format';
 import { useFmtPrice } from '@/hooks/useFmtPrice';
 import { getMarketStatus } from '@/lib/marketHours';
+import { useEmphasis } from '@/hooks/useEmphasis';
 
 const REGIME_ICONS = { BULLISH: '▲', BEARISH: '▼', VOLATILE: '⚡', NEUTRAL: '→' };
 const EXP_SHORT = { VERY_HIGH: 'VH', HIGH: 'H', MODERATE: 'M', LOW: 'L' };
@@ -83,6 +84,9 @@ function StockRowInner({
 
   const riskCls = scoreClass(analysis?.riskScore);
 
+  // Context emphasis — highlight what matters now (big move, near alert, earnings, etc.), mute the quiet.
+  const emphasis = useEmphasis({ stock, priceAlert, portfolioEntry });
+
   const analysisAgeDays = analysis?.analyzedAt
     ? Math.floor((Date.now() - new Date(analysis.analyzedAt).getTime()) / 86_400_000)
     : null;
@@ -98,6 +102,9 @@ function StockRowInner({
     <div
       className={`${styles.rowWrapper} ${isDragging ? styles.dragging : ''} ${isDropTarget ? styles.dropTarget : ''} ${isAnalyzing ? styles.analyzing : ''} ${alertTriggered ? styles.alertRing : ''}`}
       data-ticker={ticker}
+      data-emph={emphasis.level}
+      data-emph-tone={emphasis.tone || undefined}
+      title={emphasis.signals.length ? emphasis.signals.map((s) => s.label).join(' · ') : undefined}
     >
       <div
         className={styles.row}

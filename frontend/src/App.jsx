@@ -7,6 +7,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { buildMuiTheme } from '@/src/theme';
 import { CurrencyProvider } from '@/context/CurrencyContext';
 import { NotificationProvider } from '@/context/NotificationContext';
+import { MarketProvider } from '@/context/MarketContext';
 import { ToastProvider } from '@/components/Toast/ToastProvider';
 import { PWAUpdatePrompt } from '@/components/PWAUpdatePrompt/PWAUpdatePrompt';
 import { PrivateRoute } from '@/components/PrivateRoute/PrivateRoute';
@@ -85,9 +86,11 @@ function RouteFallback() {
 
 function AppLayout() {
   return (
-    <AppShell>
-      <Outlet />
-    </AppShell>
+    <MarketProvider>
+      <AppShell>
+        <Outlet />
+      </AppShell>
+    </MarketProvider>
   );
 }
 

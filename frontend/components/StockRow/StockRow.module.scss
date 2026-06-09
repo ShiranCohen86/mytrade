@@ -7,14 +7,15 @@ $cols-desktop: 20px 56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 34px;
 $cols-mobile:       56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 34px;
 
 .rowWrapper {
+  position: relative;
   border-bottom: 1px solid $chrome-dim;
-  transition: background $motion-fast;
+  transition: background $motion-fast, opacity $motion-base;
 
   &:last-child { border-bottom: none; }
   &:hover { background: $surface-hover; }
 
   &:nth-child(even) {
-    background: rgba(79, 70, 229, 0.015);
+    background: rgba(99, 102, 241, 0.015);
     [data-theme="dark"] & { background: rgba(129, 140, 248, 0.012); }
     &:hover { background: $surface-hover; }
   }
@@ -35,6 +36,34 @@ $cols-mobile:       56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 34px;
   &.alertRing {
     box-shadow: inset 3px 0 0 $warn;
   }
+
+  // ── Living-UI: context emphasis ───────────────────────────────────────────
+  // A side accent bar marks rows that matter now; quiet rows are gently muted.
+  &[data-emph='hot']::before,
+  &[data-emph='watch']::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 3px;
+    background: $accent;
+    border-start-end-radius: 2px;
+    border-end-end-radius: 2px;
+  }
+  &[data-emph='watch']::before { opacity: 0.5; }
+  // tone overrides (declared after the base so they win at equal specificity)
+  &[data-emph-tone='pos']::before    { background: $pos; }
+  &[data-emph-tone='neg']::before    { background: $neg; }
+  &[data-emph-tone='warn']::before   { background: $warn; }
+  &[data-emph-tone='accent']::before { background: $accent; }
+
+  &[data-emph='hot'] {
+    background: $surface-hover;
+    &:nth-child(even) { background: $surface-hover; }
+  }
+
+  &[data-emph='muted'] .row { opacity: var(--muted-opacity); }
+  &[data-emph='muted']:hover .row { opacity: 1; }
 }
 
 .row {

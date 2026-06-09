@@ -11,7 +11,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: $space-6;
+  @include overlay-safe-area($space-6);
   animation: fadeIn 150ms ease;
 }
 
@@ -25,7 +25,9 @@
   width: 100%;
   max-width: 540px;
   max-height: 85vh;
+  max-height: 85dvh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
   animation: slideUp 220ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -205,17 +207,17 @@
   background: $accent;
   border-radius: $radius-lg;
   transition: background $motion-fast, transform $motion-fast, box-shadow $motion-fast;
-  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.28);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.28);
 
   &:hover {
     background: $accent-hover;
     transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.36);
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.36);
   }
 
   &:active {
     transform: translateY(0);
-    box-shadow: 0 1px 4px rgba(79, 70, 229, 0.18);
+    box-shadow: 0 1px 4px rgba(99, 102, 241, 0.18);
   }
 }
 

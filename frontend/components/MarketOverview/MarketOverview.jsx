@@ -1,6 +1,6 @@
 
-import { useState, useEffect, useCallback } from 'react';
-import { getMarketOverview } from '@/lib/apiClient';
+import { useMarket } from '@/context/MarketContext';
+import { usePriceFlash } from '@/hooks/usePriceFlash';
 import styles from './MarketOverview.module.scss';
 
 const LABELS = { SPY: 'S&P 500', QQQ: 'Nasdaq', DIA: 'Dow', VIX: 'VIX' };
@@ -26,51 +26,47 @@ function computeMood(data) {
   return { label: 'NEUTRAL', cls: 'neutral_mood', emoji: '—' };
 }
 
+const SESSION_LABEL = { open: 'LIVE', pre: 'PRE-MKT', after: 'AFTER-HRS', closed: 'CLOSED' };
+
+// One quote tile — flashes green/red briefly when its price ticks.
+function Tile({ ticker, price, change, changePercent }) {
+  const flash = usePriceFlash(price);
+  const pct = changePercent;
+  const sign = pct > 0 ? '+' : '';
+  // VIX: inverted semantics — rising VIX means fear/volatility (bearish for stocks)
+  const isVix = ticker === 'VIX';
+  const cls = isVix
+    ? (pct > 0 ? styles.neg : pct < 0 ? styles.pos : styles.neutral)
+    : (pct > 0 ? styles.pos : pct < 0 ? styles.neg : styles.neutral);
+  const flashCls = flash === 'up' ? 'flash-pos' : flash === 'down' ? 'flash-neg' : '';
+
+  return (
+    <div className={`${styles.item} ${cls} ${flashCls}`}>
+      <span className={styles.name}>{LABELS[ticker] || ticker}</span>
+      <span className={styles.ticker}>{ticker}</span>
+      <span className={styles.price}>{fmtNum(price)}</span>
+      <span className={styles.change}>
+        {change != null ? `${sign}${fmtNum(change)}` : '—'}{' '}
+        <span className={styles.pct}>({sign}{pct != null ? pct.toFixed(2) : '—'}%)</span>
+      </span>
+    </div>
+  );
+}
+
 export function MarketOverview() {
-  const [data, setData] = useState([]);
+  const { indices: data, session } = useMarket();
 
-  const load = useCallback(async () => {
-    try {
-      const quotes = await getMarketOverview();
-      if (Array.isArray(quotes)) setData(quotes);
-    } catch { /* silent — dashboard still usable */ }
-  }, []);
-
-  useEffect(() => {
-    load();
-    const id = setInterval(load, 60_000);
-    return () => clearInterval(id);
-  }, [load]);
-
-  if (data.length === 0) return null;
+  if (!Array.isArray(data) || data.length === 0) return null;
 
   const mood = computeMood(data);
 
   return (
     <div className={styles.strip} aria-label="Market overview">
-      {data.map(({ ticker, price, change, changePercent }) => {
-        const pct = changePercent;
-        const sign = pct > 0 ? '+' : '';
-        // VIX: inverted semantics — rising VIX means fear/volatility (bearish for stocks)
-        const isVix = ticker === 'VIX';
-        const cls = isVix
-          ? (pct > 0 ? styles.neg : pct < 0 ? styles.pos : styles.neutral)
-          : (pct > 0 ? styles.pos : pct < 0 ? styles.neg : styles.neutral);
-        return (
-          <div key={ticker} className={`${styles.item} ${cls}`}>
-            <span className={styles.name}>{LABELS[ticker] || ticker}</span>
-            <span className={styles.ticker}>{ticker}</span>
-            <span className={styles.price}>{fmtNum(price)}</span>
-            <span className={styles.change}>
-              {change != null ? `${sign}${fmtNum(change)}` : '—'}
-              {' '}
-              <span className={styles.pct}>({sign}{pct != null ? pct.toFixed(2) : '—'}%)</span>
-            </span>
-          </div>
-        );
-      })}
+      {data.map((q) => <Tile key={q.ticker} {...q} />)}
       <div className={`${styles.item} ${styles.moodItem} ${styles[mood.cls]}`} aria-label={`Market mood: ${mood.label}`}>
-        <span className={styles.name}>Market Mood</span>
+        <span className={styles.name}>
+          <span className="live-dot" aria-hidden="true" /> {SESSION_LABEL[session] || 'CLOSED'}
+        </span>
         <span className={styles.ticker}>MOOD</span>
         <span className={styles.moodLabel}>{mood.emoji} {mood.label}</span>
       </div>

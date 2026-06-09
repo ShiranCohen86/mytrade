@@ -107,10 +107,11 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!moreOpen) return;
+    // Single pointerdown listener (covers mouse + touch). Avoids the iOS Safari
+    // race where a separate touchstart fired before the menu item's click.
     const onOutside = (e) => { if (moreRef.current && !moreRef.current.contains(e.target)) setMoreOpen(false); };
-    document.addEventListener('mousedown', onOutside);
-    document.addEventListener('touchstart', onOutside);
-    return () => { document.removeEventListener('mousedown', onOutside); document.removeEventListener('touchstart', onOutside); };
+    document.addEventListener('pointerdown', onOutside);
+    return () => document.removeEventListener('pointerdown', onOutside);
   }, [moreOpen]);
 
   useEffect(() => {

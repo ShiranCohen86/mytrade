@@ -253,7 +253,7 @@
   border: 1px solid transparent;
 }
 
-.sev_info     { background: $accent-faint; color: $accent; border-color: rgba(79, 70, 229, 0.20); }
+.sev_info     { background: $accent-faint; color: $accent; border-color: rgba(99, 102, 241, 0.20); }
 .sev_warning  { background: $warn-bg; color: $warn; border-color: rgba(217, 119, 6, 0.25); }
 .sev_critical { background: $neg-bg; color: $neg; border-color: rgba(220, 38, 38, 0.25); }
 
@@ -271,7 +271,7 @@
 }
 
 .actor_user   { background: $surface-raised; color: $text-secondary; border-color: $chrome-dim; }
-.actor_admin  { background: $accent-faint;   color: $accent;         border-color: rgba(79, 70, 229, 0.25); }
+.actor_admin  { background: $accent-faint;   color: $accent;         border-color: rgba(99, 102, 241, 0.25); }
 .actor_system { background: $surface-raised; color: $text-tertiary;  border-color: $chrome-dim; }
 
 // ─── Pagination ───────────────────────────────────────────────────────────────

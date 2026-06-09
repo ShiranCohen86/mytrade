@@ -1,0 +1,67 @@
+@use '../../styles/variables' as *;
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.label {
+  font-size: $text-sm;
+  font-weight: 600;
+  color: $text-secondary;
+  letter-spacing: -0.005em;
+}
+
+.control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: $surface-panel;
+  border: 1px solid $chrome-mid;
+  border-radius: $radius-md;
+  padding: 0 12px;
+  transition: border-color $motion-fast, box-shadow $motion-fast, background $motion-fast;
+
+  &:focus-within { border-color: $accent; box-shadow: $shadow-glow; }
+}
+
+.size-md { min-height: 44px; }
+.size-lg { min-height: 50px; border-radius: $radius-lg; padding: 0 14px; }
+
+.invalid {
+  border-color: $neg;
+  &:focus-within { box-shadow: $shadow-glow-neg; border-color: $neg; }
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  align-self: stretch;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: $text-primary;
+  font-family: $font-ui;
+  font-size: $text-md;
+
+  &::placeholder { color: $text-disabled; }
+  &:disabled { cursor: not-allowed; }
+}
+
+// iOS Safari zoom-on-focus guard — keep ≥16px on touch / small screens
+@media (max-width: $bp-md), (hover: none) and (pointer: coarse) {
+  .input { font-size: 16px; }
+}
+
+.affix {
+  color: $text-tertiary;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.hint { font-size: $text-xs; color: $text-tertiary; }
+.error { font-size: $text-xs; color: $neg; font-weight: 500; }

@@ -195,7 +195,7 @@
   border-radius: 50%;
   background: $text-disabled;
 
-  &.dot_info     { background: $accent; box-shadow: 0 0 4px rgba(79, 70, 229, 0.5); }
+  &.dot_info     { background: $accent; box-shadow: 0 0 4px rgba(99, 102, 241, 0.5); }
   &.dot_warning  { background: $warn; }
   &.dot_critical { background: $neg; box-shadow: 0 0 4px rgba(220, 38, 38, 0.5); }
 }

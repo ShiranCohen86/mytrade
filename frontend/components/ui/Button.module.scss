@@ -1,0 +1,101 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-family: $font-ui;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  border: 1px solid transparent;
+  border-radius: $radius-md;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  text-decoration: none;
+  position: relative;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background   $motion-fast,
+    border-color $motion-fast,
+    box-shadow   $motion-fast,
+    transform    $motion-fast,
+    color        $motion-fast,
+    opacity      $motion-fast;
+
+  &:focus-visible { box-shadow: $shadow-glow; outline: none; }
+  &:active:not(:disabled) { transform: scale(0.97); }
+  &:disabled, &[aria-disabled='true'] { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+}
+
+// Sizes — md/lg meet the iOS 44px touch-target minimum
+.size-sm { min-height: 36px; padding: 0 13px; font-size: $text-sm; border-radius: $radius-sm; }
+.size-md { min-height: 44px; padding: 0 18px; font-size: $text-md; }
+.size-lg { min-height: 50px; padding: 0 24px; font-size: $text-lg; border-radius: $radius-lg; }
+
+.iconOnly {
+  padding: 0;
+  &.size-sm { width: 36px; }
+  &.size-md { width: 44px; }
+  &.size-lg { width: 50px; }
+}
+
+// Variants
+.primary {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(99, 102, 241, 0.28);
+  &:hover:not(:disabled) {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px -4px rgba(99, 102, 241, 0.42);
+  }
+  &:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+}
+
+.secondary {
+  background: $surface-raised;
+  color: $text-primary;
+  border-color: $chrome-mid;
+  &:hover:not(:disabled) { background: $surface-hover; border-color: $chrome-bright; }
+}
+
+.ghost {
+  background: transparent;
+  color: $text-secondary;
+  &:hover:not(:disabled) { background: $surface-hover; color: $text-primary; }
+}
+
+.danger {
+  background: transparent;
+  color: $neg;
+  border-color: $chrome-mid;
+  &:hover:not(:disabled) { background: $neg-bg; border-color: $neg; }
+}
+
+.pos {
+  background: $pos-bg;
+  color: $pos;
+  &:hover:not(:disabled) { box-shadow: $shadow-glow-pos; }
+}
+
+.neg {
+  background: $neg-bg;
+  color: $neg;
+  &:hover:not(:disabled) { box-shadow: $shadow-glow-neg; }
+}
+
+.spinner {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: btnSpin 0.6s linear infinite;
+  opacity: 0.9;
+}
+
+@keyframes btnSpin { to { transform: rotate(360deg); } }

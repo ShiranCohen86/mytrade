@@ -119,6 +119,13 @@
   white-space: nowrap;
   margin: 1px 0;
   position: relative;
+  touch-action: manipulation;
+
+  // Touch devices (the mobile drawer): meet the 44px iOS tap-target minimum
+  @media (hover: none) {
+    min-height: 44px;
+    height: auto;
+  }
 
   &:hover {
     background: $surface-raised;

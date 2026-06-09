@@ -10,7 +10,12 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 12vh $space-4 $space-4;
+  // Safe-area aware so the palette never tucks under a notch (portrait/landscape)
+  padding:
+    max(12vh, env(safe-area-inset-top, 0px))
+    max($space-4, env(safe-area-inset-right, 0px))
+    max($space-4, env(safe-area-inset-bottom, 0px))
+    max($space-4, env(safe-area-inset-left, 0px));
   animation: fadeIn 120ms ease both;
 }
 

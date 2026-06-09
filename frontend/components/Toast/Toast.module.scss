@@ -2,8 +2,8 @@
 
 .stack {
   position: fixed;
-  top: 76px;
-  right: $space-4;
+  top: max(76px, env(safe-area-inset-top, 0px));
+  right: max(#{$space-4}, env(safe-area-inset-right, 0px));
   z-index: 9999;
   display: flex;
   flex-direction: column;

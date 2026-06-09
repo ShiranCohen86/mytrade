@@ -211,6 +211,19 @@
   background: $surface-raised;
   transition: background $motion-fast, color $motion-fast, border-color $motion-fast;
   flex-shrink: 0;
+  position: relative;
+
+  // Touch devices: expand the hit area to the 44px iOS minimum without growing the visual box
+  @media (hover: none) {
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 50% auto auto 50%;
+      transform: translate(-50%, -50%);
+      min-width: 44px;
+      min-height: 44px;
+    }
+  }
 
   &:hover {
     background: $surface-elevated;
