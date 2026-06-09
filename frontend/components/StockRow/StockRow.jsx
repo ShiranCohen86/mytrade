@@ -8,59 +8,8 @@ import { fmtVolume, scoreClass } from '@/lib/format';
 import { useFmtPrice } from '@/hooks/useFmtPrice';
 import { getMarketStatus } from '@/lib/marketHours';
 
-// Inline sparkline for risk trend
-function MiniSparkline({ history }) {
-  const pts = history.slice(-10);
-  if (pts.length < 2) return null;
-  const W = 52, H = 16, PAD = 1;
-  const values = pts.map((p) => p.riskScore);
-  const minV = Math.min(...values);
-  const maxV = Math.max(...values);
-  const range = maxV - minV || 1;
-  const toX = (i) => PAD + (i / (pts.length - 1)) * (W - PAD * 2);
-  const toY = (v) => H - PAD - ((v - minV) / range) * (H - PAD * 2);
-  const last = values[values.length - 1];
-  const color = last >= 70 ? 'var(--neg)' : last >= 40 ? 'var(--warn)' : 'var(--pos)';
-  const pointsStr = pts.map((p, i) => `${toX(i).toFixed(1)},${toY(p.riskScore).toFixed(1)}`).join(' ');
-  return (
-    <svg width={W} height={H} aria-hidden="true" className={styles.sparkline}>
-      <polyline points={pointsStr} fill="none" style={{ stroke: color }} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
-      <circle cx={toX(pts.length - 1)} cy={toY(last)} r="2" style={{ fill: color }} />
-    </svg>
-  );
-}
-
 const REGIME_ICONS = { BULLISH: '▲', BEARISH: '▼', VOLATILE: '⚡', NEUTRAL: '→' };
 const EXP_SHORT = { VERY_HIGH: 'VH', HIGH: 'H', MODERATE: 'M', LOW: 'L' };
-
-// Circular progress ring showing proximity to next earnings
-function EarningsRing({ daysToEarnings }) {
-  if (daysToEarnings === null || daysToEarnings < 0) return null;
-  const CYCLE = 91;
-  const progress = Math.max(0, Math.min(1, 1 - daysToEarnings / CYCLE));
-  const size = 14;
-  const r = 5;
-  const circ = 2 * Math.PI * r;
-  const dash = progress * circ;
-  const color = daysToEarnings <= 14 ? 'var(--neg)' : daysToEarnings <= 30 ? 'var(--warn)' : 'var(--pos)';
-  return (
-    <svg
-      width={size} height={size}
-      viewBox={`0 0 ${size} ${size}`}
-      aria-hidden="true"
-      className={styles.earningsRing}
-      style={{ transform: 'rotate(-90deg)' }}
-    >
-      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="currentColor" strokeWidth="2" opacity="0.15" />
-      <circle
-        cx={size / 2} cy={size / 2} r={r}
-        fill="none" stroke={color} strokeWidth="2"
-        strokeDasharray={`${dash.toFixed(2)} ${(circ - dash).toFixed(2)}`}
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
 
 function StockRowInner({
   stock, onRemove, isAnalyzing = false, analysisError = null,
@@ -101,18 +50,6 @@ function StockRowInner({
 
   const change = cachedData?.changePercent ?? 0;
   const isPositive = change >= 0;
-
-  const daysToEarnings = cachedData?.earningsDate
-    ? Math.ceil((new Date(cachedData.earningsDate).getTime() - Date.now()) / 86_400_000)
-    : null;
-
-  const earningsLabel =
-    daysToEarnings === null ? '—' :
-    daysToEarnings < 0 ? '—' :
-    daysToEarnings === 0 ? 'Today' :
-    `${daysToEarnings}d`;
-
-  const earningsUrgent = daysToEarnings !== null && daysToEarnings >= 0 && daysToEarnings <= 7;
 
   const currentPrice = cachedData?.price ?? null;
   const entryPrice = portfolioEntry?.entryPrice ?? null;
@@ -238,23 +175,6 @@ function StockRowInner({
         {/* Market regime */}
         <span className={`${styles.regime} ${styles[`regime_${(analysis?.marketRegime || 'neutral').toLowerCase()}`]}`}>
           {analysis?.marketRegime ? `${REGIME_ICONS[analysis.marketRegime] ?? ''} ${analysis.marketRegime}` : '—'}
-        </span>
-
-        {/* Earnings */}
-        <span
-          className={`${styles.earnings} ${earningsUrgent ? styles.earningsUrgent : ''}`}
-          title={daysToEarnings !== null && daysToEarnings >= 0 ? `${daysToEarnings} days to earnings` : undefined}
-        >
-          <EarningsRing daysToEarnings={daysToEarnings} />
-          {earningsLabel}
-          {earningsUrgent && analysis?.isSellTheNewsRisk && <span className={styles.stnDot} title="Sell-the-News Risk"> ⚡</span>}
-        </span>
-
-        {/* Sparkline */}
-        <span className={styles.sparklineCell}>
-          {(stock.scoreHistory?.length ?? 0) >= 3 && (
-            <MiniSparkline history={stock.scoreHistory} />
-          )}
         </span>
 
         {/* Actions */}

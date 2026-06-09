@@ -2,9 +2,9 @@
 @use '../../styles/mixins' as *;
 
 // Column tracks — desktop. minmax(80px,1fr) prevents 1fr collapse in scroll contexts.
-$cols-desktop: 20px 56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 56px 60px 34px;
+$cols-desktop: 20px 56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 34px;
 // Mobile: drop drag-handle column (invisible on touch, wastes 36px)
-$cols-mobile:       56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 56px 60px 34px;
+$cols-mobile:       56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 34px;
 
 // ─── Horizontal scroll wrapper ────────────────────────────────────────────────
 
@@ -44,7 +44,7 @@ $cols-mobile:       56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 56px 60px 3
 .table {
   display: flex;
   flex-direction: column;
-  min-width: 820px;
+  min-width: 660px;
   width: 100%;
 }
 
@@ -57,7 +57,7 @@ $cols-mobile:       56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 56px 60px 3
   gap: 0 $space-4;
   padding: 0 $space-4;
   height: 38px;
-  min-width: 820px; // mirrors .table min-width so 1fr is computed consistently
+  min-width: 660px; // mirrors .table min-width so 1fr is computed consistently
   position: sticky;
   top: 0;
   z-index: 9;
@@ -119,8 +119,6 @@ $cols-mobile:       56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 56px 60px 3
 .colRisk     { text-align: right; justify-content: flex-end; }
 .colExpect   { text-align: center; justify-content: center; }
 .colRegime   { }
-.colEarnings { text-align: right; justify-content: flex-end; }
-.colSpark    { text-align: center; justify-content: center; }
 .colActions  { }
 
 // ─── Body ────────────────────────────────────────────────────────────────────

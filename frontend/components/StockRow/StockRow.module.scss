@@ -2,8 +2,9 @@
 @use '../../styles/mixins' as *;
 
 // ─── Column Grid ──────────────────────────────────────────────────────────────
-$cols-desktop: 20px 56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 56px 60px 34px;
-$cols-mobile:       56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 56px 60px 34px;
+// Tracks must stay in lockstep with WatchlistTable header tracks + StockRow cells.
+$cols-desktop: 20px 56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 34px;
+$cols-mobile:       56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 34px;
 
 .rowWrapper {
   border-bottom: 1px solid $chrome-dim;
@@ -43,7 +44,7 @@ $cols-mobile:       56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 56px 60px 3
   gap: 0 $space-4;
   padding: 12px $space-4;
   min-height: 44px;
-  min-width: 820px; // prevents 1fr collapse when inside overflow-x:auto scroll context
+  min-width: 660px; // mirrors header min-width so header & rows align under horizontal scroll
   cursor: pointer;
   user-select: none;
 
@@ -112,8 +113,8 @@ $cols-mobile:       56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 56px 60px 3
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-
-  @media (max-width: 480px) { display: none; }
+  // Kept visible at every breakpoint: hiding only the body cell (not the header)
+  // shifts grid auto-placement so headers no longer sit above their content.
 }
 
 // ─── Price ───────────────────────────────────────────────────────────────────
@@ -281,45 +282,6 @@ $cols-mobile:       56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 56px 60px 3
 .regime_bearish  { color: $neg; }
 .regime_volatile { color: $warn; }
 .regime_neutral  { color: $text-secondary; }
-
-// ─── Earnings ────────────────────────────────────────────────────────────────
-
-.earnings {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  @include mono-value(11px);
-  color: $text-secondary;
-  white-space: nowrap;
-  justify-content: flex-end;
-}
-
-.earningsRing {
-  flex-shrink: 0;
-  display: block;
-  color: $chrome-mid;
-}
-
-.earningsUrgent {
-  color: $warn;
-  font-weight: 700;
-  background: $warn-bg;
-  padding: 1px 6px;
-  border-radius: $radius-pill;
-}
-
-.stnDot { color: $neg; }
-
-// ─── Sparkline ───────────────────────────────────────────────────────────────
-
-.sparklineCell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden; // clip SVG lines to cell bounds
-}
-
-.sparkline { display: block; }
 
 // ─── Actions ─────────────────────────────────────────────────────────────────
 

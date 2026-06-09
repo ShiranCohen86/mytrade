@@ -26,8 +26,6 @@ export function WatchlistTable({
     { key: 'pnl-desc',        label: t('table.pnl'),            className: styles.colPnl, sortable: true },
     { key: 'risk-desc',       label: t('table.risk'),           className: styles.colRisk, sortable: true },
     { key: null,              label: t('table.regime'),         className: styles.colRegime },
-    { key: null,              label: t('table.earnings'),       className: styles.colEarnings },
-    { key: null,              label: t('table.trend'),          className: styles.colSpark },
     { key: null,              label: '',                        className: styles.colActions },
   ];
 
