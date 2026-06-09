@@ -46,15 +46,6 @@ $cols-desktop: 20px 56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 56px 60px 3
   cursor: pointer;
   user-select: none;
 
-  // ── Mobile: switch to flex so hidden columns don't leave dead gaps ──────────
-  @media (max-width: 640px) {
-    display: flex;
-    align-items: center;
-    gap: $space-2;
-    padding: 10px $space-3;
-    min-width: unset;
-  }
-
   &:focus-visible {
     outline: none;
     box-shadow: inset 0 0 0 2px $accent;
@@ -387,27 +378,6 @@ $cols-desktop: 20px 56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 56px 60px 3
   opacity: 0.65;
 }
 
-// ─── Mobile cell overrides (≤640px: flex row, show only key columns) ─────────
-
-@media (max-width: 640px) {
-  .dragHandle    { display: none; }
-  .ticker        { width: 52px;  flex-shrink: 0; }
-  .name          { flex: 1; min-width: 0; }
-  .priceCell     { width: 120px; flex-shrink: 0; }
-  .expect        { width: 64px;  flex-shrink: 0; }
-  .pnl           { width: 48px;  flex-shrink: 0; }
-  .risk          { display: none; }
-  .regime        { display: none; }
-  .earnings      { display: none; }
-  .sparklineCell { display: none; }
-  .actionsCell   { flex-shrink: 0; width: 30px; margin-left: auto; }
-}
-
-@media (max-width: 480px) {
-  // Very narrow screens: drop P&L (visible in expanded detail panel)
-  .pnl  { display: none; }
-  // .name already display:none at 480px via existing rule
-}
 
 // ─── Per-row analyzing spinner ────────────────────────────────────────────────
 
