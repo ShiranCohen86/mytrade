@@ -73,7 +73,7 @@
   height: 64px;
   border-radius: 50%;
   background: $accent-faint;
-  border: 2px solid rgba(79, 70, 229, 0.20);
+  border: 2px solid rgba(99, 102, 241, 0.20);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -204,7 +204,7 @@
   &:disabled { opacity: 0.4; cursor: default; }
 }
 
-.btnPrimary { background: $accent;  color: #fff; box-shadow: 0 1px 4px rgba(79, 70, 229, 0.25); }
+.btnPrimary { background: $accent;  color: #fff; box-shadow: 0 1px 4px rgba(99, 102, 241, 0.25); }
 .btnDanger  { background: $neg;     color: #fff; box-shadow: 0 1px 4px rgba(220, 38, 38, 0.25); }
 .btnSuccess { background: $pos;     color: #fff; box-shadow: 0 1px 4px rgba(5, 150, 105, 0.25); }
 .btnWarning { background: $warn;    color: #fff; box-shadow: 0 1px 4px rgba(217, 119, 6, 0.25); }

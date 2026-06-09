@@ -62,7 +62,7 @@
   height: 52px;
   border-radius: $radius-pill;
   background: $accent-faint;
-  border: 2px solid rgba(79, 70, 229, 0.30);
+  border: 2px solid rgba(99, 102, 241, 0.30);
   overflow: hidden;
   flex-shrink: 0;
   display: flex;
@@ -215,11 +215,11 @@
   background: $accent;
   border-radius: $radius-md;
   transition: background $motion-fast, box-shadow $motion-fast, transform $motion-fast;
-  box-shadow: 0 1px 3px rgba(79, 70, 229, 0.25);
+  box-shadow: 0 1px 3px rgba(99, 102, 241, 0.25);
 
   &:hover:not(:disabled) {
     background: $accent-hover;
-    box-shadow: 0 3px 10px rgba(79, 70, 229, 0.30);
+    box-shadow: 0 3px 10px rgba(99, 102, 241, 0.30);
     transform: translateY(-1px);
   }
 

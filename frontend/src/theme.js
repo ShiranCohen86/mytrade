@@ -1,7 +1,7 @@
 import { createTheme } from '@mui/material/styles';
 
-// Dynamically reads CSS custom properties set by Meridian 2.0 design tokens.
-// This keeps MUI in sync with our SCSS token system at runtime.
+// Dynamically reads CSS custom properties set by our design tokens.
+// Kept in sync with the SCSS token system (frontend/app/globals.scss).
 const getToken = (name) => {
   if (typeof window === 'undefined') return '';
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -14,13 +14,13 @@ export function buildMuiTheme(mode = 'light') {
     palette: {
       mode,
       primary: {
-        main:        isDark ? '#818CF8' : '#4F46E5',
-        dark:        isDark ? '#A5B4FC' : '#4338CA',
+        main:        isDark ? '#818CF8' : '#6366F1',
+        dark:        isDark ? '#A5B4FC' : '#4F46E5',
         light:       isDark ? '#C7D2FE' : '#818CF8',
         contrastText: '#FFFFFF',
       },
       secondary: {
-        main:        isDark ? '#C084FC' : '#7C3AED',
+        main:        isDark ? '#C084FC' : '#8B5CF6',
         contrastText: '#FFFFFF',
       },
       success: {
@@ -36,15 +36,15 @@ export function buildMuiTheme(mode = 'light') {
         contrastText: '#FFFFFF',
       },
       background: {
-        default: isDark ? '#080818' : '#F5F6FA',
-        paper:   isDark ? '#0E0E24' : '#FFFFFF',
+        default: isDark ? '#0B0B0E' : '#FAFAF9',
+        paper:   isDark ? '#141417' : '#FFFFFF',
       },
       text: {
-        primary:   isDark ? '#EEEEFF' : '#09091E',
-        secondary: isDark ? '#B8BCD8' : '#3B4068',
-        disabled:  isDark ? '#3F4264' : '#A5AACB',
+        primary:   isDark ? '#FAFAFA' : '#18181B',
+        secondary: isDark ? '#B7B7C0' : '#52525B',
+        disabled:  isDark ? '#52525B' : '#A1A1AA',
       },
-      divider: isDark ? '#1C1C38' : '#E3E5F0',
+      divider: isDark ? '#26262B' : '#ECECEA',
     },
 
     typography: {
@@ -65,18 +65,29 @@ export function buildMuiTheme(mode = 'light') {
       caption: { fontSize: '0.6875rem' }, // 11px
     },
 
-    shape: { borderRadius: 10 },
+    shape: { borderRadius: 12 },
 
-    shadows: [
-      'none',
-      '0 1px 2px rgba(0,0,0,0.05)',
-      '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)',
-      '0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.04)',
-      '0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04)',
-      '0 20px 25px -5px rgba(0,0,0,0.09), 0 8px 10px -6px rgba(0,0,0,0.04)',
-      '0 24px 48px -12px rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.04)',
-      ...Array(18).fill('0 24px 48px -12px rgba(0,0,0,0.16)'),
-    ],
+    shadows: isDark
+      ? [
+          'none',
+          '0 1px 2px rgba(0,0,0,0.50)',
+          '0 2px 8px rgba(0,0,0,0.55), 0 1px 3px rgba(0,0,0,0.40)',
+          '0 4px 16px rgba(0,0,0,0.65), 0 2px 6px rgba(0,0,0,0.45)',
+          '0 10px 30px rgba(0,0,0,0.75), 0 4px 10px rgba(0,0,0,0.55)',
+          '0 20px 40px rgba(0,0,0,0.82), 0 8px 16px rgba(0,0,0,0.60)',
+          '0 28px 64px rgba(0,0,0,0.92), 0 8px 24px rgba(0,0,0,0.72)',
+          ...Array(18).fill('0 28px 64px rgba(0,0,0,0.92)'),
+        ]
+      : [
+          'none',
+          '0 1px 2px rgba(24,24,27,0.04)',
+          '0 1px 3px rgba(24,24,27,0.06), 0 1px 2px rgba(24,24,27,0.04)',
+          '0 6px 12px -2px rgba(24,24,27,0.06), 0 3px 6px -3px rgba(24,24,27,0.05)',
+          '0 12px 22px -4px rgba(24,24,27,0.08), 0 6px 10px -6px rgba(24,24,27,0.05)',
+          '0 24px 34px -8px rgba(24,24,27,0.10), 0 10px 14px -8px rgba(24,24,27,0.05)',
+          '0 28px 56px -16px rgba(24,24,27,0.18), 0 0 0 1px rgba(24,24,27,0.04)',
+          ...Array(18).fill('0 28px 56px -16px rgba(24,24,27,0.18)'),
+        ],
 
     transitions: {
       duration: {
@@ -104,20 +115,21 @@ export function buildMuiTheme(mode = 'light') {
         defaultProps: { disableElevation: true },
         styleOverrides: {
           root: {
-            borderRadius: 10,
+            borderRadius: 12,
             textTransform: 'none',
             fontWeight: 500,
             letterSpacing: '-0.01em',
+            minHeight: 44,
             transition: 'background 120ms, box-shadow 120ms, transform 120ms, border-color 120ms',
             '&:active': { transform: 'scale(0.98)' },
           },
           contained: {
-            boxShadow: '0 1px 3px rgba(79, 70, 229, 0.28)',
-            '&:hover': { boxShadow: '0 4px 12px rgba(79, 70, 229, 0.32)', transform: 'translateY(-1px)' },
+            boxShadow: '0 1px 3px rgba(99,102,241,0.28)',
+            '&:hover': { boxShadow: '0 4px 12px rgba(99,102,241,0.32)', transform: 'translateY(-1px)' },
           },
           outlined: {
-            borderColor: isDark ? '#272748' : '#C9CCDF',
-            '&:hover': { borderColor: isDark ? '#383860' : '#9096BE' },
+            borderColor: isDark ? '#303036' : '#D8D8D4',
+            '&:hover': { borderColor: isDark ? '#45454D' : '#ABABA4' },
           },
         },
       },
@@ -126,13 +138,13 @@ export function buildMuiTheme(mode = 'light') {
         styleOverrides: {
           root: {
             '& .MuiOutlinedInput-root': {
-              borderRadius: 10,
-              fontSize: '0.8125rem',
-              '& fieldset': { borderColor: isDark ? '#272748' : '#C9CCDF', transition: 'border-color 120ms, box-shadow 120ms' },
-              '&:hover fieldset': { borderColor: isDark ? '#383860' : '#9096BE' },
+              borderRadius: 12,
+              fontSize: '1rem', // 16px — never triggers iOS focus-zoom
+              '& fieldset': { borderColor: isDark ? '#303036' : '#D8D8D4', transition: 'border-color 120ms, box-shadow 120ms' },
+              '&:hover fieldset': { borderColor: isDark ? '#45454D' : '#ABABA4' },
               '&.Mui-focused fieldset': {
-                borderColor: isDark ? '#818CF8' : '#4F46E5',
-                boxShadow: `0 0 0 3px ${isDark ? 'rgba(129,140,248,0.20)' : 'rgba(79,70,229,0.18)'}`,
+                borderColor: isDark ? '#818CF8' : '#6366F1',
+                boxShadow: `0 0 0 3px ${isDark ? 'rgba(129,140,248,0.20)' : 'rgba(99,102,241,0.18)'}`,
               },
             },
           },
@@ -142,7 +154,7 @@ export function buildMuiTheme(mode = 'light') {
         defaultProps: { elevation: 2 },
         styleOverrides: {
           root: { backgroundImage: 'none' },
-          rounded: { borderRadius: 14 },
+          rounded: { borderRadius: 16 },
         },
       },
       MuiChip: {
@@ -154,20 +166,20 @@ export function buildMuiTheme(mode = 'light') {
         defaultProps: { arrow: true },
         styleOverrides: {
           tooltip: {
-            borderRadius: 8,
+            borderRadius: 10,
             fontSize: '0.75rem',
             fontWeight: 500,
-            background: isDark ? '#1A1A38' : '#09091E',
+            background: isDark ? '#222227' : '#18181B',
             padding: '6px 10px',
           },
-          arrow: { color: isDark ? '#1A1A38' : '#09091E' },
+          arrow: { color: isDark ? '#222227' : '#18181B' },
         },
       },
       MuiTableCell: {
         styleOverrides: {
           root: {
             fontSize: '0.8125rem',
-            borderBottom: `1px solid ${isDark ? '#1C1C38' : '#E3E5F0'}`,
+            borderBottom: `1px solid ${isDark ? '#26262B' : '#ECECEA'}`,
             padding: '10px 16px',
           },
           head: {
@@ -175,7 +187,7 @@ export function buildMuiTheme(mode = 'light') {
             fontSize: '0.6875rem',
             textTransform: 'uppercase',
             letterSpacing: '0.06em',
-            color: isDark ? '#6D7098' : '#686D96',
+            color: isDark ? '#8A8A95' : '#71717A',
           },
         },
       },
@@ -183,41 +195,41 @@ export function buildMuiTheme(mode = 'light') {
         styleOverrides: {
           root: {
             transition: 'background 120ms',
-            '&:hover': { background: isDark ? 'rgba(129,140,248,0.06)' : 'rgba(79,70,229,0.05)' },
+            '&:hover': { background: isDark ? 'rgba(129,140,248,0.07)' : 'rgba(99,102,241,0.05)' },
           },
         },
       },
       MuiDialog: {
         styleOverrides: {
           paper: {
-            borderRadius: 20,
+            borderRadius: 22,
             boxShadow: isDark
               ? '0 28px 64px rgba(0,0,0,0.92), 0 8px 24px rgba(0,0,0,0.72)'
-              : '0 24px 48px -12px rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.04)',
+              : '0 28px 56px -16px rgba(24,24,27,0.18), 0 0 0 1px rgba(24,24,27,0.04)',
           },
         },
       },
       MuiIconButton: {
         styleOverrides: {
           root: {
-            borderRadius: 10,
+            borderRadius: 12,
             transition: 'background 120ms, color 120ms',
           },
         },
       },
       MuiDivider: {
         styleOverrides: {
-          root: { borderColor: isDark ? '#1C1C38' : '#E3E5F0' },
+          root: { borderColor: isDark ? '#26262B' : '#ECECEA' },
         },
       },
       MuiMenu: {
         styleOverrides: {
           paper: {
-            borderRadius: 14,
-            border: `1px solid ${isDark ? '#272748' : '#C9CCDF'}`,
+            borderRadius: 16,
+            border: `1px solid ${isDark ? '#303036' : '#D8D8D4'}`,
             boxShadow: isDark
               ? '0 28px 64px rgba(0,0,0,0.92)'
-              : '0 24px 48px -12px rgba(0,0,0,0.16)',
+              : '0 28px 56px -16px rgba(24,24,27,0.18)',
           },
         },
       },
@@ -226,10 +238,10 @@ export function buildMuiTheme(mode = 'light') {
           root: {
             fontSize: '0.8125rem',
             fontWeight: 500,
-            borderRadius: 8,
+            borderRadius: 10,
             margin: '2px 6px',
             transition: 'background 120ms',
-            '&:hover': { background: isDark ? 'rgba(129,140,248,0.08)' : 'rgba(79,70,229,0.06)' },
+            '&:hover': { background: isDark ? 'rgba(129,140,248,0.08)' : 'rgba(99,102,241,0.06)' },
           },
         },
       },

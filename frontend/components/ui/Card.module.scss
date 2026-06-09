@@ -1,0 +1,31 @@
+@use '../../styles/variables' as *;
+
+.card {
+  background: $surface-panel;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-sm;
+}
+
+.elevated {
+  background: $surface-elevated;
+  border-color: $chrome-mid;
+  box-shadow: $shadow-md;
+}
+
+.subtle {
+  background: $surface-subtle;
+  box-shadow: none;
+}
+
+.pad-none { padding: 0; }
+.pad-sm { padding: $space-3; }
+.pad-md { padding: $space-4; }
+.pad-lg { padding: $space-6; }
+
+.interactive {
+  cursor: pointer;
+  transition: transform $motion-base, box-shadow $motion-base, border-color $motion-base;
+  &:hover { transform: translateY(-2px); box-shadow: $shadow-lg; border-color: $chrome-mid; }
+  &:active { transform: translateY(0); }
+}

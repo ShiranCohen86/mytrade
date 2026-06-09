@@ -1,0 +1,25 @@
+@use '../../styles/variables' as *;
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  border-radius: $radius-pill;
+  font-size: $text-xs;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+.sm { padding: 1px 7px; font-size: $text-2xs; }
+
+.accent { background: $accent-faint;   color: $accent; }
+.pos    { background: $pos-bg;         color: $pos; }
+.neg    { background: $neg-bg;         color: $neg; }
+.warn   { background: $warn-bg;        color: $warn; }
+.muted  { background: $surface-raised; color: $text-tertiary; border: 1px solid $chrome-dim; }
+.solid  { background: $accent;         color: #fff; }
+
+.dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }

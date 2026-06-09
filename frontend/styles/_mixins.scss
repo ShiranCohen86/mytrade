@@ -89,6 +89,32 @@
   -webkit-backdrop-filter: blur(20px);
 }
 
+// Safe-area padding for full-screen overlays/sheets — covers notch in portrait
+// AND landscape (iPhone/iPad). Pass a min padding; env() wins when larger.
+@mixin overlay-safe-area($base: $space-4) {
+  padding-top:    max(#{$base}, env(safe-area-inset-top));
+  padding-right:  max(#{$base}, env(safe-area-inset-right));
+  padding-bottom: max(#{$base}, env(safe-area-inset-bottom));
+  padding-left:   max(#{$base}, env(safe-area-inset-left));
+}
+
+// Guaranteed-tappable target (iOS HIG min 44px) without changing visual box —
+// expands the hit area via a centered ::after when the element renders smaller.
+@mixin tap-target($min: 44px) {
+  position: relative;
+  touch-action: manipulation;
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: $min;
+    min-height: $min;
+    width: 100%;
+    height: 100%;
+  }
+}
+
 // ─── Responsive breakpoint mixins ─────────────────────────────────────────────
 @mixin below-2xl { @media (max-width: $bp-2xl) { @content; } }
 @mixin below-xl  { @media (max-width: $bp-xl)  { @content; } }

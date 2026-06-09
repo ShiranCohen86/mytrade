@@ -2,37 +2,37 @@
 
 // ─── Theme tokens — light (default) ──────────────────────────────────────────
 :root, [data-theme="light"] {
-  // Surfaces — clean neutral foundation (enterprise-grade, not blue-tinted)
-  --surface-base:     #F5F6FA;
+  // Surfaces — warm neutral foundation (consumer-fintech: friendly off-white, not cold blue-gray)
+  --surface-base:     #FAFAF9;
   --surface-panel:    #FFFFFF;
-  --surface-raised:   #EDEEF5;
-  --surface-hover:    rgba(79, 70, 229, 0.05);
+  --surface-raised:   #F4F4F2;
+  --surface-hover:    rgba(99, 102, 241, 0.05);
   --surface-elevated: #FFFFFF;
-  --surface-overlay:  rgba(9, 9, 26, 0.52);
-  --surface-glass:    rgba(255, 255, 255, 0.88);
-  --surface-subtle:   #FAFBFE;
+  --surface-overlay:  rgba(24, 24, 27, 0.50);
+  --surface-glass:    rgba(255, 255, 255, 0.85);
+  --surface-subtle:   #FCFCFB;
 
-  // Chrome (borders) — crisp, minimal
-  --chrome-dim:    #E3E5F0;
-  --chrome-mid:    #C9CCDF;
-  --chrome-bright: #9096BE;
+  // Chrome (borders) — warm hairlines
+  --chrome-dim:    #ECECEA;
+  --chrome-mid:    #D8D8D4;
+  --chrome-bright: #ABABA4;
 
-  // Text hierarchy — deep and readable
-  --text-primary:   #09091E;
-  --text-secondary: #3B4068;
-  --text-tertiary:  #686D96;
-  --text-disabled:  #A5AACB;
+  // Text hierarchy — warm near-black, readable
+  --text-primary:   #18181B;
+  --text-secondary: #52525B;
+  --text-tertiary:  #71717A;
+  --text-disabled:  #A1A1AA;
 
-  // Accent — Indigo 600 (enterprise standard)
-  --accent:           #4F46E5;
-  --accent-hover:     #4338CA;
-  --accent-secondary: #7C3AED;
-  --accent-faint:     rgba(79, 70, 229, 0.07);
-  --accent-glow:      rgba(79, 70, 229, 0.18);
-  --accent-dim:       rgba(79, 70, 229, 0.04);
-  --accent-text:      #4338CA;
+  // Accent — friendlier Indigo 500 (consumer-fintech violet-indigo)
+  --accent:           #6366F1;
+  --accent-hover:     #4F46E5;
+  --accent-secondary: #8B5CF6;
+  --accent-faint:     rgba(99, 102, 241, 0.07);
+  --accent-glow:      rgba(99, 102, 241, 0.18);
+  --accent-dim:       rgba(99, 102, 241, 0.04);
+  --accent-text:      #4F46E5;
 
-  // Semantic
+  // Semantic (unchanged — P&L green/red are sacred)
   --pos:    #059669;
   --pos-bg: rgba(5, 150, 105, 0.08);
   --neg:    #DC2626;
@@ -40,16 +40,29 @@
   --warn:   #D97706;
   --warn-bg: rgba(217, 119, 6, 0.08);
 
-  // Shadows — Tailwind-inspired, ultra-clean layering
-  --shadow-xs:    0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-sm:    0 1px 3px rgba(0, 0, 0, 0.07), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md:    0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
-  --shadow-lg:    0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
-  --shadow-xl:    0 20px 25px -5px rgba(0, 0, 0, 0.09), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
-  --shadow-popup: 0 24px 48px -12px rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.04);
-  --shadow-glow:      0 0 0 3px rgba(79, 70, 229, 0.20);
+  // Shadows — softer, gentler float (consumer-fintech depth)
+  --shadow-xs:    0 1px 2px rgba(24, 24, 27, 0.04);
+  --shadow-sm:    0 1px 3px rgba(24, 24, 27, 0.06), 0 1px 2px rgba(24, 24, 27, 0.04);
+  --shadow-md:    0 6px 12px -2px rgba(24, 24, 27, 0.06), 0 3px 6px -3px rgba(24, 24, 27, 0.05);
+  --shadow-lg:    0 12px 22px -4px rgba(24, 24, 27, 0.08), 0 6px 10px -6px rgba(24, 24, 27, 0.05);
+  --shadow-xl:    0 24px 34px -8px rgba(24, 24, 27, 0.10), 0 10px 14px -8px rgba(24, 24, 27, 0.05);
+  --shadow-popup: 0 28px 56px -16px rgba(24, 24, 27, 0.18), 0 0 0 1px rgba(24, 24, 27, 0.04);
+  --shadow-glow:      0 0 0 3px rgba(99, 102, 241, 0.20);
   --shadow-glow-pos:  0 0 0 3px rgba(5, 150, 105, 0.18);
   --shadow-glow-neg:  0 0 0 3px rgba(220, 38, 38, 0.18);
+
+  // Living-UI: context emphasis + live flashes + ambient regime tints
+  --flash-pos:        rgba(5, 150, 105, 0.16);
+  --flash-neg:        rgba(220, 38, 38, 0.16);
+  --emphasis-ring:        0 0 0 1.5px rgba(99, 102, 241, 0.32);
+  --emphasis-glow-pos:    0 0 0 1px rgba(5, 150, 105, 0.28), 0 4px 16px -4px rgba(5, 150, 105, 0.22);
+  --emphasis-glow-neg:    0 0 0 1px rgba(220, 38, 38, 0.28), 0 4px 16px -4px rgba(220, 38, 38, 0.22);
+  --emphasis-glow-accent: 0 0 0 1px rgba(99, 102, 241, 0.28), 0 4px 16px -4px rgba(99, 102, 241, 0.20);
+  --muted-opacity:    0.58;
+  --ambient-bull:     rgba(5, 150, 105, 0.045);
+  --ambient-bear:     rgba(220, 38, 38, 0.045);
+  --ambient-volatile: rgba(217, 119, 6, 0.05);
+  --live-dot:         #059669;
 
   // Legacy compat
   --shadow-panel: var(--shadow-sm);
@@ -58,32 +71,32 @@
 
 // ─── Theme tokens — dark ──────────────────────────────────────────────────────
 [data-theme="dark"] {
-  // Surfaces — deep professional dark (Bloomberg-inspired clarity)
-  --surface-base:     #080818;
-  --surface-panel:    #0E0E24;
-  --surface-raised:   #141430;
-  --surface-hover:    rgba(129, 140, 248, 0.06);
-  --surface-elevated: #1A1A38;
-  --surface-overlay:  rgba(0, 0, 16, 0.84);
-  --surface-glass:    rgba(14, 14, 36, 0.95);
-  --surface-subtle:   #0A0A1E;
+  // Surfaces — warm near-black (neutral, not blue-black)
+  --surface-base:     #0B0B0E;
+  --surface-panel:    #141417;
+  --surface-raised:   #1B1B1F;
+  --surface-hover:    rgba(129, 140, 248, 0.07);
+  --surface-elevated: #222227;
+  --surface-overlay:  rgba(0, 0, 0, 0.84);
+  --surface-glass:    rgba(20, 20, 23, 0.95);
+  --surface-subtle:   #0E0E11;
 
   // Chrome
-  --chrome-dim:    #1C1C38;
-  --chrome-mid:    #272748;
-  --chrome-bright: #383860;
+  --chrome-dim:    #26262B;
+  --chrome-mid:    #303036;
+  --chrome-bright: #45454D;
 
-  // Text
-  --text-primary:   #EEEEFF;
-  --text-secondary: #B8BCD8;
-  --text-tertiary:  #6D7098;
-  --text-disabled:  #3F4264;
+  // Text — warm whites
+  --text-primary:   #FAFAFA;
+  --text-secondary: #B7B7C0;
+  --text-tertiary:  #8A8A95;
+  --text-disabled:  #52525B;
 
   // Accent
   --accent:           #818CF8;
   --accent-hover:     #A5B4FC;
   --accent-secondary: #C084FC;
-  --accent-faint:     rgba(129, 140, 248, 0.09);
+  --accent-faint:     rgba(129, 140, 248, 0.10);
   --accent-glow:      rgba(129, 140, 248, 0.20);
   --accent-dim:       rgba(129, 140, 248, 0.05);
   --accent-text:      #A5B4FC;
@@ -107,6 +120,19 @@
   --shadow-glow-pos:  0 0 0 3px rgba(52, 211, 153, 0.20);
   --shadow-glow-neg:  0 0 0 3px rgba(248, 113, 113, 0.20);
 
+  // Living-UI
+  --flash-pos:        rgba(52, 211, 153, 0.18);
+  --flash-neg:        rgba(248, 113, 113, 0.18);
+  --emphasis-ring:        0 0 0 1.5px rgba(129, 140, 248, 0.40);
+  --emphasis-glow-pos:    0 0 0 1px rgba(52, 211, 153, 0.32), 0 4px 18px -4px rgba(52, 211, 153, 0.28);
+  --emphasis-glow-neg:    0 0 0 1px rgba(248, 113, 113, 0.32), 0 4px 18px -4px rgba(248, 113, 113, 0.28);
+  --emphasis-glow-accent: 0 0 0 1px rgba(129, 140, 248, 0.34), 0 4px 18px -4px rgba(129, 140, 248, 0.26);
+  --muted-opacity:    0.50;
+  --ambient-bull:     rgba(52, 211, 153, 0.06);
+  --ambient-bear:     rgba(248, 113, 113, 0.06);
+  --ambient-volatile: rgba(251, 191, 36, 0.06);
+  --live-dot:         #34D399;
+
   --shadow-panel: var(--shadow-sm);
   --shadow-popup-legacy: var(--shadow-popup);
 }
@@ -125,7 +151,11 @@ html {
 }
 
 body {
-  background: $surface-base;
+  // Ambient market-regime wash (var swapped by MarketContext via [data-regime] on <html>)
+  background:
+    radial-gradient(125% 65% at 50% -5%, var(--ambient-tint, transparent), transparent 68%),
+    $surface-base;
+  background-attachment: fixed;
   color: $text-primary;
   font-family: $font-ui;
   font-size: 14px;
@@ -137,7 +167,14 @@ body {
   min-height: 100vh;
   min-height: 100dvh; // dvh tracks the visual viewport on mobile — avoids a sliver of phantom document scroll
   overscroll-behavior-y: none; // no native pull-to-refresh / rubber-band bounce
+  transition: background-color $motion-slow;
 }
+
+// ─── Living-UI: ambient market-regime tint (subtle, never fights content) ─────
+:root { --ambient-tint: transparent; }
+[data-regime="bull"]     { --ambient-tint: var(--ambient-bull); }
+[data-regime="bear"]     { --ambient-tint: var(--ambient-bear); }
+[data-regime="volatile"] { --ambient-tint: var(--ambient-volatile); }
 
 a   { color: inherit; text-decoration: none; }
 button { cursor: pointer; border: none; background: none; font: inherit; }
@@ -228,17 +265,17 @@ input, button, textarea, select { outline: none; }
   color: #fff;
   border-color: transparent;
   font-weight: 600;
-  box-shadow: 0 1px 3px rgba(79, 70, 229, 0.28);
+  box-shadow: 0 1px 3px rgba(99, 102, 241,0.28);
 
   &:hover:not(:disabled) {
     background: var(--accent-hover);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.32);
+    box-shadow: 0 4px 12px rgba(99, 102, 241,0.32);
   }
 
   &:active:not(:disabled) {
     transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(79, 70, 229, 0.18);
+    box-shadow: 0 1px 2px rgba(99, 102, 241,0.18);
   }
 }
 
@@ -247,17 +284,17 @@ input, button, textarea, select { outline: none; }
   color: #fff;
   border-color: transparent;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.28);
+  box-shadow: 0 2px 8px rgba(99, 102, 241,0.28);
 
   &:hover:not(:disabled) {
     filter: brightness(1.07);
     transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(79, 70, 229, 0.38);
+    box-shadow: 0 4px 16px rgba(99, 102, 241,0.38);
   }
 
   &:active:not(:disabled) {
     transform: translateY(0);
-    box-shadow: 0 1px 4px rgba(79, 70, 229, 0.22);
+    box-shadow: 0 1px 4px rgba(99, 102, 241,0.22);
     filter: brightness(0.97);
   }
 }
@@ -378,6 +415,17 @@ input, button, textarea, select { outline: none; }
   border-radius: $radius-lg;
 }
 
+// iOS Safari auto-zooms when a focused field is < 16px. Force ≥16px on touch /
+// small screens so focusing any input never zooms the viewport.
+@media (max-width: $bp-md), (hover: none) and (pointer: coarse) {
+  input, textarea, select, .input, .input-lg {
+    font-size: 16px;
+  }
+}
+
+// Tabular figures — align numeric columns (prices, %, scores)
+.tabular { font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; }
+
 // ─── Card utility ─────────────────────────────────────────────────────────────
 .card {
   background: $surface-panel;
@@ -472,6 +520,33 @@ input, button, textarea, select { outline: none; }
 .anim-fade-in  { animation: fadeIn  200ms ease-out; }
 .anim-slide-up { animation: slideUp 200ms cubic-bezier(0.16, 1, 0.3, 1); }
 .anim-scale-in { animation: scaleIn 150ms cubic-bezier(0.16, 1, 0.3, 1); }
+
+// ─── Living-UI: live price-tick flash + context emphasis + freshness dot ──────
+@keyframes flashPos { 0% { background-color: var(--flash-pos); } 100% { background-color: transparent; } }
+@keyframes flashNeg { 0% { background-color: var(--flash-neg); } 100% { background-color: transparent; } }
+@keyframes livePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.35; transform: scale(0.82); }
+}
+
+// Brief wash applied (via key change) when a polled value ticks up/down
+.flash-pos { animation: flashPos 900ms ease-out; }
+.flash-neg { animation: flashNeg 900ms ease-out; }
+
+// Context emphasis levels — driven by lib/emphasis.js
+.emph-muted  { opacity: var(--muted-opacity); transition: opacity $motion-base; }
+.emph-watch  { box-shadow: var(--emphasis-ring); }
+.emph-hot-pos    { box-shadow: var(--emphasis-glow-pos); }
+.emph-hot-neg    { box-shadow: var(--emphasis-glow-neg); }
+.emph-hot-accent { box-shadow: var(--emphasis-glow-accent); }
+
+// Data-freshness "live" dot — calmer when market closed
+.live-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--live-dot); display: inline-block;
+  animation: livePulse 2.2s ease-in-out infinite;
+}
+[data-session="closed"] .live-dot { background: var(--chrome-bright); animation: none; }
 
 // ─── RTL (Hebrew) support ─────────────────────────────────────────────────────
 [dir="rtl"] {
