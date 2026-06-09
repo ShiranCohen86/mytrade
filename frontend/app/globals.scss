@@ -151,11 +151,12 @@ html {
 }
 
 body {
-  // Ambient market-regime wash (var swapped by MarketContext via [data-regime] on <html>)
+  // Ambient market-regime wash (var swapped by MarketContext via [data-regime] on <html>).
+  // NOTE: no `background-attachment: fixed` — on iOS it repaints every scroll frame and
+  // jumps as the URL bar collapses (dvh changes). A normal top-anchored gradient is smooth.
   background:
-    radial-gradient(125% 65% at 50% -5%, var(--ambient-tint, transparent), transparent 68%),
+    radial-gradient(125% 60% at 50% 0%, var(--ambient-tint, transparent), transparent 60%) no-repeat,
     $surface-base;
-  background-attachment: fixed;
   color: $text-primary;
   font-family: $font-ui;
   font-size: 14px;
