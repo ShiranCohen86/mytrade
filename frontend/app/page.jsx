@@ -15,6 +15,17 @@ import { useAppShell } from '@/components/AppShell/AppShell';
 import { track, EV } from '@/lib/analytics';
 import styles from './page.module.scss';
 
+// Skip the auto-analyze on dashboard entry when every stock was analyzed within
+// this window — avoids re-running a full watchlist analysis on every navigation.
+const AUTO_ANALYZE_STALE_MS = 4 * 60 * 60 * 1000;
+
+// Prevent CSV/Excel formula injection: prefix cells that begin with a formula
+// trigger (= + - @) so spreadsheets treat them as plain text.
+const csvSafe = (v) => {
+  const s = String(v ?? '');
+  return /^[=+\-@]/.test(s) ? `'${s}` : s;
+};
+
 function sortStocks(stocks, key, portfolio) {
   if (key === 'default') return stocks;
   return [...stocks].sort((a, b) => {
@@ -103,10 +114,15 @@ export default function DashboardPage() {
   }, [moreOpen]);
 
   useEffect(() => {
-    if (!isLoading && stocks.length > 0 && !hasAutoAnalyzed.current) {
-      hasAutoAnalyzed.current = true;
-      analyzeAll();
-    }
+    if (isLoading || stocks.length === 0 || hasAutoAnalyzed.current) return;
+    hasAutoAnalyzed.current = true;
+    // Only auto-analyze when something is actually stale, so returning to the
+    // dashboard doesn't re-run a full analysis of an already-fresh watchlist.
+    const hasStale = stocks.some((s) => {
+      const at = s.analysis?.analyzedAt;
+      return !at || (Date.now() - new Date(at).getTime()) > AUTO_ANALYZE_STALE_MS;
+    });
+    if (hasStale) analyzeAll();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, stocks.length]);
 
@@ -212,8 +228,8 @@ export default function DashboardPage() {
     const headers = ['Ticker', 'Name', 'Sector', 'Price', 'Change%', 'Risk Score', 'Risk Label', 'Expectation Score', 'Expectation Label', 'Market Regime', 'Earnings Date', 'Analyzed At'];
     const rows = target.map((s) => [
       s.ticker,
-      `"${(s.name || '').replace(/"/g, '""')}"`,
-      `"${(s.sector || '').replace(/"/g, '""')}"`,
+      `"${csvSafe(s.name).replace(/"/g, '""')}"`,
+      `"${csvSafe(s.sector).replace(/"/g, '""')}"`,
       s.cachedData?.price?.toFixed(2) ?? '',
       s.cachedData?.changePercent?.toFixed(2) ?? '',
       s.analysis?.riskScore ?? '',

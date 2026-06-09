@@ -80,6 +80,7 @@
     "welcomeBack": "ברוך שובך",
     "welcomeBackSub": "התחבר לחשבונך כדי להמשיך.",
     "googleFailed": "הכניסה דרך Google נכשלה. נסה שוב או השתמש באימייל.",
+    "accountSuspended": "החשבון שלך הושעה. אנא פנה לתמיכה.",
     "loginFailed": "הכניסה נכשלה. אנא נסה שוב.",
     "createAccount": "צור חשבון",
     "createAccountArrow": "צור חשבון →",

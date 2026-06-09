@@ -31,7 +31,7 @@ router.get('/', adminAuth('watchlist.edit'), async (req, res) => {
 
     res.json({ items, pagination: { page, limit, total, pages: Math.ceil(total / limit) } });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 
@@ -43,7 +43,7 @@ router.get('/:userId', adminAuth('watchlist.edit'), async (req, res) => {
       .lean();
     res.json(items);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 
@@ -67,7 +67,7 @@ router.post('/:userId/restore/:symbol', adminAuth('watchlist.edit'), async (req,
 
     res.json(item);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 
@@ -98,7 +98,7 @@ router.post('/:userId/disable/:symbol', adminAuth('watchlist.edit'), async (req,
 
     res.json(item);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 

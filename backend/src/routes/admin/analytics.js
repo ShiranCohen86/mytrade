@@ -59,7 +59,7 @@ router.get('/overview', adminAuth('logs.read'), async (req, res) => {
       system: { totalLogs, criticalLogs7d, failedLogins7d },
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 
@@ -82,7 +82,7 @@ router.get('/signups', adminAuth('logs.read'), async (req, res) => {
 
     res.json(data.map((d) => ({ date: d._id, count: d.count })));
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 
@@ -106,7 +106,7 @@ router.get('/activity', adminAuth('logs.read'), async (req, res) => {
 
     res.json(data.map((d) => ({ date: d.date, count: d.count })));
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 
@@ -134,7 +134,7 @@ router.get('/watchlists', adminAuth('logs.read'), async (req, res) => {
 
     res.json({ mostAdded, mostRemoved, symbolPopularity });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 
@@ -164,7 +164,7 @@ router.get('/security', adminAuth('audit.read'), async (req, res) => {
 
     res.json({ failedByIp, failedByEmail, recentCritical });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 
@@ -237,7 +237,7 @@ router.get('/product', adminAuth('logs.read'), async (req, res) => {
       topEvents: byEvent.sort((a, b) => b.count - a.count).slice(0, 15).map((e) => ({ event: e._id, count: e.count })),
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 

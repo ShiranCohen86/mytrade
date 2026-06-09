@@ -16,9 +16,12 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(
-    searchParams.get('error') === 'google' ? t('auth.googleFailed') : ''
-  );
+  const [error, setError] = useState(() => {
+    const code = searchParams.get('error');
+    if (code === 'google') return t('auth.googleFailed');
+    if (code === 'suspended') return t('auth.accountSuspended');
+    return '';
+  });
   const [loading, setLoading] = useState(false);
 
   if (!isLoading && isAuthenticated) return <Navigate to="/dashboard" replace />;

@@ -35,10 +35,15 @@ const userSchema = new mongoose.Schema(
   {
     email: { type: String, unique: true, sparse: true, lowercase: true, trim: true },
     passwordHash: { type: String, select: false },
+    // Bumped on logout to invalidate all outstanding refresh tokens for the user.
+    tokenVersion: { type: Number, default: 0 },
     googleId: { type: String, sparse: true },
     displayName: { type: String, default: '' },
     avatar: { type: String, default: '' },
     onboardingDone: { type: Boolean, default: false },
+    // Denormalized last-activity timestamp, bumped (throttled) by touchActivity
+    // middleware. Powers active/inactive/returning notification segments.
+    lastActiveAt: { type: Date, default: null, index: true },
     role: { type: String, enum: ROLES, default: 'user', index: true },
     isSuspended: { type: Boolean, default: false, index: true },
     suspendedAt: { type: Date, default: null },

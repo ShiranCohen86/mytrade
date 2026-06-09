@@ -6,13 +6,15 @@ const ROLE_PERMISSIONS = {
   super_admin: [
     'users.read', 'users.write', 'logs.read', 'logs.export',
     'system.config', 'watchlist.edit', 'user.suspend', 'audit.read',
+    'notifications.read', 'notifications.send',
   ],
   admin: [
     'users.read', 'users.write', 'logs.read', 'logs.export',
     'watchlist.edit', 'user.suspend', 'audit.read',
+    'notifications.read', 'notifications.send',
   ],
   support_agent: ['users.read', 'logs.read', 'watchlist.edit'],
-  analyst: ['logs.read', 'logs.export', 'audit.read'],
+  analyst: ['logs.read', 'logs.export', 'audit.read', 'notifications.read'],
   user: [],
 };
 

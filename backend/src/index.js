@@ -1,4 +1,5 @@
 const path = require('path');
+const http = require('http');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -22,10 +23,10 @@ app.use(helmet());
 app.use((_req, res, next) => {
   res.setHeader('Content-Security-Policy', [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+    "script-src 'self' 'unsafe-inline'",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "img-src 'self' data: https:",
-    "connect-src 'self' https:",
+    "connect-src 'self' https: wss:",
     "font-src 'self' https://fonts.gstatic.com",
   ].join('; '));
   next();
@@ -43,9 +44,14 @@ app.use((req, res, next) => {
 app.use(compression());
 
 // CORS — needed for local dev (Vite on :3000 → Express on :5000); not needed in prod (same origin)
-const allowedOrigin = process.env.ALLOWED_ORIGIN || 'http://localhost:3000';
+const allowedOrigins = (process.env.ALLOWED_ORIGIN || 'http://localhost:3000')
+  .split(',').map((o) => o.trim()).filter(Boolean);
 app.use(cors({
-  origin: allowedOrigin,
+  // Allow requests with no Origin (same-origin / curl) and any configured origin.
+  origin(origin, cb) {
+    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+    return cb(null, false);
+  },
   credentials: true,
 }));
 
@@ -114,14 +120,21 @@ app.get('/api/market/overview', async (_req, res) => {
       return res.json(_overviewCache);
     }
     const provider = require('./providers/ProviderFactory');
-    const tickers = ['SPY', 'QQQ', 'DIA', 'VIX'];
+    // The volatility index resolves on Yahoo as ^VIX (plain "VIX" returns no data).
+    // Keep the display ticker as 'VIX' so the frontend keying stays unchanged.
+    const tickers = [
+      { symbol: 'SPY', label: 'SPY' },
+      { symbol: 'QQQ', label: 'QQQ' },
+      { symbol: 'DIA', label: 'DIA' },
+      { symbol: '^VIX', label: 'VIX' },
+    ];
     const quotes = await Promise.all(
-      tickers.map(async (ticker) => {
+      tickers.map(async ({ symbol, label }) => {
         try {
-          const q = await provider.getCurrentQuote(ticker);
-          return { ticker, price: q.price, change: q.change, changePercent: q.changePercent };
+          const q = await provider.getCurrentQuote(symbol);
+          return { ticker: label, price: q.price, change: q.change, changePercent: q.changePercent };
         } catch {
-          return { ticker, price: null, change: null, changePercent: null };
+          return { ticker: label, price: null, change: null, changePercent: null };
         }
       })
     );
@@ -190,16 +203,20 @@ app.use('/auth', require('./routes/auth'));
 // applies `auth` to everything under /api, which would otherwise block the
 // public /api/push/vapid-public-key endpoint.
 app.use('/api/push', require('./routes/push'));
+
+// Admin API — namespaced under /api/admin so it never collides with the SPA's
+// client-side /admin/* routes (which must resolve to index.html in production).
+// Registered BEFORE the '/api' stocks router so admin requests don't pass through
+// the user-level `auth` middleware. Each sub-router enforces its own RBAC via adminAuth.
+app.use('/api/admin/users', adminLimiter, require('./routes/admin/users'));
+app.use('/api/admin/audit', adminLimiter, require('./routes/admin/audit'));
+app.use('/api/admin/analytics', adminLimiter, require('./routes/admin/analytics'));
+app.use('/api/admin/watchlists', adminLimiter, require('./routes/admin/watchlist'));
+app.use('/api/admin/support', adminLimiter, require('./routes/admin/support'));
+app.use('/api/admin/intelligence', adminLimiter, require('./routes/admin/intelligence'));
+
 app.use('/api', require('./routes/stocks'));
 app.use('/api/timeline', require('./routes/timeline'));
-
-// Admin routes — each sub-router enforces its own RBAC via adminAuth middleware
-app.use('/admin/users', adminLimiter, require('./routes/admin/users'));
-app.use('/admin/audit', adminLimiter, require('./routes/admin/audit'));
-app.use('/admin/analytics', adminLimiter, require('./routes/admin/analytics'));
-app.use('/admin/watchlists', adminLimiter, require('./routes/admin/watchlist'));
-app.use('/admin/support', adminLimiter, require('./routes/admin/support'));
-app.use('/admin/intelligence', adminLimiter, require('./routes/admin/intelligence'));
 
 app.get('/health', async (_req, res) => {
   let dbOk = true;
@@ -221,6 +238,12 @@ app.get('/health', async (_req, res) => {
     db: dbOk ? 'connected' : 'disconnected',
     provider: providerStatus,
   });
+});
+
+// Unmatched API/auth routes → JSON 404 (so they don't fall through to the SPA
+// HTML in production or Express's default HTML 404 in dev).
+app.use(['/api', '/auth'], (_req, res) => {
+  res.status(404).json({ error: 'Not found.' });
 });
 
 // Serve Vite build + SPA fallback in production

@@ -17,9 +17,11 @@ router.get('/vapid-public-key', (_req, res) => {
 router.use(auth);
 
 function sanitizeCategories(input) {
+  // Non-array (e.g. a new device with no stated preference) → default to all.
+  // An explicit array is honored as-is, including empty, so a user can mute
+  // every category (the old code silently re-enabled all on an empty array).
   if (!Array.isArray(input)) return PUSH_CATEGORIES;
-  const filtered = input.filter((c) => PUSH_CATEGORIES.includes(c));
-  return filtered.length ? filtered : PUSH_CATEGORIES;
+  return input.filter((c) => PUSH_CATEGORIES.includes(c));
 }
 
 // GET /api/push/status — current subscription + preferences for this user

@@ -1,13 +1,26 @@
-const EXPRESS = import.meta.env.VITE_EXPRESS_URL || '';
-const TOKEN_KEY = 'mytrade-token';
+import { getAccessToken, setAccessToken } from './authToken';
 
-function getToken() {
-  try { return localStorage.getItem(TOKEN_KEY); } catch { return null; }
-}
+const EXPRESS = import.meta.env.VITE_EXPRESS_URL || '';
 
 function authHeaders() {
-  const token = getToken();
+  const token = getAccessToken();
   return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+// Single-flight refresh: if several requests 401 at once, they share one
+// /auth/refresh call instead of each rotating the refresh cookie (which races).
+let refreshPromise = null;
+function refreshAccessToken() {
+  if (!refreshPromise) {
+    refreshPromise = fetch(`${EXPRESS}/auth/refresh`, { method: 'POST', credentials: 'include' })
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error('refresh failed'))))
+      .then(({ accessToken }) => {
+        setAccessToken(accessToken);
+        return accessToken;
+      })
+      .finally(() => { refreshPromise = null; });
+  }
+  return refreshPromise;
 }
 
 async function request(path, options = {}) {
@@ -22,33 +35,25 @@ async function request(path, options = {}) {
   });
 
   if (res.status === 401) {
-    // Try to refresh the access token first
+    // Refresh the access token (single-flight) and retry the original request once.
     try {
-      const refreshRes = await fetch(`${EXPRESS}/auth/refresh`, {
-        method: 'POST',
+      const accessToken = await refreshAccessToken();
+      const retry = await fetch(path, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+          ...options.headers,
+        },
         credentials: 'include',
+        ...options,
       });
-      if (refreshRes.ok) {
-        const { accessToken } = await refreshRes.json();
-        localStorage.setItem(TOKEN_KEY, accessToken);
-        // Retry original request with new token
-        const retry = await fetch(path, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`,
-            ...options.headers,
-          },
-          credentials: 'include',
-          ...options,
-        });
-        if (retry.ok) {
-          if (retry.status === 204) return undefined;
-          return retry.json();
-        }
+      if (retry.ok) {
+        if (retry.status === 204) return undefined;
+        return retry.json();
       }
     } catch { /* fall through to redirect */ }
 
-    localStorage.removeItem(TOKEN_KEY);
+    setAccessToken(null);
     window.location.href = '/login';
     throw new Error('Session expired. Please sign in again.');
   }
@@ -217,23 +222,23 @@ export const adminGetUsers = (params = {}) => {
   const qs = new URLSearchParams(
     Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== ''))
   ).toString();
-  return request(`${EXPRESS}/admin/users${qs ? `?${qs}` : ''}`);
+  return request(`${EXPRESS}/api/admin/users${qs ? `?${qs}` : ''}`);
 };
 
 export const adminGetUser = (id) =>
-  request(`${EXPRESS}/admin/users/${id}`);
+  request(`${EXPRESS}/api/admin/users/${id}`);
 
 export const adminSetRole = (id, role) =>
-  request(`${EXPRESS}/admin/users/${id}/role`, { method: 'PUT', body: JSON.stringify({ role }) });
+  request(`${EXPRESS}/api/admin/users/${id}/role`, { method: 'PUT', body: JSON.stringify({ role }) });
 
 export const adminSuspendUser = (id, suspend, reason = '') =>
-  request(`${EXPRESS}/admin/users/${id}/suspend`, {
+  request(`${EXPRESS}/api/admin/users/${id}/suspend`, {
     method: 'PUT',
     body: JSON.stringify({ suspend, reason }),
   });
 
 export const adminDeleteUser = (id) =>
-  request(`${EXPRESS}/admin/users/${id}`, { method: 'DELETE' });
+  request(`${EXPRESS}/api/admin/users/${id}`, { method: 'DELETE' });
 
 // ─── Admin: Audit Logs ────────────────────────────────────────────────────────
 
@@ -241,38 +246,38 @@ export const adminGetAuditLogs = (params = {}) => {
   const qs = new URLSearchParams(
     Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== ''))
   ).toString();
-  return request(`${EXPRESS}/admin/audit${qs ? `?${qs}` : ''}`);
+  return request(`${EXPRESS}/api/admin/audit${qs ? `?${qs}` : ''}`);
 };
 
 export const adminGetAuditStats = (since) =>
-  request(`${EXPRESS}/admin/audit/stats${since ? `?since=${since}` : ''}`);
+  request(`${EXPRESS}/api/admin/audit/stats${since ? `?since=${since}` : ''}`);
 
 export const adminExportAudit = (params = {}) => {
   const qs = new URLSearchParams(
     Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== ''))
   ).toString();
-  return `${EXPRESS}/admin/audit/export${qs ? `?${qs}` : ''}`;
+  return `${EXPRESS}/api/admin/audit/export${qs ? `?${qs}` : ''}`;
 };
 
 // ─── Admin: Analytics ─────────────────────────────────────────────────────────
 
 export const adminAnalyticsOverview = () =>
-  request(`${EXPRESS}/admin/analytics/overview`);
+  request(`${EXPRESS}/api/admin/analytics/overview`);
 
 export const adminAnalyticsSignups = (days = 30) =>
-  request(`${EXPRESS}/admin/analytics/signups?days=${days}`);
+  request(`${EXPRESS}/api/admin/analytics/signups?days=${days}`);
 
 export const adminAnalyticsActivity = (days = 30) =>
-  request(`${EXPRESS}/admin/analytics/activity?days=${days}`);
+  request(`${EXPRESS}/api/admin/analytics/activity?days=${days}`);
 
 export const adminAnalyticsWatchlists = () =>
-  request(`${EXPRESS}/admin/analytics/watchlists`);
+  request(`${EXPRESS}/api/admin/analytics/watchlists`);
 
 export const adminAnalyticsSecurity = () =>
-  request(`${EXPRESS}/admin/analytics/security`);
+  request(`${EXPRESS}/api/admin/analytics/security`);
 
 export const adminAnalyticsProduct = (days = 30) =>
-  request(`${EXPRESS}/admin/analytics/product?days=${days}`);
+  request(`${EXPRESS}/api/admin/analytics/product?days=${days}`);
 
 // ─── Admin: Watchlists ────────────────────────────────────────────────────────
 
@@ -280,17 +285,17 @@ export const adminGetWatchlists = (params = {}) => {
   const qs = new URLSearchParams(
     Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== ''))
   ).toString();
-  return request(`${EXPRESS}/admin/watchlists${qs ? `?${qs}` : ''}`);
+  return request(`${EXPRESS}/api/admin/watchlists${qs ? `?${qs}` : ''}`);
 };
 
 export const adminGetUserWatchlist = (userId) =>
-  request(`${EXPRESS}/admin/watchlists/${userId}`);
+  request(`${EXPRESS}/api/admin/watchlists/${userId}`);
 
 export const adminRestoreWatchlistItem = (userId, symbol) =>
-  request(`${EXPRESS}/admin/watchlists/${userId}/restore/${symbol}`, { method: 'POST' });
+  request(`${EXPRESS}/api/admin/watchlists/${userId}/restore/${symbol}`, { method: 'POST' });
 
 export const adminDisableWatchlistItem = (userId, symbol, reason = '') =>
-  request(`${EXPRESS}/admin/watchlists/${userId}/disable/${symbol}`, {
+  request(`${EXPRESS}/api/admin/watchlists/${userId}/disable/${symbol}`, {
     method: 'POST',
     body: JSON.stringify({ reason }),
   });
@@ -298,24 +303,24 @@ export const adminDisableWatchlistItem = (userId, symbol, reason = '') =>
 // ─── Admin: Support ───────────────────────────────────────────────────────────
 
 export const adminImpersonate = (userId) =>
-  request(`${EXPRESS}/admin/support/impersonate/${userId}`, { method: 'POST' });
+  request(`${EXPRESS}/api/admin/support/impersonate/${userId}`, { method: 'POST' });
 
 export const adminGetUserActivity = (userId, limit = 100) =>
-  request(`${EXPRESS}/admin/support/users/${userId}/activity?limit=${limit}`);
+  request(`${EXPRESS}/api/admin/support/users/${userId}/activity?limit=${limit}`);
 
 export const adminFlagUser = (userId, reason, severity = 'warning') =>
-  request(`${EXPRESS}/admin/support/users/${userId}/flag`, {
+  request(`${EXPRESS}/api/admin/support/users/${userId}/flag`, {
     method: 'POST',
     body: JSON.stringify({ reason, severity }),
   });
 
 export const adminSearch = (q) =>
-  request(`${EXPRESS}/admin/support/search?q=${encodeURIComponent(q)}`);
+  request(`${EXPRESS}/api/admin/support/search?q=${encodeURIComponent(q)}`);
 
 // ─── Admin: User Insights ─────────────────────────────────────────────────────
 
 export const adminGetUserInsights = (userId, days = 30) =>
-  request(`${EXPRESS}/admin/users/${userId}/insights?days=${days}`);
+  request(`${EXPRESS}/api/admin/users/${userId}/insights?days=${days}`);
 
 // ─── User: Personal Timeline ──────────────────────────────────────────────────
 
@@ -332,27 +337,27 @@ export const getTimelineInsights = (days = 30) =>
 // ─── Admin: AI Market Intelligence (admin / super_admin only) ─────────────────
 
 export const adminIntelligenceOverview = () =>
-  request(`${EXPRESS}/admin/intelligence/overview`);
+  request(`${EXPRESS}/api/admin/intelligence/overview`);
 
 export const adminIntelligenceHotStocks = (params = {}) => {
   const qs = new URLSearchParams(
     Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== ''))
   ).toString();
-  return request(`${EXPRESS}/admin/intelligence/hot-stocks${qs ? `?${qs}` : ''}`);
+  return request(`${EXPRESS}/api/admin/intelligence/hot-stocks${qs ? `?${qs}` : ''}`);
 };
 
 export const adminIntelligenceHotStockDetail = (symbol) =>
-  request(`${EXPRESS}/admin/intelligence/hot-stocks/${encodeURIComponent(symbol)}`);
+  request(`${EXPRESS}/api/admin/intelligence/hot-stocks/${encodeURIComponent(symbol)}`);
 
 export const adminIntelligenceSectorHeatmap = () =>
-  request(`${EXPRESS}/admin/intelligence/sector-heatmap`);
+  request(`${EXPRESS}/api/admin/intelligence/sector-heatmap`);
 
 export const adminIntelligenceRefresh = () =>
-  request(`${EXPRESS}/admin/intelligence/refresh`, { method: 'POST' });
+  request(`${EXPRESS}/api/admin/intelligence/refresh`, { method: 'POST' });
 
 export const adminIntelligenceExportUrl = (params = {}) => {
   const qs = new URLSearchParams(
     Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== ''))
   ).toString();
-  return `${EXPRESS}/admin/intelligence/export${qs ? `?${qs}` : ''}`;
+  return `${EXPRESS}/api/admin/intelligence/export${qs ? `?${qs}` : ''}`;
 };

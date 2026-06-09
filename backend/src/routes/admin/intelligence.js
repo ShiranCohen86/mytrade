@@ -116,7 +116,7 @@ router.get('/overview', adminAuth('logs.read'), requireIntelligenceRole, async (
       totalTracked,
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 
@@ -155,7 +155,7 @@ router.get('/hot-stocks', adminAuth('logs.read'), requireIntelligenceRole, async
       pagination: { page, limit, total, pages: Math.ceil(total / limit) },
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 
@@ -202,7 +202,7 @@ router.get(
         })),
       });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Server error.' });
     }
   }
 );
@@ -240,7 +240,7 @@ router.get(
         }))
       );
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: 'Server error.' });
     }
   }
 );
@@ -294,7 +294,7 @@ router.post('/refresh', adminAuth('audit.read'), requireIntelligenceRole, async 
 
     res.json({ computed: ops.length, analyzed, computedAt: new Date() });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 
@@ -339,7 +339,7 @@ router.get('/export', adminAuth('logs.export'), requireIntelligenceRole, async (
 
     res.json(mapped);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 

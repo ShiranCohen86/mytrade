@@ -34,7 +34,7 @@ router.get('/', adminAuth('logs.read'), async (req, res) => {
       pagination: { page, limit, total, pages: Math.ceil(total / limit) },
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 
@@ -90,7 +90,7 @@ router.get('/export', adminAuth('logs.export'), async (req, res) => {
     res.setHeader('Content-Disposition', 'attachment; filename="audit-export.csv"');
     res.send([header, ...rows].join('\n'));
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 
@@ -124,7 +124,7 @@ router.get('/stats', adminAuth('audit.read'), async (req, res) => {
 
     res.json({ byAction, bySeverity, byDay });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 

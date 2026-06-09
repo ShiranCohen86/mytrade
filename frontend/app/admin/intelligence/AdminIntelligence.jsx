@@ -13,16 +13,16 @@ import {
   CartesianGrid, LineChart, Line, Cell,
 } from 'recharts';
 import styles from './AdminIntelligence.module.scss';
+import { getAccessToken } from '@/lib/authToken';
 
-const TOKEN_KEY = 'mytrade-token';
 const EXPRESS = import.meta.env.VITE_EXPRESS_URL || '';
 
 async function downloadExport(params = {}) {
   const qs = new URLSearchParams(
     Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== ''))
   ).toString();
-  const url = `${EXPRESS}/admin/intelligence/export${qs ? `?${qs}` : ''}`;
-  const token = localStorage.getItem(TOKEN_KEY);
+  const url = `${EXPRESS}/api/admin/intelligence/export${qs ? `?${qs}` : ''}`;
+  const token = getAccessToken();
   const res = await fetch(url, {
     headers: { Authorization: `Bearer ${token}` },
     credentials: 'include',

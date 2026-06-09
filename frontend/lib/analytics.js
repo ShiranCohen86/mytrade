@@ -6,8 +6,9 @@
  *
  * Sink: own backend (Mongo) — surfaced in the admin analytics dashboard.
  */
+import { getAccessToken } from './authToken';
+
 const EXPRESS = import.meta.env.VITE_EXPRESS_URL || '';
-const TOKEN_KEY = 'mytrade-token';
 const DEVICE_KEY = 'mytrade-device-id';
 const LASTSEEN_KEY = 'mytrade-last-seen';
 const SESSIONS_KEY = 'mytrade-session-count';
@@ -149,7 +150,7 @@ export function flush(useBeacon = false) {
       return;
     }
   } catch { /* fall through to fetch */ }
-  const token = ls(TOKEN_KEY);
+  const token = getAccessToken();
   fetch(url, {
     method: 'POST',
     headers: {

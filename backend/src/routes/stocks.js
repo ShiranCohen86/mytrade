@@ -68,11 +68,15 @@ router.get('/stocks', async (req, res) => {
 router.post('/stocks', async (req, res) => {
   try {
     const { ticker } = req.body;
-    if (!ticker || !/^[A-Za-z]{1,5}$/.test(ticker.trim())) {
-      return res.status(400).json({ error: 'Invalid ticker. Must be 1–5 letters (e.g. AAPL).' });
+    if (!ticker || typeof ticker !== 'string') {
+      return res.status(400).json({ error: 'Invalid ticker.' });
     }
-
-    const t = ticker.trim().toUpperCase();
+    // Use the same sanitizer as every other endpoint so symbols with dots/digits
+    // (e.g. BRK.B) are accepted; the provider lookup below validates existence.
+    const t = sanitizeTicker(ticker);
+    if (!t || t.length > 8) {
+      return res.status(400).json({ error: 'Invalid ticker. Use a symbol like AAPL or BRK.B.' });
+    }
     const user = await getUser(req.user.id);
 
     if (user.watchlist.includes(t)) {

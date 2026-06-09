@@ -56,13 +56,14 @@ router.get('/', adminAuth('users.read'), async (req, res) => {
       pagination: { page, limit, total, pages: Math.ceil(total / limit) },
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 
 // GET /admin/users/:id — full user profile with stats
 router.get('/:id', adminAuth('users.read'), async (req, res) => {
   try {
+    if (!Types.ObjectId.isValid(req.params.id)) return res.status(400).json({ error: 'Invalid user id.' });
     const user = await User.findById(req.params.id)
       .select('-passwordHash -resetToken -resetTokenExpiry')
       .lean();
@@ -78,7 +79,7 @@ router.get('/:id', adminAuth('users.read'), async (req, res) => {
 
     res.json({ user, watchlistItems, recentAudit });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 
@@ -178,13 +179,14 @@ router.get('/:id/insights', adminAuth('users.read'), async (req, res) => {
       periodDays:        days,
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 
 // PUT /admin/users/:id/role — change role (super_admin only)
 router.put('/:id/role', adminAuth('system.config'), async (req, res) => {
   try {
+    if (!Types.ObjectId.isValid(req.params.id)) return res.status(400).json({ error: 'Invalid user id.' });
     const { role } = req.body;
     const validRoles = ['super_admin', 'admin', 'support_agent', 'analyst', 'user'];
     if (!validRoles.includes(role)) {
@@ -210,13 +212,14 @@ router.put('/:id/role', adminAuth('system.config'), async (req, res) => {
 
     res.json({ user });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 
 // PUT /admin/users/:id/suspend — suspend or unsuspend a user
 router.put('/:id/suspend', adminAuth('user.suspend'), async (req, res) => {
   try {
+    if (!Types.ObjectId.isValid(req.params.id)) return res.status(400).json({ error: 'Invalid user id.' });
     const { suspend, reason } = req.body;
     if (typeof suspend !== 'boolean') {
       return res.status(400).json({ error: 'suspend must be a boolean.' });
@@ -246,13 +249,14 @@ router.put('/:id/suspend', adminAuth('user.suspend'), async (req, res) => {
 
     res.json({ user });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 
 // DELETE /admin/users/:id — permanent delete (super_admin only, logs the action)
 router.delete('/:id', adminAuth('system.config'), async (req, res) => {
   try {
+    if (!Types.ObjectId.isValid(req.params.id)) return res.status(400).json({ error: 'Invalid user id.' });
     if (req.params.id === req.adminUser.id) {
       return res.status(400).json({ error: 'Cannot delete yourself.' });
     }
@@ -268,7 +272,7 @@ router.delete('/:id', adminAuth('system.config'), async (req, res) => {
     await User.findByIdAndDelete(req.params.id);
     res.status(204).send();
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 

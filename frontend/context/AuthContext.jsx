@@ -1,8 +1,8 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { identifyUser } from '@/lib/analytics';
+import { getAccessToken, setAccessToken } from '@/lib/authToken';
 
 const EXPRESS = import.meta.env.VITE_EXPRESS_URL || '';
-const TOKEN_KEY = 'mytrade-token';
 
 const AuthContext = createContext(null);
 
@@ -10,53 +10,51 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const getToken = () => {
-    try { return localStorage.getItem(TOKEN_KEY); } catch { return null; }
-  };
-
-  const setToken = (token) => {
-    try {
-      if (token) localStorage.setItem(TOKEN_KEY, token);
-      else localStorage.removeItem(TOKEN_KEY);
-    } catch { /* storage unavailable */ }
-  };
+  // Access token is held in memory only (not localStorage) so XSS can't read it.
+  const getToken = () => getAccessToken();
+  const setToken = (token) => setAccessToken(token);
 
   const logout = useCallback(async () => {
     try {
+      const token = getToken();
       await fetch(`${EXPRESS}/auth/logout`, {
         method: 'POST',
         credentials: 'include',
+        // Send the token so the server can bump tokenVersion (revoke refresh tokens).
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
     } catch { /* ignore */ }
     setToken(null);
     setUser(null);
+    // Purge cached authenticated API responses so personal data (watchlist,
+    // portfolio, …) isn't readable after sign-out on a shared device / offline.
+    try {
+      if (typeof caches !== 'undefined') await caches.delete('api-cache');
+    } catch { /* ignore */ }
   }, []);
 
-  // Verify token on mount
+  // Rehydrate the session on mount. The access token lives only in memory, so on
+  // a fresh load there's nothing persisted to read — exchange the httpOnly refresh
+  // cookie for a fresh access token, then load the user.
   useEffect(() => {
-    const token = getToken();
-    if (!token) { setIsLoading(false); return; }
-
-    fetch(`${EXPRESS}/auth/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => r.ok ? r.json() : Promise.reject(r.status))
-      .then(({ user: u }) => setUser(u))
-      .catch(() => {
-        // Try refresh token flow
-        return fetch(`${EXPRESS}/auth/refresh`, { method: 'POST', credentials: 'include' })
-          .then((r) => r.ok ? r.json() : Promise.reject())
-          .then(({ accessToken }) => {
-            setToken(accessToken);
-            return fetch(`${EXPRESS}/auth/me`, {
-              headers: { Authorization: `Bearer ${accessToken}` },
-            });
-          })
-          .then((r) => r.ok ? r.json() : Promise.reject())
-          .then(({ user: u }) => setUser(u))
-          .catch(() => setToken(null));
-      })
-      .finally(() => setIsLoading(false));
+    (async () => {
+      try {
+        const r = await fetch(`${EXPRESS}/auth/refresh`, { method: 'POST', credentials: 'include' });
+        if (!r.ok) throw new Error('no session');
+        const { accessToken } = await r.json();
+        setToken(accessToken);
+        const meRes = await fetch(`${EXPRESS}/auth/me`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        if (!meRes.ok) throw new Error('me failed');
+        const { user: u } = await meRes.json();
+        setUser(u);
+      } catch {
+        setToken(null);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
   }, []);
 
   const login = async (email, password) => {

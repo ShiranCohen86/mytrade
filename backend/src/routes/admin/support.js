@@ -50,7 +50,7 @@ router.post('/impersonate/:userId', adminAuth('system.config'), async (req, res)
       },
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 
@@ -64,7 +64,7 @@ router.get('/users/:userId/activity', adminAuth('users.read'), async (req, res) 
       .lean();
     res.json(logs);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 
@@ -86,7 +86,7 @@ router.post('/users/:userId/flag', adminAuth('user.suspend'), async (req, res) =
 
     res.json({ ok: true });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 
@@ -120,7 +120,7 @@ router.get('/search', adminAuth('users.read'), async (req, res) => {
 
     res.json({ users, logs });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 

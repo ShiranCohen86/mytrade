@@ -1,22 +1,34 @@
 import { useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 
+const EXPRESS = import.meta.env.VITE_EXPRESS_URL || '';
+
 export default function GoogleCallbackPage() {
-  const [params] = useSearchParams();
   const navigate = useNavigate();
   const { loginWithToken } = useAuth();
 
+  // After Google OAuth the backend sets only an httpOnly refresh cookie (the
+  // access token is no longer passed in the URL). Exchange that cookie for an
+  // access token via /auth/refresh, then bootstrap the session.
   useEffect(() => {
-    const token = params.get('token');
-    if (token) {
-      loginWithToken(token).then(() => {
-        navigate('/dashboard', { replace: true });
-      });
-    } else {
-      navigate('/login?error=google', { replace: true });
-    }
-  }, [params, navigate, loginWithToken]);
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`${EXPRESS}/auth/refresh`, {
+          method: 'POST',
+          credentials: 'include',
+        });
+        if (!res.ok) throw new Error('refresh failed');
+        const { accessToken } = await res.json();
+        await loginWithToken(accessToken);
+        if (!cancelled) navigate('/dashboard', { replace: true });
+      } catch {
+        if (!cancelled) navigate('/login?error=google', { replace: true });
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [navigate, loginWithToken]);
 
   return (
     <div style={{
