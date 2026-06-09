@@ -12,6 +12,7 @@ import { BottomSheet } from '@/components/BottomSheet/BottomSheet';
 import { WelcomeCard } from '@/components/Onboarding/WelcomeCard';
 import { useToast } from '@/components/Toast/ToastProvider';
 import { useAppShell } from '@/components/AppShell/AppShell';
+import { track, EV } from '@/lib/analytics';
 import styles from './page.module.scss';
 
 function sortStocks(stocks, key, portfolio) {
@@ -65,7 +66,7 @@ export default function DashboardPage() {
     sharedRef.current = true;
     const m = shared.match(/\$?\b([A-Za-z]{1,5})\b/);
     const ticker = m ? m[1].toUpperCase() : null;
-    import('@/lib/analytics').then(({ track, EV }) => track(EV.SHARE_TARGET_RECEIVED, { ticker }));
+    track(EV.SHARE_TARGET_RECEIVED, { ticker });
     // Strip the share params from the URL.
     window.history.replaceState({}, '', '/dashboard');
     if (ticker) {

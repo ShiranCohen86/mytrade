@@ -13,6 +13,9 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      # Pin a known-good Node (the build uses vite-plugin-pwa's SW build).
+      - key: NODE_VERSION
+        value: "22"
 
       # ── Database ──────────────────────────────────────────────────────────
       - key: MONGO_URI
