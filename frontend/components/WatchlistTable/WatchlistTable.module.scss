@@ -1,8 +1,8 @@
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as *;
 
-// Column tracks — single desktop layout used at all widths (table scrolls horizontally on mobile)
-$cols-desktop: 20px 56px 1fr 140px 68px 68px 48px 92px 56px 60px 34px;
+// Column tracks — desktop. minmax(80px,1fr) prevents 1fr collapse in scroll contexts.
+$cols-desktop: 20px 56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 56px 60px 34px;
 
 // ─── Horizontal scroll wrapper ────────────────────────────────────────────────
 
@@ -28,6 +28,7 @@ $cols-desktop: 20px 56px 1fr 140px 68px 68px 48px 92px 56px 60px 34px;
   gap: 0 $space-3;
   padding: 0 $space-4;
   height: 38px;
+  min-width: 820px; // mirrors .table min-width so 1fr is computed consistently
   position: sticky;
   top: 44px;
   z-index: 9;
@@ -37,6 +38,15 @@ $cols-desktop: 20px 56px 1fr 140px 68px 68px 48px 92px 56px 60px 34px;
   -webkit-backdrop-filter: blur(16px) saturate(1.4);
   border-bottom: 1px solid $chrome-dim;
   flex-shrink: 0;
+
+  @media (max-width: 640px) {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    padding: 0 $space-3;
+    min-width: unset;
+    overflow: visible;
+  }
 }
 
 .th {
@@ -150,3 +160,24 @@ $cols-desktop: 20px 56px 1fr 140px 68px 68px 48px 92px 56px 60px 34px;
 .expHigh     { color: $warn;          background: $warn-bg; }
 .expMod      { color: $accent-text;   background: $accent-dim; }
 .expLow      { color: $text-tertiary; background: $surface-raised; }
+
+// ─── Mobile header column overrides (≤640px: flex row, show key columns only) ─
+
+@media (max-width: 640px) {
+  .colDrag     { display: none; }
+  .colTicker   { width: 52px;  flex-shrink: 0; }
+  .colName     { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .colPrice    { width: 120px; flex-shrink: 0; }
+  .colExpect   { width: 64px;  flex-shrink: 0; justify-content: center; }
+  .colPnl      { width: 48px;  flex-shrink: 0; }
+  .colRisk     { display: none; }
+  .colRegime   { display: none; }
+  .colEarnings { display: none; }
+  .colSpark    { display: none; }
+  .colActions  { width: 30px;  flex-shrink: 0; margin-left: auto; }
+}
+
+@media (max-width: 480px) {
+  .colName { display: none; }
+  .colPnl  { display: none; }
+}
