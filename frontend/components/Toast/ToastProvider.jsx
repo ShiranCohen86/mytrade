@@ -1,6 +1,9 @@
 
 import { createContext, useContext, useCallback, useState } from 'react';
+import { tapSuccess, tapError, tapWarning, tapLight } from '@/lib/haptics';
 import styles from './Toast.module.scss';
+
+const HAPTIC_BY_TYPE = { success: tapSuccess, error: tapError, warning: tapWarning, info: tapLight };
 
 const ToastCtx = createContext(null);
 let _id = 0;
@@ -15,6 +18,7 @@ export function ToastProvider({ children }) {
   const add = useCallback((type, message, duration = 4000) => {
     const id = ++_id;
     setToasts((prev) => [...prev.slice(-4), { id, type, message }]);
+    (HAPTIC_BY_TYPE[type] || tapLight)();
     if (duration > 0) setTimeout(() => dismiss(id), duration);
     return id;
   }, [dismiss]);

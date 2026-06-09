@@ -185,6 +185,32 @@ export const deleteAccount = () =>
 export const searchStocks = (q) =>
   request(`${EXPRESS}/api/search?q=${encodeURIComponent(q)}`);
 
+// ─── Web Push ─────────────────────────────────────────────────────────────────
+
+export const getPushVapidKey = () =>
+  request(`${EXPRESS}/api/push/vapid-public-key`);
+
+export const getPushStatus = () =>
+  request(`${EXPRESS}/api/push/status`);
+
+export const savePushSubscription = (subscription, platform, categories) =>
+  request(`${EXPRESS}/api/push/subscribe`, {
+    method: 'POST',
+    body: JSON.stringify({ subscription, platform, categories }),
+  });
+
+export const removePushSubscription = (endpoint) =>
+  request(`${EXPRESS}/api/push/unsubscribe`, {
+    method: 'POST',
+    body: JSON.stringify({ endpoint }),
+  });
+
+export const updatePushPreferences = (categories) =>
+  request(`${EXPRESS}/api/push/preferences`, {
+    method: 'PUT',
+    body: JSON.stringify({ categories }),
+  });
+
 // ─── Admin: Users ─────────────────────────────────────────────────────────────
 
 export const adminGetUsers = (params = {}) => {
@@ -244,6 +270,9 @@ export const adminAnalyticsWatchlists = () =>
 
 export const adminAnalyticsSecurity = () =>
   request(`${EXPRESS}/admin/analytics/security`);
+
+export const adminAnalyticsProduct = (days = 30) =>
+  request(`${EXPRESS}/admin/analytics/product?days=${days}`);
 
 // ─── Admin: Watchlists ────────────────────────────────────────────────────────
 

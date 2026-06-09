@@ -1,0 +1,91 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: $space-4;
+  padding: $space-2 $space-2 $space-4;
+}
+
+.appIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-md;
+}
+
+.desc {
+  margin: 0;
+  font-size: $text-md;
+  line-height: 1.45;
+  color: $text-secondary;
+  max-width: 360px;
+}
+
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  text-align: start;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    font-size: $text-md;
+    color: $text-primary;
+  }
+}
+
+.stepIcon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: $radius-md;
+  background: $accent-faint;
+  color: $accent;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  width: 100%;
+  max-width: 360px;
+}
+
+.primary,
+.secondary {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 46px;
+  border-radius: $radius-md;
+  font-size: $text-md;
+  font-weight: 600;
+  transition: transform $motion-fast, background $motion-fast;
+}
+
+.primary {
+  background: $accent;
+  color: $text-inverse;
+  &:hover { background: $accent-hover; transform: translateY(-1px); }
+  &:active { transform: translateY(0); }
+}
+
+.secondary {
+  background: transparent;
+  color: $text-secondary;
+  &:hover { background: $surface-hover; color: $text-primary; }
+}

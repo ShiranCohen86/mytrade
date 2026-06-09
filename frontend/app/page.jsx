@@ -11,6 +11,7 @@ import { TopMovers } from '@/components/TopMovers/TopMovers';
 import { BottomSheet } from '@/components/BottomSheet/BottomSheet';
 import { WelcomeCard } from '@/components/Onboarding/WelcomeCard';
 import { useToast } from '@/components/Toast/ToastProvider';
+import { useAppShell } from '@/components/AppShell/AppShell';
 import styles from './page.module.scss';
 
 function sortStocks(stocks, key, portfolio) {
@@ -45,7 +46,35 @@ export default function DashboardPage() {
 
   const toast = useToast();
   const { t } = useTranslation();
+  const { setRefreshHandler } = useAppShell();
   const prevAnalyzingRef = useRef(false);
+
+  // Drive pull-to-refresh from the app shell.
+  useEffect(() => {
+    setRefreshHandler(reload);
+    return () => setRefreshHandler(null);
+  }, [setRefreshHandler, reload]);
+
+  // Web Share Target: if the app was opened via a share, try to add the ticker.
+  const sharedRef = useRef(false);
+  useEffect(() => {
+    if (sharedRef.current) return;
+    const params = new URLSearchParams(window.location.search);
+    const shared = `${params.get('text') || ''} ${params.get('title') || ''} ${params.get('url') || ''}`.trim();
+    if (!shared) return;
+    sharedRef.current = true;
+    const m = shared.match(/\$?\b([A-Za-z]{1,5})\b/);
+    const ticker = m ? m[1].toUpperCase() : null;
+    import('@/lib/analytics').then(({ track, EV }) => track(EV.SHARE_TARGET_RECEIVED, { ticker }));
+    // Strip the share params from the URL.
+    window.history.replaceState({}, '', '/dashboard');
+    if (ticker) {
+      add(ticker)
+        .then(() => toast.success(`${ticker} added to your watchlist`))
+        .catch((e) => toast.error(e.message || `Couldn't add ${ticker}`));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const alertsTriggeredRef = useRef(null);
 
   const [sortKey, setSortKey] = useState(() => {

@@ -24,6 +24,43 @@ export function BottomSheet({ children, onClose, title }) {
     return () => document.removeEventListener('keydown', handler);
   }, [onClose]);
 
+  // Android hardware/gesture back closes the sheet instead of leaving the page.
+  useEffect(() => {
+    window.history.pushState({ mtSheet: true }, '');
+    const onPop = () => onClose();
+    window.addEventListener('popstate', onPop);
+    return () => {
+      window.removeEventListener('popstate', onPop);
+      // Closed via button/escape (not back) → pop the history entry we added.
+      if (window.history.state && window.history.state.mtSheet) window.history.back();
+    };
+  }, [onClose]);
+
+  // Focus trap + restore — keep keyboard focus inside the sheet while open.
+  useEffect(() => {
+    const previouslyFocused = document.activeElement;
+    const sheet = sheetRef.current;
+    const FOCUSABLE = 'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
+    const focusables = () => Array.from(sheet?.querySelectorAll(FOCUSABLE) || []).filter((el) => el.offsetParent !== null);
+    const first = focusables()[0];
+    (first || sheet)?.focus?.();
+
+    const onKey = (e) => {
+      if (e.key !== 'Tab') return;
+      const items = focusables();
+      if (!items.length) return;
+      const firstEl = items[0];
+      const lastEl = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === firstEl) { e.preventDefault(); lastEl.focus(); }
+      else if (!e.shiftKey && document.activeElement === lastEl) { e.preventDefault(); firstEl.focus(); }
+    };
+    sheet?.addEventListener('keydown', onKey);
+    return () => {
+      sheet?.removeEventListener('keydown', onKey);
+      if (previouslyFocused && previouslyFocused.focus) previouslyFocused.focus();
+    };
+  }, []);
+
   const handleTouchStart = useCallback((e) => {
     // Only initiate drag from handle or header area
     const target = e.target;
@@ -73,6 +110,7 @@ export function BottomSheet({ children, onClose, title }) {
       <div
         ref={sheetRef}
         className={styles.sheet}
+        tabIndex={-1}
         style={{
           transform: dragOffset > 0 ? `translateY(${dragOffset}px)` : undefined,
           transition: isDragging ? 'none' : undefined,

@@ -18,6 +18,7 @@
 
 .content {
   grid-area: content;
+  position: relative;
   overflow-y: auto;
   overflow-x: hidden;
   background: $surface-base;
@@ -70,3 +71,44 @@
 }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ── Pull-to-refresh indicator ───────────────────────────────────────────── */
+.ptr {
+  position: absolute;
+  top: -44px;
+  left: 50%;
+  margin-left: -16px;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  z-index: 5;
+  will-change: transform;
+}
+
+.ptrSpinner {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2.5px solid $chrome-mid;
+  border-top-color: $accent;
+}
+
+.ptrSpin { animation: ptrRotate 0.7s linear infinite; }
+
+@keyframes ptrRotate { to { transform: rotate(360deg); } }
+
+/* ── Route transition ────────────────────────────────────────────────────── */
+.routeFade {
+  animation: routeFade 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes routeFade {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .routeFade { animation: none; }
+  .ptrSpin { animation-duration: 1.2s; }
+}

@@ -6,6 +6,8 @@ import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/Toast/ToastProvider';
 import { useTheme } from '@/hooks/useTheme';
 import { updateProfile, changePassword, deleteAccount } from '@/lib/apiClient';
+import { NotificationSettings } from '@/components/NotificationSettings/NotificationSettings';
+import { shareInvite } from '@/lib/share';
 import styles from './SettingsPage.module.scss';
 
 function Initials({ name, avatar }) {
@@ -93,6 +95,12 @@ export default function SettingsPage() {
   const handleLangChange = (lang) => {
     i18n.changeLanguage(lang);
     try { localStorage.setItem('mytrade-lang', lang); } catch { /* noop */ }
+  };
+
+  const handleInvite = async () => {
+    const r = await shareInvite(user?.id || user?._id);
+    if (r === 'copied') toast.success(t('settings.inviteCopied', 'Invite link copied'));
+    else if (r === 'unsupported') toast.warning(t('pwa.notNow', 'Sharing not supported on this device'));
   };
 
   return (
@@ -188,6 +196,26 @@ export default function SettingsPage() {
                 {t('settings.langHebrew')}
               </button>
             </div>
+          </div>
+        </section>
+
+        {/* Notifications */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>{t('settings.notifications', 'Notifications')}</h2>
+          <NotificationSettings />
+        </section>
+
+        {/* Invite */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>{t('settings.invite', 'Invite a friend')}</h2>
+          <div className={styles.prefRow}>
+            <div className={styles.prefLabel}>
+              <span className={styles.prefName}>{t('settings.inviteShare', 'Share MyTrade')}</span>
+              <span className={styles.prefDesc}>{t('settings.inviteDesc', 'Send a friend your invite link.')}</span>
+            </div>
+            <button type="button" className={styles.btnPrimary} onClick={handleInvite}>
+              {t('settings.invite', 'Invite a friend')}
+            </button>
           </div>
         </section>
 

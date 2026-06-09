@@ -8,6 +8,7 @@ import {
   reorderWatchlist,
 } from '@/lib/apiClient';
 import { isMarketActive } from '@/lib/marketHours';
+import { onStockAdded, onStockRemoved, onFirstAlertSet, onWatchlistCount } from '@/lib/activation';
 
 export function useStocks() {
   const [stocks, setStocks] = useState([]);
@@ -34,6 +35,7 @@ export function useStocks() {
 
       if (stocksResult.status === 'fulfilled') {
         setStocks(stocksResult.value);
+        onWatchlistCount(stocksResult.value.length);
         setIsConnected(true);
         setError(null);
       } else {
@@ -135,6 +137,7 @@ export function useStocks() {
   const add = useCallback(async (ticker) => {
     const stock = await addStock(ticker);
     setStocks((prev) => [...prev, stock]);
+    onStockAdded(stocksRef.current.length + 1);
     return stock;
   }, []);
 
@@ -142,6 +145,7 @@ export function useStocks() {
     try {
       await removeStock(ticker);
       setStocks((prev) => prev.filter((s) => s.ticker !== ticker));
+      onStockRemoved(Math.max(0, stocksRef.current.length - 1));
     } catch (err) {
       setError(err instanceof Error ? err.message : `Failed to remove ${ticker}`);
     }
@@ -232,6 +236,9 @@ export function useStocks() {
       setPriceAlerts((prev) => prev.filter((a) => a.ticker !== ticker));
     } else {
       const alert = await setAlert(ticker, targetPrice, direction);
+      onFirstAlertSet();
+      // High-intent moment — offer notifications so the alert can actually reach them.
+      try { window.dispatchEvent(new Event('mytrade:notif-signal')); } catch { /* ignore */ }
       setPriceAlerts((prev) => {
         const idx = prev.findIndex((a) => a.ticker === ticker);
         if (idx >= 0) return prev.map((a) => (a.ticker === ticker ? alert : a));

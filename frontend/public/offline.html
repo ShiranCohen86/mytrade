@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#4F46E5" />
+    <title>Offline — MyTrade</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; margin: 0; }
+      body {
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 20px; padding: 24px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, sans-serif;
+        text-align: center; background: #080818; color: #e6e8f0;
+      }
+      img { width: 84px; height: 84px; border-radius: 20px; }
+      h1 { font-size: 20px; margin: 0; font-weight: 700; }
+      p { margin: 0; max-width: 320px; color: #9aa0b4; line-height: 1.5; font-size: 14px; }
+      button {
+        margin-top: 8px; padding: 12px 28px; border: 0; border-radius: 12px;
+        background: #4F46E5; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer;
+      }
+      button:active { transform: translateY(1px); }
+    </style>
+  </head>
+  <body>
+    <img src="/pwa-192x192.png" alt="MyTrade" />
+    <h1>You're offline</h1>
+    <p>MyTrade can't reach the network right now. Check your connection — your watchlist will reload automatically once you're back online.</p>
+    <button onclick="location.reload()">Try again</button>
+    <script>
+      window.addEventListener('online', function () { location.reload(); });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /$
+Allow: /login
+Allow: /signup
+# App is an authenticated SPA — keep private/admin areas out of crawls.
+Disallow: /dashboard
+Disallow: /portfolio
+Disallow: /sectors
+Disallow: /settings
+Disallow: /stocks/
+Disallow: /admin
+
+Sitemap: https://mytrade-zty9.onrender.com/sitemap.xml

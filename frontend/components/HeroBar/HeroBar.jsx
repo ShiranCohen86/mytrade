@@ -7,7 +7,7 @@ export function HeroBar({
   preMarketPrice, preMarketChange, preMarketChangePercent,
   postMarketPrice, postMarketChange, postMarketChangePercent,
   marketState,
-  onRefresh, isRefreshing,
+  onRefresh, isRefreshing, onShare,
 }) {
   const { fmtPrice } = useFmtPrice();
   const pct = changePercent ?? 0;
@@ -68,6 +68,15 @@ export function HeroBar({
             </div>
           )}
         </div>
+        {onShare && (
+          <button className={styles.refreshBtn} onClick={onShare} title="Share" aria-label="Share">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginInlineEnd: 4 }}>
+              <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
+              <path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" />
+            </svg>
+            Share
+          </button>
+        )}
         <button
           className={styles.refreshBtn}
           onClick={onRefresh}

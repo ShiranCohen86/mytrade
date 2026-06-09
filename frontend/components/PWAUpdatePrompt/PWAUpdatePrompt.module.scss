@@ -1,0 +1,121 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.wrap {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(#{$space-4} + 64px + env(safe-area-inset-bottom, 0px));
+  z-index: 1200;
+  width: min(440px, calc(100vw - #{$space-6}));
+  pointer-events: none;
+  animation: pwaSlideUp $motion-spring both;
+
+  @include above-md {
+    left: auto;
+    right: $space-6;
+    transform: none;
+    bottom: calc(#{$space-6} + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+.card {
+  pointer-events: auto;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: 'icon body' 'actions actions';
+  gap: $space-2 $space-3;
+  align-items: center;
+  padding: $space-4;
+  border-radius: $radius-xl;
+  background: $surface-elevated;
+  border: 1px solid $chrome-mid;
+  box-shadow: $shadow-popup;
+
+  @include above-md {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas: 'icon body actions';
+  }
+}
+
+.icon {
+  grid-area: icon;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: $radius-md;
+  background: $accent-faint;
+  color: $accent;
+  font-size: $text-xl;
+}
+
+.body { grid-area: body; min-width: 0; }
+
+.title {
+  font-size: $text-md;
+  font-weight: 700;
+  color: $text-primary;
+  line-height: 1.2;
+}
+
+.desc {
+  margin-top: 2px;
+  font-size: $text-sm;
+  color: $text-secondary;
+  line-height: 1.35;
+}
+
+.actions {
+  grid-area: actions;
+  display: flex;
+  gap: $space-2;
+  justify-content: flex-end;
+}
+
+.update,
+.later {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  font-size: $text-sm;
+  font-weight: 600;
+  padding: $space-2 $space-4;
+  border-radius: $radius-md;
+  transition: transform $motion-fast, background $motion-fast;
+}
+
+.update {
+  background: $accent;
+  color: $text-inverse;
+  &:hover { background: $accent-hover; transform: translateY(-1px); }
+  &:active { transform: translateY(0); }
+}
+
+.later {
+  background: transparent;
+  color: $text-secondary;
+  &:hover { background: $surface-hover; color: $text-primary; }
+}
+
+.info {
+  grid-template-columns: auto 1fr;
+  grid-template-areas: 'icon body';
+  .icon { background: $pos-bg; color: $pos; }
+}
+
+@keyframes pwaSlideUp {
+  from { opacity: 0; transform: translate(-50%, 16px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+@include above-md {
+  @keyframes pwaSlideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wrap { animation: none; }
+}

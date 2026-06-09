@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { identifyUser } from '@/lib/analytics';
 
 const EXPRESS = import.meta.env.VITE_EXPRESS_URL || '';
 const TOKEN_KEY = 'mytrade-token';
@@ -85,6 +86,11 @@ export function AuthProvider({ children }) {
     setUser(data.user);
     return data.user;
   };
+
+  // Attach the user id to analytics events once known.
+  useEffect(() => {
+    identifyUser(user ? (user.id || user._id) : null);
+  }, [user]);
 
   const updateUser = (partial) => setUser((u) => u ? { ...u, ...partial } : u);
 

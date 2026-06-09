@@ -6,6 +6,7 @@ import { useStocks } from '@/hooks/useStocks';
 import { useFmtPrice } from '@/hooks/useFmtPrice';
 import { getMarketOverview } from '@/lib/apiClient';
 import { ExtPriceBadge } from '@/components/ExtPriceBadge/ExtPriceBadge';
+import { Skeleton } from '@/components/Skeleton/Skeleton';
 import styles from './PortfolioPage.module.scss';
 
 const SECTOR_COLORS = [
@@ -445,8 +446,10 @@ export default function PortfolioPage() {
       )}
 
       {isLoading ? (
-        <div className={styles.empty}>
-          <span className={styles.emptyTitle}>{t('portfolio.loading')}</span>
+        <div style={{ display: 'grid', gap: 10, padding: 4 }}>
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} h={56} radius={12} />
+          ))}
         </div>
       ) : rows.length === 0 ? (
         <div className={styles.empty}>

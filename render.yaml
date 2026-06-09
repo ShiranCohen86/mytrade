@@ -38,6 +38,16 @@ services:
       - key: GOOGLE_CALLBACK_URL
         value: https://mytrade-zty9.onrender.com/auth/google/callback
 
+      # ── Web Push (VAPID) ──────────────────────────────────────────────────
+      # Generate the pair: node -e "console.log(require('web-push').generateVAPIDKeys())"
+      # Public key + subject are not secret (the public key ships to browsers).
+      - key: VAPID_PUBLIC_KEY
+        value: BCr5Fu835XvP0L_-luj_PoYKm8sj7cH6lOBt7dcxaRH3X3ejtAtszzxyMMWHsy3F4BdEDx5NCQ9cr3Nf2ntfCmo
+      - key: VAPID_SUBJECT
+        value: mailto:shiranc86@gmail.com
+      - key: VAPID_PRIVATE_KEY
+        sync: false           # Secret — set in Render dashboard → Environment
+
       # ── News & Cache ──────────────────────────────────────────────────────
       - key: CACHE_TTL_MINUTES
         value: 60

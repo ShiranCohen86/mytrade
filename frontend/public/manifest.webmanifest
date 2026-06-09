@@ -4,13 +4,61 @@
   "name": "MyTrade — Stock Intelligence",
   "short_name": "MyTrade",
   "description": "Risk scores, earnings scenarios, market regime analysis, and price alerts — all in one intelligent stock dashboard.",
-  "start_url": "/dashboard",
+  "lang": "en",
+  "dir": "ltr",
+  "start_url": "/dashboard?source=pwa",
   "display": "standalone",
-  "background_color": "#0d0d10",
-  "theme_color": "#4f7ef7",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#080818",
+  "theme_color": "#080818",
+  "categories": ["finance", "business", "productivity"],
   "icons": [
-    { "src": "/favicon.svg",          "sizes": "any",     "type": "image/svg+xml", "purpose": "any" },
-    { "src": "/icon.svg",             "sizes": "512x512", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "/icon-maskable.svg",    "sizes": "512x512", "type": "image/svg+xml", "purpose": "maskable" }
+    { "src": "/pwa-192x192.png",      "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/pwa-512x512.png",      "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/maskable-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/maskable-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icon.svg",             "sizes": "any",     "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-wide.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "MyTrade dashboard — risk scores, earnings AI and price alerts"
+    },
+    {
+      "src": "/screenshot-narrow.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Track your watchlist with intelligent risk scoring"
+    }
+  ],
+  "share_target": {
+    "action": "/dashboard",
+    "method": "GET",
+    "params": { "title": "title", "text": "text", "url": "url" }
+  },
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "url": "/dashboard?source=shortcut",
+      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Portfolio",
+      "short_name": "Portfolio",
+      "url": "/portfolio?source=shortcut",
+      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Sectors",
+      "short_name": "Sectors",
+      "url": "/sectors?source=shortcut",
+      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192", "type": "image/png" }]
+    }
   ]
 }

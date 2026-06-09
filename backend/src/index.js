@@ -49,6 +49,18 @@ app.use(cors({
   credentials: true,
 }));
 
+// Product analytics ingestion (Phase A). Mounted BEFORE the global 10kb JSON
+// limit so batched event payloads aren't rejected, with its own rate limiter
+// generous enough for high-volume telemetry.
+const eventsLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many events, slow down.' },
+});
+app.use('/api/events', eventsLimiter, express.json({ limit: '64kb' }), require('./routes/events'));
+
 // Body parser with size limit (prevents DoS via large payloads)
 app.use(express.json({ limit: '10kb' }));
 app.use(cookieParser());
@@ -171,6 +183,10 @@ const adminLimiter = rateLimit({
 
 // Routes
 app.use('/auth', require('./routes/auth'));
+// Push routes must be registered BEFORE the '/api' stocks router — that router
+// applies `auth` to everything under /api, which would otherwise block the
+// public /api/push/vapid-public-key endpoint.
+app.use('/api/push', require('./routes/push'));
 app.use('/api', require('./routes/stocks'));
 app.use('/api/timeline', require('./routes/timeline'));
 
@@ -246,6 +262,18 @@ async function start() {
       require('./jobs/newsTickerScan');
     } catch (cronErr) {
       logger.error('Failed to load news ticker scan job', { err: cronErr.message });
+    }
+
+    try {
+      require('./jobs/alertScan');
+    } catch (cronErr) {
+      logger.error('Failed to load price-alert scan job', { err: cronErr.message });
+    }
+
+    try {
+      require('./jobs/digest');
+    } catch (cronErr) {
+      logger.error('Failed to load daily digest job', { err: cronErr.message });
     }
 
     server = app.listen(config.PORT, () => {

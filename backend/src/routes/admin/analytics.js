@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../../models/User');
 const AuditLog = require('../../models/AuditLog');
 const WatchlistItem = require('../../models/WatchlistItem');
+const AnalyticsEvent = require('../../models/AnalyticsEvent');
 const adminAuth = require('../../middleware/adminAuth');
 
 // GET /admin/analytics/overview — key metrics snapshot
@@ -162,6 +163,79 @@ router.get('/security', adminAuth('audit.read'), async (req, res) => {
     ]);
 
     res.json({ failedByIp, failedByEmail, recentCritical });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /admin/analytics/product — PWA / growth / activation funnels from client events
+router.get('/product', adminAuth('logs.read'), async (req, res) => {
+  try {
+    const days = Math.min(90, Math.max(7, parseInt(req.query.days) || 30));
+    const since = new Date(Date.now() - days * 86400_000);
+
+    const [byEvent, platforms, standaloneTrend] = await Promise.all([
+      AnalyticsEvent.aggregate([
+        { $match: { ts: { $gte: since } } },
+        { $group: { _id: '$event', count: { $sum: 1 }, devices: { $addToSet: '$deviceId' } } },
+      ]),
+      AnalyticsEvent.aggregate([
+        { $match: { ts: { $gte: since }, event: 'SESSION_START' } },
+        { $group: { _id: '$platform', count: { $sum: 1 } } },
+      ]),
+      AnalyticsEvent.aggregate([
+        { $match: { ts: { $gte: since }, event: 'PWA_LAUNCHED_STANDALONE' } },
+        { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$ts' } }, count: { $sum: 1 } } },
+        { $sort: { _id: 1 } },
+      ]),
+    ]);
+
+    const map = {};
+    byEvent.forEach((e) => { map[e._id] = { count: e.count, devices: (e.devices || []).filter(Boolean).length }; });
+    const c = (k) => (map[k] ? map[k].count : 0);
+    const dev = (k) => (map[k] ? map[k].devices : 0);
+    const pct = (num, den) => (den ? +((num / den) * 100).toFixed(1) : 0);
+
+    const installShown = c('INSTALL_PROMPT_SHOWN');
+    const installed = c('PWA_INSTALLED');
+    const softShown = c('SOFT_NOTIFICATION_PROMPT_SHOWN');
+    const granted = c('NOTIFICATION_PERMISSION_GRANTED');
+
+    res.json({
+      days,
+      totalEvents: byEvent.reduce((s, e) => s + e.count, 0),
+      sessions: c('SESSION_START'),
+      standaloneLaunches: c('PWA_LAUNCHED_STANDALONE'),
+      standaloneDevices: dev('PWA_LAUNCHED_STANDALONE'),
+      returningUsers: c('USER_RETURNED'),
+      install: {
+        shown: installShown,
+        accepted: c('INSTALL_PROMPT_ACCEPTED'),
+        dismissed: c('INSTALL_PROMPT_DISMISSED'),
+        installed,
+        conversionRate: pct(installed, installShown),
+      },
+      notifications: {
+        softShown,
+        softAccepted: c('SOFT_NOTIFICATION_PROMPT_ACCEPTED'),
+        granted,
+        denied: c('NOTIFICATION_PERMISSION_DENIED'),
+        subscribed: c('PUSH_SUBSCRIBED'),
+        optInRate: pct(granted, softShown),
+      },
+      activation: {
+        onboardingCompleted: c('ONBOARDING_COMPLETED'),
+        firstStockAdded: c('FIRST_STOCK_ADDED'),
+        firstAlertSet: c('FIRST_ALERT_SET'),
+        ahaReached: c('AHA_REACHED'),
+        becameActive: c('USER_BECAME_ACTIVE'),
+        becamePowerUser: c('USER_BECAME_POWER_USER'),
+      },
+      updates: { shown: c('UPDATE_PROMPT_SHOWN'), accepted: c('UPDATE_PROMPT_ACCEPTED') },
+      platforms: platforms.map((p) => ({ platform: p._id || 'unknown', count: p.count })),
+      standaloneTrend: standaloneTrend.map((x) => ({ date: x._id, count: x.count })),
+      topEvents: byEvent.sort((a, b) => b.count - a.count).slice(0, 15).map((e) => ({ event: e._id, count: e.count })),
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

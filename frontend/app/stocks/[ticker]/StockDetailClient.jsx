@@ -1,6 +1,10 @@
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { onStockViewed } from '@/lib/activation';
+import { shareStock } from '@/lib/share';
+import { useToast } from '@/components/Toast/ToastProvider';
+import { Skeleton } from '@/components/Skeleton/Skeleton';
 import { useStockAnalysis } from '@/hooks/useStockAnalysis';
 import { useStocks } from '@/hooks/useStocks';
 import { PriceChart } from '@/components/PriceChart/PriceChart';
@@ -198,11 +202,26 @@ export default function StockDetailClient({ ticker }) {
   const { stock, isLoading, isRefreshing, error, refresh } = useStockAnalysis(ticker);
   const { stocks: allStocks, portfolio, priceAlerts, notes, updateEntryPrice, updateAlert, updateNote } = useStocks();
 
+  const toast = useToast();
+  useEffect(() => { onStockViewed(); }, [ticker]);
+
+  const handleShare = async () => {
+    const r = await shareStock(ticker, stock?.name);
+    if (r === 'copied') toast.success('Link copied to clipboard');
+    else if (r === 'unsupported') toast.warning('Sharing not supported on this device');
+  };
+
   if (isLoading && !stock) {
     return (
-      <div className={styles.loading}>
-        <div className={styles.spinner} />
-        <span>Loading {ticker}…</span>
+      <div style={{ display: 'grid', gap: 16, padding: 16, maxWidth: 1100, margin: '0 auto' }}>
+        <Skeleton w={120} h={28} radius={8} />
+        <Skeleton w="40%" h={40} radius={10} />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} h={140} radius={16} />
+          ))}
+        </div>
+        <Skeleton h={260} radius={16} />
       </div>
     );
   }
@@ -334,6 +353,7 @@ export default function StockDetailClient({ ticker }) {
         marketState={cachedData?.marketState}
         onRefresh={refresh}
         isRefreshing={isRefreshing}
+        onShare={handleShare}
       />
 
       <StatsBar items={statItems} />

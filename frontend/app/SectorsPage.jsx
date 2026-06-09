@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useStocks } from '@/hooks/useStocks';
 import { useFmtPrice } from '@/hooks/useFmtPrice';
 import { ExtPriceBadge } from '@/components/ExtPriceBadge/ExtPriceBadge';
+import { Skeleton } from '@/components/Skeleton/Skeleton';
 import styles from './SectorsPage.module.scss';
 
 function riskPipClass(score) {
@@ -94,8 +95,10 @@ export default function SectorsPage() {
       </div>
 
       {isLoading ? (
-        <div className={styles.empty}>
-          <span className={styles.emptyTitle}>{t('sectors.loading')}</span>
+        <div style={{ display: 'grid', gap: 12, padding: 4 }}>
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} h={64} radius={14} />
+          ))}
         </div>
       ) : sectors.length === 0 ? (
         <div className={styles.empty}>

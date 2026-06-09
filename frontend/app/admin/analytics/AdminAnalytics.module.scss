@@ -137,3 +137,42 @@
   border: 1px solid rgba(220, 38, 38, 0.25);
   border-radius: $radius-md;
 }
+
+// ─── PWA & Growth stat tiles ───────────────────────────────────────────
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: $space-3;
+  margin-bottom: $space-4;
+
+  @include below-xl { grid-template-columns: repeat(3, 1fr); }
+  @include below-sm { grid-template-columns: repeat(2, 1fr); }
+}
+
+.statTile {
+  padding: $space-4;
+  border-radius: $radius-lg;
+  background: $surface-raised;
+  border: 1px solid $chrome-dim;
+}
+
+.statValue {
+  font-size: $text-3xl;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: $text-primary;
+  line-height: 1;
+}
+
+.statLabel {
+  margin-top: $space-2;
+  font-size: $text-xs;
+  font-weight: 600;
+  color: $text-secondary;
+}
+
+.statSub {
+  margin-top: 2px;
+  font-size: $text-2xs;
+  color: $text-tertiary;
+}

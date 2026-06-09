@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { updateProfile } from '@/lib/apiClient';
+import { onOnboardingCompleted } from '@/lib/activation';
 import styles from './WelcomeCard.module.scss';
 
 export function WelcomeCard() {
@@ -12,6 +13,7 @@ export function WelcomeCard() {
 
   const handleDismiss = async () => {
     setDone(true);
+    onOnboardingCompleted();
     try {
       await updateProfile({ onboardingDone: true });
       updateUser({ onboardingDone: true });

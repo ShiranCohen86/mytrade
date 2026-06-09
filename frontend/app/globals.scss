@@ -485,3 +485,15 @@ input, button, textarea, select { outline: none; }
   .ml-auto { margin-left: unset; margin-right: auto; }
   .mr-auto { margin-right: unset; margin-left: auto; }
 }
+
+// ─── Accessibility: respect reduced-motion preference ─────────────────────────
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
