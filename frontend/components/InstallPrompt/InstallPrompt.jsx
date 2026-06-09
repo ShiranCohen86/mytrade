@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BottomSheet } from '@/components/BottomSheet/BottomSheet';
-import { track, EV, getSessionCount } from '@/lib/analytics';
+import { track, EV } from '@/lib/analytics';
 import { tapMedium } from '@/lib/haptics';
-import { hasFlag } from '@/lib/activation';
+import { claimSlot, releaseSlot, SLOT_FREE_EVENT } from '@/lib/pwaPromptSlot';
 import {
   getDeferredPrompt, clearDeferredPrompt, isStandalone, isIOS, isIPad,
   isSnoozed, isExhausted, snooze,
@@ -17,16 +17,11 @@ function isIOSSafari() {
   return !/CriOS|FxiOS|EdgiOS|OPiOS/.test(ua);
 }
 
-/** Engaged enough to ask: 2+ sessions or already hit the "aha" milestone. */
-function isEngaged() {
-  return getSessionCount() >= 2 || hasFlag('aha');
-}
-
 /**
- * Custom, platform-aware install prompt. Mounted inside the authenticated app
- * shell. Shows a native install sheet on Android/desktop (via beforeinstallprompt)
- * and an illustrated "Add to Home Screen" guide on iOS Safari. Smart-timed,
- * snoozable with backoff, and fully tracked.
+ * Custom, platform-aware install prompt. Appears immediately when the app is
+ * installable (Android/desktop via beforeinstallprompt; iOS Safari via an
+ * illustrated Add-to-Home-Screen guide). Snoozable with backoff, fully tracked,
+ * and coordinated so it never stacks with the notification prompt.
  */
 export function InstallPrompt() {
   const { t } = useTranslation();
@@ -35,22 +30,28 @@ export function InstallPrompt() {
 
   const evaluate = useCallback(() => {
     if (shownRef.current || mode) return;
-    if (isStandalone() || isSnoozed() || isExhausted() || !isEngaged()) return;
-    if (getDeferredPrompt()) { setMode('native'); return; }
-    if (isIOSSafari()) setMode('ios');
+    if (isStandalone() || isSnoozed() || isExhausted()) return;
+    let next = null;
+    if (getDeferredPrompt()) next = 'native';
+    else if (isIOSSafari()) next = 'ios';
+    if (!next) return;
+    if (!claimSlot('install')) return; // a higher-priority dialog is showing
+    setMode(next);
   }, [mode]);
 
   useEffect(() => {
-    // Small delay so we never interrupt the first paint / a fresh navigation.
-    const timer = setTimeout(evaluate, 2500);
+    // Check right away (the install event may have already fired), again just
+    // after first paint, and whenever the event fires later.
+    evaluate();
+    const timer = setTimeout(evaluate, 600);
     const onAvail = () => evaluate();
-    const onSignal = () => evaluate();
+    const onSlotFree = () => evaluate(); // notification prompt closed → our turn
     window.addEventListener('mytrade:installavailable', onAvail);
-    window.addEventListener('mytrade:install-signal', onSignal);
+    window.addEventListener(SLOT_FREE_EVENT, onSlotFree);
     return () => {
       clearTimeout(timer);
       window.removeEventListener('mytrade:installavailable', onAvail);
-      window.removeEventListener('mytrade:install-signal', onSignal);
+      window.removeEventListener(SLOT_FREE_EVENT, onSlotFree);
     };
   }, [evaluate]);
 
@@ -61,7 +62,7 @@ export function InstallPrompt() {
     }
   }, [mode]);
 
-  const close = useCallback(() => setMode(null), []);
+  const close = useCallback(() => { setMode(null); releaseSlot('install'); }, []);
 
   const dismiss = useCallback(() => {
     snooze();

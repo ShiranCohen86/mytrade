@@ -12,11 +12,26 @@
 .bell {
   display: grid;
   place-items: center;
-  width: 60px;
-  height: 60px;
-  border-radius: $radius-xl;
+  width: 68px;
+  height: 68px;
+  border-radius: $radius-2xl;
   background: $accent-faint;
   color: $accent;
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 8%, transparent);
+  animation: bellPop $motion-spring both;
+}
+
+@keyframes bellPop {
+  from { transform: scale(0.6); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.title {
+  margin: 0;
+  font-size: $text-2xl;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: $text-primary;
 }
 
 .desc {
@@ -25,6 +40,48 @@
   line-height: 1.45;
   color: $text-secondary;
   max-width: 360px;
+}
+
+.benefits {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  text-align: start;
+
+  li {
+    position: relative;
+    padding-inline-start: $space-6;
+    font-size: $text-md;
+    color: $text-primary;
+    line-height: 1.4;
+  }
+  li::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    top: 6px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: $accent-faint;
+    box-shadow: inset 0 0 0 2px $accent;
+  }
+  li::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: 5px;
+    top: 10px;
+    width: 6px;
+    height: 3px;
+    border-inline-start: 1.5px solid $accent;
+    border-bottom: 1.5px solid $accent;
+    transform: rotate(-45deg);
+  }
 }
 
 .actions {
@@ -52,7 +109,7 @@
   background: $accent;
   color: $text-inverse;
   &:hover { background: $accent-hover; transform: translateY(-1px); }
-  &:active { transform: translateY(0); }
+  &:active { transform: scale(0.97); }
 }
 
 .secondary {

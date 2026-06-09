@@ -7,7 +7,7 @@ import { track, EV, isStandalone, getPlatform } from './analytics';
 
 const SNOOZE_KEY = 'mytrade-install-snooze';
 // Backoff schedule (days) by number of prior dismissals; capped after the last.
-const BACKOFF_DAYS = [3, 7, 30, 90];
+const BACKOFF_DAYS = [1, 7, 30];
 
 let deferredPrompt = null;
 

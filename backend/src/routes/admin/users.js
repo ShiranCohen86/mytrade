@@ -17,10 +17,12 @@ router.get('/', adminAuth('users.read'), async (req, res) => {
     const filter = {};
 
     if (req.query.search) {
-      const q = req.query.search.trim();
+      // Escape regex metacharacters to prevent ReDoS / unintended matches from
+      // admin-supplied search input, and cap length.
+      const safe = req.query.search.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&').slice(0, 100);
       filter.$or = [
-        { email: { $regex: q, $options: 'i' } },
-        { displayName: { $regex: q, $options: 'i' } },
+        { email: { $regex: safe, $options: 'i' } },
+        { displayName: { $regex: safe, $options: 'i' } },
       ];
     }
 

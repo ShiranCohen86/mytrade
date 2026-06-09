@@ -81,7 +81,7 @@
   background: $accent;
   color: $text-inverse;
   &:hover { background: $accent-hover; transform: translateY(-1px); }
-  &:active { transform: translateY(0); }
+  &:active { transform: scale(0.97); }
 }
 
 .secondary {

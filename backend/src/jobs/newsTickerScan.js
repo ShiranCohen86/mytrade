@@ -26,7 +26,7 @@ const FEEDS = [
   { url: 'https://finance.yahoo.com/news/rssindex',                 name: 'Yahoo Finance' },
   { url: 'https://feeds.marketwatch.com/marketwatch/topstories/',   name: 'MarketWatch'   },
   { url: 'https://feeds.a.dj.com/rss/RSSMarketsMain.xml',          name: 'WSJ Markets'   },
-  { url: 'https://www.reutersagency.com/feed/?best-topics=business-finance&post_type=best', name: 'Reuters' },
+  { url: 'https://news.google.com/rss/search?q=business+finance+site:reuters.com&hl=en-US&gl=US&ceid=US:en', name: 'Reuters' },
   { url: 'https://news.google.com/rss/search?q=stock+market+earnings&hl=en-US&gl=US&ceid=US:en', name: 'Google News' },
 ];
 
@@ -75,10 +75,10 @@ async function fetchFeedTickers(feed) {
     }
     const unique = [...new Set(tickers)];
     logger.info(`[news-scan] ${feed.name}: ${parsed.items?.length ?? 0} items → ${unique.length} candidates`);
-    return unique;
+    return { feed, ok: true, tickers: unique };
   } catch (err) {
     logger.warn(`[news-scan] Feed failed: ${feed.name}`, { err: err.message });
-    return [];
+    return { feed, ok: false, tickers: [] };
   }
 }
 
@@ -86,10 +86,13 @@ async function fetchFeedTickers(feed) {
 
 async function fetchMoverTickers() {
   try {
-    const { default: yf } = await import('yahoo-finance2');
+    // yahoo-finance2 v3: instantiate the class; dailyGainers/dailyLosers are
+    // deprecated and now throw — screener() is the supported replacement.
+    const YahooFinance = (await import('yahoo-finance2')).default;
+    const yf = new YahooFinance({ suppressNotices: ['yahooSurvey', 'ripHistorical'] });
     const [gainers, losers] = await Promise.allSettled([
-      yf.dailyGainers({ count: 10, region: 'US' }),
-      yf.dailyLosers({ count: 10, region: 'US' }),
+      yf.screener({ scrIds: 'day_gainers', count: 10, region: 'US' }),
+      yf.screener({ scrIds: 'day_losers', count: 10, region: 'US' }),
     ]);
     const pick = (r) => (r.status === 'fulfilled' ? (r.value.quotes || []) : []);
     const tickers = [
@@ -145,7 +148,15 @@ async function runScan() {
   try {
     // 1. Fetch all feeds in parallel
     const feedResults = await Promise.all(FEEDS.map(fetchFeedTickers));
-    const newsTickers = feedResults.flat();
+    const newsTickers = feedResults.flatMap((r) => r.tickers);
+
+    // Consolidated feed-health summary — glanceable alternative to scanning per-feed logs
+    const dead = feedResults.filter((r) => !r.ok).map((r) => r.feed.name);
+    logger.info(
+      `[news-scan] Feed health — ✓ ${FEEDS.length - dead.length}/${FEEDS.length} alive` +
+        (dead.length ? `  ✗ dead: ${dead.join(', ')}` : '')
+    );
+
     if (newsTickers.length > 0) {
       await recordCandidates(newsTickers, 'news');
     }

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import { useTranslation } from 'react-i18next';
 import { track, EV } from '@/lib/analytics';
@@ -12,6 +12,7 @@ import styles from './PWAUpdatePrompt.module.scss';
  */
 export function PWAUpdatePrompt() {
   const { t } = useTranslation();
+  const regRef = useRef(null);
   const {
     needRefresh: [needRefresh, setNeedRefresh],
     offlineReady: [offlineReady, setOfflineReady],
@@ -19,14 +20,28 @@ export function PWAUpdatePrompt() {
   } = useRegisterSW({
     onRegisteredSW(swUrl, registration) {
       track(EV.SW_INSTALLED, {});
-      // Long-lived sessions: poll for a new deploy hourly so the prompt appears
-      // without requiring a manual reload.
+      regRef.current = registration || null;
+      // Long-lived sessions: poll for a new deploy hourly.
       if (registration) {
         setInterval(() => { registration.update().catch(() => {}); }, 60 * 60 * 1000);
       }
     },
     onRegisterError() { /* best-effort; ignore */ },
   });
+
+  // Check for a fresh deploy whenever the user returns to the app, so the
+  // update prompt appears promptly instead of waiting for the hourly poll.
+  useEffect(() => {
+    const check = () => {
+      if (document.visibilityState === 'visible') regRef.current?.update().catch(() => {});
+    };
+    document.addEventListener('visibilitychange', check);
+    window.addEventListener('focus', check);
+    return () => {
+      document.removeEventListener('visibilitychange', check);
+      window.removeEventListener('focus', check);
+    };
+  }, []);
 
   useEffect(() => {
     if (needRefresh) track(EV.UPDATE_PROMPT_SHOWN, {});

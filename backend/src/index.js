@@ -145,10 +145,13 @@ app.get('/api/market/movers', async (_req, res) => {
     if (_moversCache && Date.now() - _moversCacheAt < MOVERS_TTL_MS) {
       return res.json(_moversCache);
     }
-    const { default: yf } = await import('yahoo-finance2');
+    // yahoo-finance2 v3: default export is a class that must be instantiated,
+    // and dailyGainers/dailyLosers are deprecated in favour of screener().
+    const YahooFinance = (await import('yahoo-finance2')).default;
+    const yf = new YahooFinance({ suppressNotices: ['yahooSurvey', 'ripHistorical'] });
     const [gainers, losers] = await Promise.allSettled([
-      yf.dailyGainers({ count: 5, region: 'US' }),
-      yf.dailyLosers({ count: 5, region: 'US' }),
+      yf.screener({ scrIds: 'day_gainers', count: 5, region: 'US' }),
+      yf.screener({ scrIds: 'day_losers', count: 5, region: 'US' }),
     ]);
     const pick = (r) => (r.status === 'fulfilled' ? (r.value.quotes || []) : []);
     const fmt = (q) => ({
