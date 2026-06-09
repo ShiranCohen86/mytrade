@@ -9,7 +9,7 @@ module.exports = [
   mk('user_registered', 'New registration / welcome', 'Fires once when a user signs up',
     [], () => true,
     () => ({ title: 'Welcome to MyTrade 👋', message: 'Hi {{firstName}}! Add your first ticker to start tracking the market.', type: 'success', icon: '👋', deepLink: '/dashboard', actionText: 'Get started' }),
-    (c) => `welcome:${c.user && c.user._id}`, 'event'),
+    (c) => `welcome:${((c.subject || c.user) || {})._id}`, 'event'),
 
   mk('user_inactive', 'User inactive N days', 'No activity for N+ days',
     [{ name: 'days', type: 'number', default: 7, label: 'Inactive for (days)' }],

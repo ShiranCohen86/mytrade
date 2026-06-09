@@ -55,8 +55,8 @@ export default function AdminAutomationBuilder() {
   useEffect(() => {
     if (!isEdit) return;
     adminGetAutomation(id).then(({ rule }) => {
-      setForm({ ...EMPTY, ...rule, trigger: rule.trigger || EMPTY.trigger, conditions: rule.conditions || EMPTY.conditions, actions: rule.actions || EMPTY.actions, antiSpam: { ...EMPTY.antiSpam, ...rule.antiSpam }, digest: { ...EMPTY.digest, ...rule.digest }, abTest: { ...EMPTY.abTest, ...rule.abTest } });
-      const def = (rule.trigger && rule.trigger.type) ? null : null;
+      setForm({ ...EMPTY, ...rule, trigger: rule.trigger || EMPTY.trigger, conditions: rule.conditions || EMPTY.conditions, targeting: rule.targeting || EMPTY.targeting, actions: rule.actions || EMPTY.actions, antiSpam: { ...EMPTY.antiSpam, ...rule.antiSpam }, digest: { ...EMPTY.digest, ...rule.digest }, abTest: { ...EMPTY.abTest, ...rule.abTest } });
+      if (rule.category) setActiveCat(rule.category); // surface the saved trigger under the right category tab
     }).catch(() => toast.error(t('autom.loadFailed')));
   }, [id, isEdit]); // eslint-disable-line react-hooks/exhaustive-deps
 
