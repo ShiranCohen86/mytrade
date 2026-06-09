@@ -165,8 +165,8 @@ async function runScan() {
   }
 }
 
-// Every 6 hours
-cron.schedule('0 */6 * * *', () => {
+// Every 30 minutes
+cron.schedule('*/30 * * * *', () => {
   logger.info('[news-scan] Starting scheduled ticker scan');
   runScan();
 });
@@ -177,4 +177,4 @@ setTimeout(() => {
   runScan();
 }, 15_000);
 
-logger.info('[news-scan] Registered — runs every 6 hours');
+logger.info('[news-scan] Registered — runs every 30 minutes');
