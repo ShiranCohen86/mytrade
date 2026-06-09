@@ -43,6 +43,21 @@
 .removeBtn { display: grid; place-items: center; width: 30px; height: 30px; border-radius: $radius-sm; color: $text-tertiary; &:hover { background: $neg-bg; color: $neg; } }
 .addCond { font-size: $text-xs; font-weight: 600; color: $accent; padding: 4px 8px; border-radius: $radius-sm; &:hover { background: $accent-faint; } }
 
+// Insertable template variables ({{token}})
+.tokenRow { display: flex; flex-wrap: wrap; gap: $space-2; }
+.tokenChip {
+  font-family: $font-mono;
+  font-size: $text-2xs;
+  font-weight: 600;
+  color: $accent;
+  padding: 3px 9px;
+  border: 1px solid $chrome-dim;
+  border-radius: $radius-pill;
+  background: $accent-faint;
+  transition: all $motion-fast;
+  &:hover { border-color: $accent; }
+}
+
 // Anti-spam grid
 .antiGrid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: $space-3; @include below-sm { grid-template-columns: 1fr; } }
 .switchRow { display: flex; align-items: center; gap: $space-2; font-size: $text-sm; color: $text-secondary; margin-top: $space-2; }
