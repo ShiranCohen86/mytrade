@@ -20,7 +20,10 @@ precacheAndRoute(self.__WB_MANIFEST || []);
 const navigationHandler = createHandlerBoundToURL('index.html');
 registerRoute(
   new NavigationRoute(navigationHandler, {
-    denylist: [/^\/api\//, /^\/auth\//, /^\/admin\//, /^\/health/],
+    // Note: /admin/* is NOT denylisted — those are client-side SPA routes that must
+    // receive the app shell. The admin *API* lives under /api/admin and is covered
+    // by the /api denylist below.
+    denylist: [/^\/api\//, /^\/auth\//, /^\/health/],
   }),
 );
 
@@ -84,6 +87,7 @@ self.addEventListener('push', (event) => {
     data = { title: 'MyTrade', body: event.data ? event.data.text() : '' };
   }
   const title = data.title || 'MyTrade';
+  const silent = Boolean(data.silent);
   const options = {
     body: data.body || '',
     icon: data.icon || '/pwa-192x192.png',
@@ -91,6 +95,11 @@ self.addEventListener('push', (event) => {
     tag: data.tag,
     renotify: Boolean(data.tag),
     requireInteraction: Boolean(data.requireInteraction),
+    silent,
+    // Vibration nudges Android to surface a heads-up alert and makes the
+    // notification noticeable even with the screen off. Payload may override
+    // the pattern, or set `silent` to opt out.
+    vibrate: silent ? undefined : (data.vibrate || [200, 100, 200]),
     data: { url: data.url || '/dashboard', ...(data.data || {}) },
   };
   const tasks = [self.registration.showNotification(title, options)];
