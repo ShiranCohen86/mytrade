@@ -6,7 +6,9 @@ services:
     region: oregon
     plan: free
     branch: main
-    autoDeploy: true
+    # Deploys are triggered by the GitHub Actions workflow (.github/workflows/deploy.yml)
+    # via the Render deploy hook, after CI passes. Disabled here to avoid double deploys.
+    autoDeploy: false
     buildCommand: npm ci && npm run build
     startCommand: node backend/src/index.js
     healthCheckPath: /health
