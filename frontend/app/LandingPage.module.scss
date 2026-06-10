@@ -72,7 +72,9 @@
   font-size: 13px;
   font-weight: 600;
   color: #fff;
-  background: $accent;
+  // Darker than the brand accent (#6366F1) so white text clears the 4.5:1 WCAG-AA
+  // contrast threshold on this primary CTA (the accent itself is 4.45:1 — a hair short).
+  background: #4F46E5;
   text-decoration: none;
   padding: $space-2 $space-4;
   border-radius: $radius-md;

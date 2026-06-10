@@ -124,7 +124,7 @@ export default function LandingPage() {
       {/* Navigation */}
       <nav className={styles.nav}>
         <Link to="/" className={styles.navBrand}>
-          <img src="/favicon.svg" alt="MyTrade" width={28} height={28} />
+          <img src="/favicon.svg" alt="" width={28} height={28} />
           <span>MyTrade</span>
         </Link>
         <div className={styles.navLinks}>
@@ -200,7 +200,7 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className={styles.footer}>
         <div className={styles.footerBrand}>
-          <img src="/favicon.svg" alt="MyTrade" width={20} height={20} />
+          <img src="/favicon.svg" alt="" width={20} height={20} />
           <span>MyTrade</span>
         </div>
         <p className={styles.footerTagline}>{t('landing.footerTagline')}</p>
