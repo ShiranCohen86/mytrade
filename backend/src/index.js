@@ -265,7 +265,12 @@ app.get('/health', async (_req, res) => {
 
 // Unmatched API/auth routes → JSON 404 (so they don't fall through to the SPA
 // HTML in production or Express's default HTML 404 in dev).
-app.use(['/api', '/auth'], (_req, res) => {
+// Exception: /auth/callback is a CLIENT-side SPA route (the Google OAuth redirect
+// target), not a backend endpoint. It must fall through to the SPA fallback below,
+// otherwise the browser's full-page GET /auth/callback after Google sign-in renders
+// a raw {"error":"Not found."} JSON page instead of loading the app.
+app.use(['/api', '/auth'], (req, res, next) => {
+  if (req.originalUrl.split('?')[0] === '/auth/callback') return next();
   res.status(404).json({ error: 'Not found.' });
 });
 
