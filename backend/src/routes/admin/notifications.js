@@ -28,6 +28,9 @@ function validateAudience(audience) {
   if (audience.mode === 'single' || audience.mode === 'multiple') {
     const arr = Array.isArray(audience.userIds) ? audience.userIds : [];
     if (!arr.length) return 'Select at least one user.';
+    // Cap explicit recipient lists so a single request can't enqueue an unbounded
+    // per-recipient fan-out. Large audiences should use a segment instead.
+    if (arr.length > 10000) return 'Too many recipients (max 10,000). Use a segment for a larger audience.';
     if (arr.some((id) => !Types.ObjectId.isValid(id))) return 'Invalid user id in audience.';
     if (audience.mode === 'single' && arr.length !== 1) return 'Single mode expects exactly one user.';
   }

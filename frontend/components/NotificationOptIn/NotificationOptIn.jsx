@@ -84,13 +84,21 @@ export function NotificationOptIn() {
     track(EV.SOFT_NOTIFICATION_PROMPT_ACCEPTED, {});
     // Call subscribeToPush BEFORE closing — its first await is the native
     // permission request, so the user gesture stays active (iOS requirement).
-    const res = await subscribeToPush();
+    let res;
+    try {
+      res = await subscribeToPush();
+    } catch {
+      // Never leave the sheet stuck open / the slot held if subscribe throws.
+      res = { ok: false, reason: 'error' };
+    }
     setOpen(false);
     releaseSlot('notif');
     if (res.ok) {
       toast.success(t('pwa.notifEnabledToast', "You're all set — we'll keep you posted."));
     } else if (res.reason === 'denied') {
       toast.warning(t('pwa.notifBlockedDesc', 'Notifications are blocked. Enable them for MyTrade in your settings.'));
+    } else if (res.reason === 'error') {
+      toast.error(t('pwa.notifFailedToast', "Couldn't enable notifications. Please try again."));
     }
     // 'server-disabled' / 'default' (dismissed native prompt): stay silent.
   }, [t, toast]);

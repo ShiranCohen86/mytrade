@@ -137,14 +137,14 @@ self.addEventListener('notificationclick', (event) => {
       const wins = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
       for (const client of wins) {
         if ('focus' in client) {
-          try {
-            await client.navigate(targetUrl);
-          } catch {
-            /* cross-origin or not allowed — ignore */
-          }
+          // Soft in-app navigation: ask the live SPA to route via React Router
+          // instead of client.navigate() (a full reload that drops in-memory
+          // state, scroll and filters). The app listens for this message.
+          client.postMessage({ type: 'NOTIFICATION_NAVIGATE', url: targetUrl });
           return client.focus();
         }
       }
+      // No window open → cold-start the app at the target route.
       if (self.clients.openWindow) return self.clients.openWindow(targetUrl);
     })(),
   );

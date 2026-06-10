@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { Types } = require('mongoose');
 const User = require('../../models/User');
 const WatchlistItem = require('../../models/WatchlistItem');
 const adminAuth = require('../../middleware/adminAuth');
@@ -13,7 +14,12 @@ router.get('/', adminAuth('watchlist.edit'), async (req, res) => {
     const skip = (page - 1) * limit;
 
     const filter = {};
-    if (req.query.userId) filter.userId = req.query.userId;
+    if (req.query.userId) {
+      if (!Types.ObjectId.isValid(req.query.userId)) {
+        return res.status(400).json({ error: 'Invalid user id.' });
+      }
+      filter.userId = req.query.userId;
+    }
     if (req.query.symbol) filter.symbol = { $regex: req.query.symbol.toUpperCase(), $options: 'i' };
     if (req.query.isDisabled === 'true') filter.isDisabled = true;
     if (req.query.isDisabled === 'false') filter.isDisabled = false;
@@ -38,6 +44,9 @@ router.get('/', adminAuth('watchlist.edit'), async (req, res) => {
 // GET /admin/watchlists/:userId — all items for a specific user
 router.get('/:userId', adminAuth('watchlist.edit'), async (req, res) => {
   try {
+    if (!Types.ObjectId.isValid(req.params.userId)) {
+      return res.status(400).json({ error: 'Invalid user id.' });
+    }
     const items = await WatchlistItem.find({ userId: req.params.userId })
       .sort({ isDisabled: 1, updatedAt: -1 })
       .lean();
@@ -50,6 +59,9 @@ router.get('/:userId', adminAuth('watchlist.edit'), async (req, res) => {
 // POST /admin/watchlists/:userId/restore/:symbol — re-enable a disabled item
 router.post('/:userId/restore/:symbol', adminAuth('watchlist.edit'), async (req, res) => {
   try {
+    if (!Types.ObjectId.isValid(req.params.userId)) {
+      return res.status(400).json({ error: 'Invalid user id.' });
+    }
     const symbol = req.params.symbol.toUpperCase().replace(/[^A-Z0-9.]/g, '');
     const item = await WatchlistItem.findOneAndUpdate(
       { userId: req.params.userId, symbol, isDisabled: true },
@@ -74,6 +86,9 @@ router.post('/:userId/restore/:symbol', adminAuth('watchlist.edit'), async (req,
 // POST /admin/watchlists/:userId/disable/:symbol — force-disable an item
 router.post('/:userId/disable/:symbol', adminAuth('watchlist.edit'), async (req, res) => {
   try {
+    if (!Types.ObjectId.isValid(req.params.userId)) {
+      return res.status(400).json({ error: 'Invalid user id.' });
+    }
     const symbol = req.params.symbol.toUpperCase().replace(/[^A-Z0-9.]/g, '');
     const reason = String(req.body.reason || '').slice(0, 200);
 

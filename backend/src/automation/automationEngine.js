@@ -13,7 +13,7 @@ const antiSpam = require('./antiSpam');
 const adapters = require('./channels');
 const dataLoader = require('./dataLoader');
 const segmentService = require('../services/segmentService');
-const { interpolate, getByPath } = require('./config');
+const { interpolate, getByPath, MARKET_RULE_MAX_FANOUT } = require('./config');
 const logger = require('../utils/logger');
 
 const round = (n, d = 2) => (n == null || Number.isNaN(Number(n)) ? null : Math.round(Number(n) * 10 ** d) / 10 ** d);
@@ -224,18 +224,30 @@ async function runMarketRule(rule, data, allUsers, opts = {}) {
   const allUsersById = new Map(allUsers.map((u) => [String(u._id), u]));
   const targetIds = await resolveTargetUserIds(rule, allUsersById);
   const tickers = params.ticker ? [String(params.ticker).toUpperCase()] : [...data.stocks.keys()];
+  // Bound the work a single rule can do per run (see MARKET_RULE_MAX_FANOUT).
+  const cap = Math.max(1, Number(rule.maxFanOut) || MARKET_RULE_MAX_FANOUT);
   const results = [];
+  let processed = 0;
+  let capped = false;
   for (const ticker of tickers) {
+    if (processed >= cap) { capped = true; break; }
     const stock = data.stocks.get(ticker);
     if (!stock) continue;
     let users;
     if (rule.targeting.mode === 'watchlist_holders' || !targetIds) users = allUsers.filter((u) => (u.watchlist || []).includes(ticker));
     else users = targetIds.map((id) => allUsersById.get(id)).filter(Boolean);
     for (const user of users) {
+      if (processed >= cap) { capped = true; break; }
+      processed += 1;
       const ctx = { ticker, stock, hot: data.hot.get(ticker) || null, market: data.market, user, entry: dataLoader.portfolioEntry(user, ticker) };
       const r = await fireOne(rule, user, ctx, opts); // eslint-disable-line no-await-in-loop
       if (r) results.push(r);
     }
+  }
+  if (capped) {
+    logger.warn('[automation] market rule fan-out hit cap — truncated', {
+      ruleId: String(rule._id), ruleName: rule.name, cap, tickers: tickers.length,
+    });
   }
   return results;
 }

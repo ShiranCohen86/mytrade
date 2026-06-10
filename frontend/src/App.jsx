@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate, Outlet, useParams } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useParams, useNavigate } from 'react-router-dom';
 import { useEffect, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ThemeProvider } from '@mui/material/styles';
@@ -60,6 +60,31 @@ function DirectionSync() {
   return null;
 }
 
+// Bridges push-notification clicks into the SPA: the service worker postMessages
+// a target URL (instead of hard-reloading), and we route to it with React Router
+// so the user keeps their in-memory state, scroll position and filters.
+function SwNavigationBridge() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!('serviceWorker' in navigator)) return undefined;
+    const onMessage = (event) => {
+      const d = event.data;
+      if (!d || d.type !== 'NOTIFICATION_NAVIGATE' || !d.url) return;
+      try {
+        const url = new URL(d.url, window.location.origin);
+        if (url.origin === window.location.origin) {
+          navigate(url.pathname + url.search + url.hash);
+        } else {
+          window.location.assign(d.url);
+        }
+      } catch { /* ignore malformed url */ }
+    };
+    navigator.serviceWorker.addEventListener('message', onMessage);
+    return () => navigator.serviceWorker.removeEventListener('message', onMessage);
+  }, [navigate]);
+  return null;
+}
+
 function StockDetailRoute() {
   const { ticker } = useParams();
   return <StockDetailClient ticker={ticker.toUpperCase()} />;
@@ -101,6 +126,7 @@ export default function App() {
     <ThemeProvider theme={buildMuiTheme(theme)}>
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <DirectionSync />
+      <SwNavigationBridge />
       <CurrencyProvider>
       <ToastProvider>
       <AuthProvider>

@@ -11,6 +11,7 @@ const sectorService = require('../services/sectorService');
 const registry = require('../automation/registry');
 const engine = require('../automation/automationEngine');
 const dataLoader = require('../automation/dataLoader');
+const { withCronLock } = require('../utils/cronLock');
 const logger = require('../utils/logger');
 
 let isRunning = false;
@@ -66,7 +67,7 @@ async function scan() {
   }
 }
 
-cron.schedule('0 * * * *', scan); // hourly
+cron.schedule('0 * * * *', () => withCronLock('automation-user', 55 * 60 * 1000, scan)); // hourly
 logger.info('[automation-user] Registered — hourly');
 
 module.exports = { scan };

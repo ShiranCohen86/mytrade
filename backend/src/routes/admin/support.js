@@ -1,16 +1,24 @@
 const express = require('express');
 const router = express.Router();
+const { Types } = require('mongoose');
 const jwt = require('jsonwebtoken');
 const User = require('../../models/User');
 const AuditLog = require('../../models/AuditLog');
 const adminAuth = require('../../middleware/adminAuth');
 const audit = require('../../services/auditService');
 
+// Escape user input before it is used as a $regex, so search terms are treated
+// literally (no ReDoS / unexpected matches). Mirrors admin/users.js.
+const escapeRegex = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 // POST /admin/support/impersonate/:userId
 // Issues a short-lived (15-min) impersonation token for the target user.
 // The token carries an impersonatedBy field so downstream code can detect it.
 router.post('/impersonate/:userId', adminAuth('system.config'), async (req, res) => {
   try {
+    if (!Types.ObjectId.isValid(req.params.userId)) {
+      return res.status(400).json({ error: 'Invalid user id.' });
+    }
     if (req.params.userId === req.adminUser.id) {
       return res.status(400).json({ error: 'Cannot impersonate yourself.' });
     }
@@ -57,6 +65,9 @@ router.post('/impersonate/:userId', adminAuth('system.config'), async (req, res)
 // GET /admin/support/users/:userId/activity — recent activity timeline for a user
 router.get('/users/:userId/activity', adminAuth('users.read'), async (req, res) => {
   try {
+    if (!Types.ObjectId.isValid(req.params.userId)) {
+      return res.status(400).json({ error: 'Invalid user id.' });
+    }
     const limit = Math.min(200, parseInt(req.query.limit, 10) || 100);
     const logs = await AuditLog.find({ userId: req.params.userId })
       .sort({ timestamp: -1 })
@@ -71,6 +82,9 @@ router.get('/users/:userId/activity', adminAuth('users.read'), async (req, res) 
 // POST /admin/support/users/:userId/flag — flag user for suspicious behavior
 router.post('/users/:userId/flag', adminAuth('user.suspend'), async (req, res) => {
   try {
+    if (!Types.ObjectId.isValid(req.params.userId)) {
+      return res.status(400).json({ error: 'Invalid user id.' });
+    }
     const { reason, severity = 'warning' } = req.body;
     if (!['warning', 'critical'].includes(severity)) {
       return res.status(400).json({ error: 'severity must be warning or critical.' });
@@ -95,12 +109,13 @@ router.get('/search', adminAuth('users.read'), async (req, res) => {
   try {
     const q = String(req.query.q || '').trim().slice(0, 100);
     if (!q) return res.json({ users: [], logs: [] });
+    const safe = escapeRegex(q);
 
     const [users, logs] = await Promise.all([
       User.find({
         $or: [
-          { email: { $regex: q, $options: 'i' } },
-          { displayName: { $regex: q, $options: 'i' } },
+          { email: { $regex: safe, $options: 'i' } },
+          { displayName: { $regex: safe, $options: 'i' } },
         ],
       })
         .select('-passwordHash -resetToken -resetTokenExpiry')
@@ -110,7 +125,7 @@ router.get('/search', adminAuth('users.read'), async (req, res) => {
         $or: [
           { ip: q },
           { correlationId: q },
-          { 'actor.email': { $regex: q, $options: 'i' } },
+          { 'actor.email': { $regex: safe, $options: 'i' } },
         ],
       })
         .sort({ timestamp: -1 })

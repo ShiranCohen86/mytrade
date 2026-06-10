@@ -220,17 +220,19 @@ router.put('/:id/role', adminAuth('system.config'), async (req, res) => {
 router.put('/:id/suspend', adminAuth('user.suspend'), async (req, res) => {
   try {
     if (!Types.ObjectId.isValid(req.params.id)) return res.status(400).json({ error: 'Invalid user id.' });
-    const { suspend, reason } = req.body;
+    const { suspend } = req.body;
     if (typeof suspend !== 'boolean') {
       return res.status(400).json({ error: 'suspend must be a boolean.' });
     }
+    // Cap the free-text reason so it can't bloat the User document.
+    const reason = String(req.body.reason || '').slice(0, 1000);
 
     if (req.params.id === req.adminUser.id) {
       return res.status(400).json({ error: 'Cannot suspend yourself.' });
     }
 
     const update = suspend
-      ? { isSuspended: true, suspendedAt: new Date(), suspendedBy: req.adminUser.id, suspendReason: reason || '' }
+      ? { isSuspended: true, suspendedAt: new Date(), suspendedBy: req.adminUser.id, suspendReason: reason }
       : { isSuspended: false, suspendedAt: null, suspendedBy: null, suspendReason: '' };
 
     const user = await User.findByIdAndUpdate(req.params.id, update, {

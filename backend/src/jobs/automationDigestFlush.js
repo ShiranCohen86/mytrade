@@ -13,23 +13,34 @@ const registry = require('../automation/registry');
 const engine = require('../automation/automationEngine');
 const dataLoader = require('../automation/dataLoader');
 const notificationService = require('../services/notificationService');
+const { withCronLock } = require('../utils/cronLock');
 const logger = require('../utils/logger');
 
 async function flushBuckets(window) {
-  const buckets = await DigestBucket.find({ window }).lean();
+  const buckets = await DigestBucket.find({ window }).select('_id').lean();
   let sent = 0;
-  for (const b of buckets) {
-    if (!b.items.length) { await DigestBucket.deleteOne({ _id: b._id }); continue; } // eslint-disable-line no-await-in-loop
-    const n = b.items.length;
-    const tickers = [...new Set(b.items.map((i) => i.ticker).filter(Boolean))];
-    const title = n === 1 ? b.items[0].title : `${tickers.length || n} updates in your watchlist`;
+  for (const { _id } of buckets) {
+    // Atomically claim the current items and reset the bucket to empty. Anything
+    // pushed *during* this flush lands in the now-empty array and survives to the
+    // next flush, instead of being lost to a read-then-delete race.
+    const claimed = await DigestBucket.findOneAndUpdate( // eslint-disable-line no-await-in-loop
+      { _id }, { $set: { items: [] } }, { new: false }
+    ).lean();
+    const items = (claimed && claimed.items) || [];
+    // Drop the bucket only while it is still empty (filter guards against a push
+    // that arrived after the reset above).
+    if (!items.length) { await DigestBucket.deleteOne({ _id, items: { $size: 0 } }); continue; } // eslint-disable-line no-await-in-loop
+
+    const n = items.length;
+    const tickers = [...new Set(items.map((i) => i.ticker).filter(Boolean))];
+    const title = n === 1 ? items[0].title : `${tickers.length || n} updates in your watchlist`;
     const message = n === 1
-      ? b.items[0].message
-      : `${b.items.slice(0, 4).map((i) => i.title).join(' · ')}${n > 4 ? ` and ${n - 4} more` : ''}`;
-    await notificationService.deliverToUser(b.userId, // eslint-disable-line no-await-in-loop
+      ? items[0].message
+      : `${items.slice(0, 4).map((i) => i.title).join(' · ')}${n > 4 ? ` and ${n - 4} more` : ''}`;
+    await notificationService.deliverToUser(claimed.userId, // eslint-disable-line no-await-in-loop
       { title, message, type: 'info', icon: '🗞️', deepLink: '/notifications', actionText: 'View all' },
       { inApp: true, push: true }, { tag: `digest-${window}` });
-    await DigestBucket.deleteOne({ _id: b._id }); // eslint-disable-line no-await-in-loop
+    await DigestBucket.deleteOne({ _id, items: { $size: 0 } }); // eslint-disable-line no-await-in-loop
     sent += 1;
   }
   return sent;
@@ -87,7 +98,7 @@ async function run() {
   }
 }
 
-cron.schedule('35 13 * * 1-5', run); // ~9:35 AM ET on weekdays
+cron.schedule('35 13 * * 1-5', () => withCronLock('automation-digest', 20 * 60 * 1000, run)); // ~9:35 AM ET on weekdays
 logger.info('[automation-digest] Registered — weekday mornings');
 
 module.exports = { run, flushBuckets };

@@ -4,7 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { searchStocks } from '@/lib/apiClient';
 import styles from './AddTickerForm.module.scss';
 
-const TICKER_RE = /^[A-Z]{1,5}$/;
+// Match what the backend's sanitizeTicker accepts ([A-Z0-9.]): letter-led, so
+// tickers with a class suffix or digits (BRK.B, RDS.A, BF.B) aren't rejected here.
+const TICKER_RE = /^[A-Z][A-Z0-9.]{0,9}$/;
 
 function parseTickers(raw) {
   return raw
@@ -79,8 +81,10 @@ export function AddTickerForm({ onAdd }) {
         setShowDropdown(false);
       }
     };
-    document.addEventListener('mousedown', onOutside);
-    return () => document.removeEventListener('mousedown', onOutside);
+    // pointerdown (not mousedown) so an outside *tap* closes the dropdown on
+    // touch devices — mousedown doesn't fire for touch in some mobile browsers.
+    document.addEventListener('pointerdown', onOutside);
+    return () => document.removeEventListener('pointerdown', onOutside);
   }, [showDropdown]);
 
   const selectResult = useCallback((ticker) => {
@@ -170,7 +174,7 @@ export function AddTickerForm({ onAdd }) {
             onChange={(e) => setValue(e.target.value.slice(0, 50))}
             onBlur={(e) => {
               if (!e.target.value.includes(',') && !e.target.value.includes(';')) {
-                setValue(e.target.value.toUpperCase().slice(0, 5));
+                setValue(e.target.value.toUpperCase().slice(0, 10));
               }
             }}
             onKeyDown={handleKeyDown}

@@ -70,11 +70,22 @@ router.post('/register', async (req, res) => {
     }
 
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-    const user = await User.create({
-      email: email.toLowerCase(),
-      passwordHash,
-      displayName: (displayName || '').trim() || email.split('@')[0],
-    });
+    let user;
+    try {
+      user = await User.create({
+        email: email.toLowerCase(),
+        passwordHash,
+        displayName: (displayName || '').trim() || email.split('@')[0],
+      });
+    } catch (createErr) {
+      // Two concurrent signups for the same email both pass the findOne check
+      // above; the unique index then rejects the loser with E11000. Surface a
+      // clean 409 instead of a generic 500.
+      if (createErr.code === 11000) {
+        return res.status(409).json({ error: 'An account with this email already exists.' });
+      }
+      throw createErr;
+    }
 
     const { accessToken, refreshToken } = issueTokens(user);
     setRefreshCookie(res, refreshToken);
@@ -243,7 +254,13 @@ router.put('/password', authMiddleware, async (req, res) => {
     if (!match) return res.status(401).json({ error: 'Current password is incorrect.' });
 
     user.passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
+    // Invalidate every outstanding refresh token (a password change must log out
+    // any session a thief may be holding). The caller keeps their current access
+    // token until it expires (15m); their own refresh cookie below stays valid.
+    user.tokenVersion = (user.tokenVersion ?? 0) + 1;
     await user.save();
+    const { refreshToken } = issueTokens(user);
+    setRefreshCookie(res, refreshToken);
     res.json({ ok: true });
   } catch (err) {
     logger.error('PUT /auth/password', { err: err.message });
@@ -323,8 +340,13 @@ router.post('/reset-password', async (req, res) => {
     user.passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
     user.resetToken = undefined;
     user.resetTokenExpiry = undefined;
+    // A reset must revoke every outstanding session: bump tokenVersion (invalidates
+    // all refresh tokens) and clear the reset-flow refresh cookie so the user
+    // re-authenticates with the new password.
+    user.tokenVersion = (user.tokenVersion ?? 0) + 1;
     await user.save();
 
+    res.clearCookie(REFRESH_COOKIE, { path: '/auth/refresh' });
     res.json({ ok: true });
   } catch (err) {
     logger.error('POST /auth/reset-password', { err: err.message });
@@ -378,6 +400,11 @@ router.delete('/account', authMiddleware, async (req, res) => {
     const PushSubscription = require('../models/PushSubscription');
     const AnalyticsEvent = require('../models/AnalyticsEvent');
     const WatchlistItem = require('../models/WatchlistItem');
+    const UserNotification = require('../models/UserNotification');
+    const NotificationDelivery = require('../models/NotificationDelivery');
+    const DigestBucket = require('../models/DigestBucket');
+    const TriggerState = require('../models/TriggerState');
+    const UserNotifyBudget = require('../models/UserNotifyBudget');
     const user = await User.findById(req.user.id);
     const watchlist = user?.watchlist || [];
 
@@ -397,6 +424,11 @@ router.delete('/account', authMiddleware, async (req, res) => {
       PushSubscription.deleteMany({ userId: req.user.id }),
       AnalyticsEvent.deleteMany({ userId: req.user.id }),
       WatchlistItem.deleteMany({ userId: req.user.id }),
+      UserNotification.deleteMany({ userId: req.user.id }),
+      NotificationDelivery.deleteMany({ userId: req.user.id }),
+      DigestBucket.deleteMany({ userId: req.user.id }),
+      TriggerState.deleteMany({ userId: req.user.id }),
+      UserNotifyBudget.deleteMany({ userId: req.user.id }),
     ]);
 
     res.clearCookie(REFRESH_COOKIE, { path: '/auth/refresh' });

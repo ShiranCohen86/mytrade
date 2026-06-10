@@ -9,6 +9,10 @@ const cookieParser = require('cookie-parser');
 const config = require('./config');
 const db = require('./db');
 const logger = require('./utils/logger');
+const observability = require('./utils/observability');
+
+// Initialize optional error tracking before anything else can throw.
+observability.init();
 
 // Initialize passport strategies
 require('./config/passport');
@@ -107,6 +111,7 @@ const authLimiter = rateLimit({
 app.use('/auth/login', authLimiter);
 app.use('/auth/register', authLimiter);
 app.use('/auth/forgot-password', authLimiter);
+app.use('/auth/reset-password', authLimiter);
 
 // Public market overview endpoint — must be registered BEFORE the stocks router
 // (stocks router has router.use(auth) which would block unauthenticated requests)
@@ -306,6 +311,7 @@ if (process.env.NODE_ENV === 'production') {
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, _next) => {
   logger.error(`Unhandled error [${req.id}]`, { err: err.message });
+  observability.captureException(err, { requestId: req.id, path: req.originalUrl, method: req.method });
   res.status(500).json({ error: 'An unexpected error occurred' });
 });
 
@@ -390,10 +396,12 @@ async function start() {
   }
 }
 
-// Graceful shutdown — close DB connection and in-flight requests cleanly
+// Graceful shutdown — close socket.io, DB connection and in-flight requests cleanly
 function shutdown(signal) {
   logger.info(`${signal} received — closing server`);
   if (server) {
+    // Close live socket.io connections first so they don't hold the HTTP server open.
+    try { require('./services/realtimeService').getIO()?.close(); } catch { /* ignore */ }
     server.close(async () => {
       if (db.mode === 'mongo') {
         try {
@@ -412,5 +420,20 @@ function shutdown(signal) {
 
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
+
+// Last-resort safety nets: a stray rejection/throw from the many fire-and-forget
+// async paths (automation, push, sockets) should be logged + reported, not crash
+// the single instance silently. uncaughtException is treated as fatal (exit so the
+// platform restarts a clean process); unhandledRejection is logged + reported.
+process.on('unhandledRejection', (reason) => {
+  const err = reason instanceof Error ? reason : new Error(String(reason));
+  logger.error('Unhandled promise rejection', { err: err.message });
+  observability.captureException(err, { kind: 'unhandledRejection' });
+});
+process.on('uncaughtException', (err) => {
+  logger.error('Uncaught exception — exiting for a clean restart', { err: err.message });
+  observability.captureException(err, { kind: 'uncaughtException' });
+  shutdown('uncaughtException');
+});
 
 start();

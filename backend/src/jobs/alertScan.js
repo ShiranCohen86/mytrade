@@ -10,6 +10,7 @@ const User = require('../models/User');
 const Stock = require('../models/Stock');
 const provider = require('../providers/ProviderFactory');
 const pushService = require('../services/pushService');
+const { withCronLock } = require('../utils/cronLock');
 const logger = require('../utils/logger');
 
 const COOLDOWN_MS = 24 * 60 * 60 * 1000;
@@ -72,14 +73,14 @@ async function scanAlerts() {
   return fired;
 }
 
-cron.schedule('*/5 * * * 1-5', async () => {
+cron.schedule('*/5 * * * 1-5', () => withCronLock('alert-scan', 4 * 60 * 1000, async () => {
   try {
     const n = await scanAlerts();
     if (n) logger.info(`[alert-scan] fired ${n} price alert(s)`);
   } catch (err) {
     logger.error('[alert-scan] failed', { err: err.message });
   }
-}, { timezone: 'America/New_York' });
+}), { timezone: 'America/New_York' });
 
 logger.info('[alert-scan] Registered — every 5 min on weekdays (ET)');
 

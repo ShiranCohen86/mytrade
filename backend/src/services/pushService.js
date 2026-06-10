@@ -22,8 +22,18 @@ try {
   logger.error('[push] Failed to configure VAPID', { err: err.message });
 }
 
+// Lightweight rolling health stats so a persistent failure (bad VAPID, provider
+// outage) is observable instead of silently logged per-send while campaigns still
+// report "sent". Read via getStats() from an admin/health endpoint.
+const stats = { sent: 0, pruned: 0, failed: 0, lastError: null, lastErrorAt: null };
+
 function isPushEnabled() {
   return enabled;
+}
+
+function getStats() {
+  const total = stats.sent + stats.failed;
+  return { ...stats, failureRate: total ? stats.failed / total : 0 };
 }
 
 function getPublicKey() {
@@ -67,6 +77,9 @@ async function sendToUser(userId, category, payload) {
           stale.push(sub.endpoint);
           pruned += 1;
         } else {
+          stats.failed += 1;
+          stats.lastError = err.message;
+          stats.lastErrorAt = new Date();
           logger.warn('[push] send failed', { err: err.message, status: err.statusCode });
         }
       }
@@ -76,6 +89,8 @@ async function sendToUser(userId, category, payload) {
   if (stale.length) {
     await PushSubscription.deleteMany({ endpoint: { $in: stale } }).catch(() => {});
   }
+  stats.sent += sent;
+  stats.pruned += pruned;
   return { sent, pruned };
 }
 
@@ -85,4 +100,4 @@ async function countForUser(userId) {
   return getModel().countDocuments({ userId }).catch(() => 0);
 }
 
-module.exports = { isPushEnabled, getPublicKey, sendToUser, countForUser };
+module.exports = { isPushEnabled, getPublicKey, getStats, sendToUser, countForUser };

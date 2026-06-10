@@ -53,6 +53,15 @@ services:
       - key: VAPID_PRIVATE_KEY
         sync: false           # Secret — set in Render dashboard → Environment
 
+      # ── Observability & Scale (optional — features are env-gated) ─────────
+      # Error tracking. Unset = disabled (no-op). Set to a Sentry DSN to enable.
+      - key: SENTRY_DSN
+        sync: false           # Optional — set in Render dashboard to enable Sentry
+      # Horizontal scaling for realtime sockets. Unset = single-instance (current).
+      # Set to a Redis connection URL to fan socket.io events across instances.
+      - key: REDIS_URL
+        sync: false           # Optional — set when running >1 instance
+
       # ── News & Cache ──────────────────────────────────────────────────────
       - key: CACHE_TTL_MINUTES
         value: 60

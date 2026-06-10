@@ -77,24 +77,47 @@ function roll(doc, now) {
   if (!doc.dayResetAt || now >= new Date(doc.dayResetAt).getTime()) { doc.dayCount = 0; doc.dayResetAt = new Date(now + DAY_MS); }
 }
 
+// Read-modify-write with one retry if a concurrent fire inserted the same unique
+// doc first (E11000). The retry re-reads the now-existing doc and applies the bump,
+// so a parallel fire can't turn the unique-index collision into a failed delivery.
+async function bumpWithRetry(load, apply) {
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const doc = await load(); // eslint-disable-line no-await-in-loop
+    apply(doc);
+    try {
+      await doc.save(); // eslint-disable-line no-await-in-loop
+      return;
+    } catch (err) {
+      if (err && err.code === 11000 && attempt === 0) continue;
+      throw err;
+    }
+  }
+}
+
 async function record(rule, userId, key, dedupeHash) {
   const now = Date.now();
 
-  const state = (await TriggerState.findOne({ ruleId: rule._id, userId, key }))
-    || new TriggerState({ ruleId: rule._id, userId, key });
-  roll(state, now);
-  state.hourCount += 1;
-  state.dayCount += 1;
-  state.lastFiredAt = new Date(now);
-  if (dedupeHash) state.lastDedupeHash = dedupeHash;
-  state.expiresAt = new Date(now + STATE_TTL_MS);
-  await state.save();
+  await bumpWithRetry(
+    async () => (await TriggerState.findOne({ ruleId: rule._id, userId, key }))
+      || new TriggerState({ ruleId: rule._id, userId, key }),
+    (state) => {
+      roll(state, now);
+      state.hourCount += 1;
+      state.dayCount += 1;
+      state.lastFiredAt = new Date(now);
+      if (dedupeHash) state.lastDedupeHash = dedupeHash;
+      state.expiresAt = new Date(now + STATE_TTL_MS);
+    },
+  );
 
-  const budget = (await UserNotifyBudget.findOne({ userId })) || new UserNotifyBudget({ userId });
-  roll(budget, now);
-  budget.hourCount += 1;
-  budget.dayCount += 1;
-  await budget.save();
+  await bumpWithRetry(
+    async () => (await UserNotifyBudget.findOne({ userId })) || new UserNotifyBudget({ userId }),
+    (budget) => {
+      roll(budget, now);
+      budget.hourCount += 1;
+      budget.dayCount += 1;
+    },
+  );
 }
 
 module.exports = { check, record, inQuietHours };

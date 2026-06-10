@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { authResetPassword } from '@/lib/apiClient';
@@ -24,14 +24,25 @@ export default function ResetPasswordPage() {
     setLoading(true);
     try {
       await authResetPassword(token, password);
+      // Clear the sensitive fields so the new password isn't left on screen on a
+      // shared device after success.
+      setPassword('');
+      setConfirm('');
       setDone(true);
-      setTimeout(() => navigate('/login', { replace: true }), 2500);
     } catch (err) {
       setError(err.message || t('auth.resetLinkInvalid'));
     } finally {
       setLoading(false);
     }
   };
+
+  // Redirect to login shortly after success — in an effect so the timer is
+  // cleaned up if the user navigates away first (no navigate-after-unmount).
+  useEffect(() => {
+    if (!done) return undefined;
+    const id = setTimeout(() => navigate('/login', { replace: true }), 2500);
+    return () => clearTimeout(id);
+  }, [done, navigate]);
 
   if (!token) {
     return (

@@ -8,6 +8,7 @@ const AutomationRule = require('../models/AutomationRule');
 const registry = require('../automation/registry');
 const engine = require('../automation/automationEngine');
 const dataLoader = require('../automation/dataLoader');
+const { withCronLock } = require('../utils/cronLock');
 const logger = require('../utils/logger');
 
 let isRunning = false;
@@ -55,7 +56,7 @@ async function scan() {
   }
 }
 
-cron.schedule('*/10 * * * 1-5', scan);
+cron.schedule('*/10 * * * 1-5', () => withCronLock('automation-market', 9 * 60 * 1000, scan));
 logger.info('[automation-market] Registered — every 10 min on weekdays');
 
 module.exports = { scan };

@@ -13,6 +13,7 @@ import styles from './PWAUpdatePrompt.module.scss';
 export function PWAUpdatePrompt() {
   const { t } = useTranslation();
   const regRef = useRef(null);
+  const pollRef = useRef(null);
   const {
     needRefresh: [needRefresh, setNeedRefresh],
     offlineReady: [offlineReady, setOfflineReady],
@@ -21,13 +22,16 @@ export function PWAUpdatePrompt() {
     onRegisteredSW(swUrl, registration) {
       track(EV.SW_INSTALLED, {});
       regRef.current = registration || null;
-      // Long-lived sessions: poll for a new deploy hourly.
+      // Long-lived sessions: poll for a new deploy hourly (cleared on unmount).
       if (registration) {
-        setInterval(() => { registration.update().catch(() => {}); }, 60 * 60 * 1000);
+        clearInterval(pollRef.current);
+        pollRef.current = setInterval(() => { registration.update().catch(() => {}); }, 60 * 60 * 1000);
       }
     },
     onRegisterError() { /* best-effort; ignore */ },
   });
+
+  useEffect(() => () => clearInterval(pollRef.current), []);
 
   // Check for a fresh deploy whenever the user returns to the app, so the
   // update prompt appears promptly instead of waiting for the hourly poll.

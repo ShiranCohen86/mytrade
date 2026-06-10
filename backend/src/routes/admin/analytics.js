@@ -4,6 +4,7 @@ const User = require('../../models/User');
 const AuditLog = require('../../models/AuditLog');
 const WatchlistItem = require('../../models/WatchlistItem');
 const AnalyticsEvent = require('../../models/AnalyticsEvent');
+const pushService = require('../../services/pushService');
 const adminAuth = require('../../middleware/adminAuth');
 
 // GET /admin/analytics/overview — key metrics snapshot
@@ -56,7 +57,10 @@ router.get('/overview', adminAuth('logs.read'), async (req, res) => {
       },
       signups: { today: newToday, week: newWeek, month: newMonth },
       watchlists: { total: totalWatchlistItems, active: activeWatchlistItems },
-      system: { totalLogs, criticalLogs7d, failedLogins7d },
+      system: {
+        totalLogs, criticalLogs7d, failedLogins7d,
+        push: { enabled: pushService.isPushEnabled(), ...pushService.getStats() },
+      },
     });
   } catch (err) {
     res.status(500).json({ error: 'Server error.' });

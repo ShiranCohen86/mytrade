@@ -8,6 +8,7 @@ const User = require('../models/User');
 const Stock = require('../models/Stock');
 const PushSubscription = require('../models/PushSubscription');
 const pushService = require('../services/pushService');
+const { withCronLock } = require('../utils/cronLock');
 const logger = require('../utils/logger');
 
 async function sendDailyDigest() {
@@ -88,7 +89,7 @@ async function sendDailyDigest() {
 }
 
 // Weekday mornings 09:35 ET — slightly after the US open (DST-correct via tz).
-cron.schedule('35 9 * * 1-5', async () => {
+cron.schedule('35 9 * * 1-5', () => withCronLock('daily-digest', 20 * 60 * 1000, async () => {
   logger.info('[digest] running daily digest');
   try {
     const r = await sendDailyDigest();
@@ -96,7 +97,7 @@ cron.schedule('35 9 * * 1-5', async () => {
   } catch (err) {
     logger.error('[digest] failed', { err: err.message });
   }
-}, { timezone: 'America/New_York' });
+}), { timezone: 'America/New_York' });
 
 logger.info('[digest] Registered — weekdays 09:35 ET');
 
