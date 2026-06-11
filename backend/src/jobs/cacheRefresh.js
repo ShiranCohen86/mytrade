@@ -4,6 +4,8 @@ const { User, Stock } = require('../db');
 const stockService = require('../services/stockService');
 const logger = require('../utils/logger');
 const { sendAlertEmail } = require('../utils/emailService');
+const { withCronLock } = require('../utils/cronLock');
+const pushService = require('../services/pushService');
 
 const ALERT_COOLDOWN_MS = 24 * 60 * 60 * 1000; // 24 hours between repeat emails
 
@@ -25,6 +27,12 @@ async function checkPriceAlerts(tickers) {
     const now = Date.now();
 
     for (const user of users) {
+      // Push is the primary alert channel; email is a fallback only for users who
+      // can't receive a price-alert push. Anyone with an active price_alert
+      // subscription is served by alertScan (push) — skip them here so the two
+      // channels don't double-notify or fight over the shared cooldown.
+      if (await pushService.countForUser(user._id, 'price_alert') > 0) continue;
+
       for (const alert of user.priceAlerts) {
         const currentPrice = priceMap[alert.ticker];
         if (currentPrice == null) continue;
@@ -89,7 +97,13 @@ const cronSchedule = CRON_VALID_RE.test(config.CRON_SCHEDULE)
 
 let isRunning = false;
 
-cron.schedule(cronSchedule, async () => {
+// Outer withCronLock guards against concurrent runs across *processes* (multi-instance
+// deploys); the inner isRunning flag guards against overlap within a single process.
+// Without the distributed lock every instance would refresh the whole watchlist in
+// parallel, multiplying Yahoo load and risking rate limits.
+const REFRESH_LOCK_TTL_MS = 30 * 60 * 1000; // matches the 30-min overrun warning below
+
+cron.schedule(cronSchedule, () => withCronLock('watchlist-refresh', REFRESH_LOCK_TTL_MS, async () => {
   if (isRunning) {
     logger.warn('Previous cron run still in progress — skipping this tick');
     return;
@@ -139,6 +153,6 @@ cron.schedule(cronSchedule, async () => {
   } finally {
     isRunning = false;
   }
-});
+}));
 
 logger.info(`Cron scheduled with: ${cronSchedule}`);

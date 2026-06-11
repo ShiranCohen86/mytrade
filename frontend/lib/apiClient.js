@@ -36,9 +36,10 @@ async function request(path, options = {}) {
 
   if (res.status === 401) {
     // Refresh the access token (single-flight) and retry the original request once.
+    let retry;
     try {
       const accessToken = await refreshAccessToken();
-      const retry = await fetch(path, {
+      retry = await fetch(path, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${accessToken}`,
@@ -47,15 +48,29 @@ async function request(path, options = {}) {
         credentials: 'include',
         ...options,
       });
-      if (retry.ok) {
-        if (retry.status === 204) return undefined;
-        return retry.json();
-      }
-    } catch { /* fall through to redirect */ }
+    } catch {
+      // Refresh itself failed → the session is genuinely gone.
+      setAccessToken(null);
+      window.location.href = '/login';
+      throw new Error('Session expired. Please sign in again.');
+    }
 
-    setAccessToken(null);
-    window.location.href = '/login';
-    throw new Error('Session expired. Please sign in again.');
+    if (retry.ok) {
+      if (retry.status === 204) return undefined;
+      return retry.json();
+    }
+
+    // Still unauthorized after a fresh token → the session is truly expired.
+    if (retry.status === 401) {
+      setAccessToken(null);
+      window.location.href = '/login';
+      throw new Error('Session expired. Please sign in again.');
+    }
+
+    // Any other status (500, 503, 403, 429, …) is a transient/normal error on the
+    // retried request — surface it without nuking the (valid) token or logging out.
+    const body = await retry.json().catch(() => ({ error: retry.statusText }));
+    throw new Error(body.error || `Request failed: ${retry.status}`);
   }
 
   if (!res.ok) {

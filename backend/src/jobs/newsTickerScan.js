@@ -16,6 +16,7 @@ const Parser = require('rss-parser');
 const logger = require('../utils/logger');
 const { recordCandidates, validateTicker } = require('../services/tickerDiscovery');
 const DiscoveredTicker = require('../models/DiscoveredTicker');
+const { withCronLock } = require('../utils/cronLock');
 
 const rssParser = new Parser({ timeout: 6000 });
 const MAX_VALIDATE_PER_RUN = 20;
@@ -176,11 +177,13 @@ async function runScan() {
   }
 }
 
-// Every 30 minutes
-cron.schedule('*/30 * * * *', () => {
+// Every 30 minutes. withCronLock keeps only one instance scanning feeds + validating
+// tickers per tick on a multi-instance deploy (the exported runScan stays unguarded
+// for intentional on-demand admin refreshes).
+cron.schedule('*/30 * * * *', () => withCronLock('news-scan', 25 * 60 * 1000, async () => {
   logger.info('[news-scan] Starting scheduled ticker scan');
-  runScan();
-});
+  await runScan();
+}));
 
 // Export for on-demand use (e.g. admin intelligence refresh)
 module.exports = { runScan };

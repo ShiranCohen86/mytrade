@@ -94,10 +94,16 @@ async function sendToUser(userId, category, payload) {
   return { sent, pruned };
 }
 
-/** Convenience: count a user's active subscriptions (for badge / settings UI). */
-async function countForUser(userId) {
+/**
+ * Convenience: count a user's active subscriptions (for badge / settings UI).
+ * Pass `category` to count only subscriptions opted into that category — used to
+ * decide whether push can deliver a given alert type (else fall back to email).
+ */
+async function countForUser(userId, category) {
   if (!userId) return 0;
-  return getModel().countDocuments({ userId }).catch(() => 0);
+  const query = { userId };
+  if (category) query.categories = category;
+  return getModel().countDocuments(query).catch(() => 0);
 }
 
 module.exports = { isPushEnabled, getPublicKey, getStats, sendToUser, countForUser };

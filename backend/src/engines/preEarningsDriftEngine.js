@@ -33,7 +33,9 @@ function calculate({ historicalPrices, earningsDate }) {
   const current = sorted[sorted.length - 1].close;
   const past = sorted[Math.max(sorted.length - 11, 0)].close;
 
-  if (!past || past === 0) return noSignal;
+  // Both endpoints must be valid positive closes; a data hole would otherwise
+  // produce a misleading ±100% drift (e.g. a missing current close → FALLING).
+  if (!current || current <= 0 || !past || past <= 0) return noSignal;
 
   const driftPercent = ((current - past) / past) * 100;
 

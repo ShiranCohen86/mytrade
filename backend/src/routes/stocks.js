@@ -177,8 +177,9 @@ router.get('/stocks/:ticker/analysis', async (req, res) => {
     audit.logUser(req, 'stock.viewed', {
       symbol:          t,
       sector:          getSector(t),
-      price_at_event:  stock.currentPrice ?? stock.price ?? null,
-      price_change_24h: stock.changePercent ?? stock.dailyChangePercent ?? null,
+      // Price context lives under cachedData (no top-level price fields on Stock).
+      price_at_event:   stock.cachedData?.price ?? null,
+      price_change_24h: stock.cachedData?.changePercent ?? null,
     });
     res.json(stock);
   } catch (err) {

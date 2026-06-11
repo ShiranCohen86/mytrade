@@ -55,7 +55,7 @@ async function scanAlerts() {
       if (now - last < COOLDOWN_MS) continue;
 
       const verb = a.direction === 'below' ? 'dropped to' : 'reached';
-      await pushService.sendToUser(u._id, 'price_alert', {
+      const { sent } = await pushService.sendToUser(u._id, 'price_alert', {
         title: `${a.ticker} ${verb} $${a.targetPrice}`,
         body: `${a.ticker} is now $${Number(price).toFixed(2)} — your price alert triggered.`,
         url: `/stocks/${a.ticker}`,
@@ -63,8 +63,13 @@ async function scanAlerts() {
         urgency: 'high',
         requireInteraction: true,
       });
-      setObj[`priceAlerts.${i}.lastAlertNotifiedAt`] = new Date();
-      fired += 1;
+      // Only consume the 24h cooldown when push actually reached a device. If the
+      // user has no price_alert subscription (sent === 0), leave lastAlertNotifiedAt
+      // untouched so the email fallback (cacheRefresh) can still deliver to them.
+      if (sent > 0) {
+        setObj[`priceAlerts.${i}.lastAlertNotifiedAt`] = new Date();
+        fired += 1;
+      }
     }
     if (Object.keys(setObj).length) {
       await User.updateOne({ _id: u._id }, { $set: setObj }).catch(() => {});

@@ -29,6 +29,9 @@ function momentumScore(historicalPrices) {
   const price10 = sorted[Math.max(sorted.length - 11, 0)].close;
   const price30 = sorted[Math.max(sorted.length - 31, 0)].close;
 
+  // Guard against zero/missing closes in upstream data (would yield Infinity → max score).
+  if (!current || !price10 || !price30 || price10 <= 0 || price30 <= 0) return 15;
+
   const momentum10 = ((current - price10) / price10) * 100;
   const momentum30 = ((current - price30) / price30) * 100;
 

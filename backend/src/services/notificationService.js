@@ -125,12 +125,22 @@ async function runChunkPush(campaign, chunk) {
  * @returns {Promise<NotificationCampaign|null>}
  */
 async function dispatch(campaignId) {
-  const campaign = await NotificationCampaign.findById(campaignId);
-  if (!campaign) return null;
-  if (!['draft', 'scheduled', 'sending'].includes(campaign.status)) return campaign;
-
-  campaign.status = 'sending';
-  await campaign.save();
+  // Atomically claim the campaign: only one dispatcher — across processes — can move
+  // it out of draft/scheduled into 'sending'. This makes dispatch idempotent against
+  // duplicate triggers (double admin click, or the per-instance scheduler firing on
+  // multiple instances). A plain read-then-write status check would let two concurrent
+  // dispatches both pass and fan out twice (duplicate in-app notifications + double
+  // push). 'sending' is intentionally excluded — re-dispatching a half-sent campaign
+  // would re-run every chunk and duplicate everything, so it was never safe.
+  const campaign = await NotificationCampaign.findOneAndUpdate(
+    { _id: campaignId, status: { $in: ['draft', 'scheduled'] } },
+    { $set: { status: 'sending' } },
+    { new: true }
+  );
+  if (!campaign) {
+    // Not found, already sent/cancelled, or being sent elsewhere — don't re-dispatch.
+    return NotificationCampaign.findById(campaignId);
+  }
 
   let recipients;
   try {

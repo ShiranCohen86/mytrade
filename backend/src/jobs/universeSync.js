@@ -12,6 +12,7 @@ const Stock = require('../models/Stock');
 const stockService = require('../services/stockService');
 const logger = require('../utils/logger');
 const tickerDiscovery = require('../services/tickerDiscovery');
+const { withCronLock } = require('../utils/cronLock');
 
 const MAX_PER_RUN = 60;
 const STALE_MS = 7 * 24 * 60 * 60 * 1000;
@@ -73,8 +74,10 @@ async function syncUniverseStocks() {
 
 let isRunning = false;
 
-// Daily at 02:00 UTC
-cron.schedule('0 2 * * *', async () => {
+// Daily at 02:00 UTC. Outer withCronLock prevents every instance in a multi-instance
+// deploy from running the full universe analysis (heavy Yahoo load) in parallel;
+// inner isRunning guards intra-process overlap.
+cron.schedule('0 2 * * *', () => withCronLock('universe-sync', 60 * 60 * 1000, async () => {
   if (isRunning) {
     logger.warn('[universe-sync] Previous run still in progress — skipping');
     return;
@@ -91,7 +94,7 @@ cron.schedule('0 2 * * *', async () => {
   } finally {
     isRunning = false;
   }
-});
+}));
 
 // On startup: log coverage diagnostics without triggering any analysis
 tickerDiscovery.getAllTickers()

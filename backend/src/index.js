@@ -20,6 +20,14 @@ const googleOAuthEnabled = !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE
 
 const app = express();
 
+// Trust the platform's reverse proxy (Render/Heroku-style: exactly one hop) so
+// req.ip resolves to the real client IP from X-Forwarded-For. Without this, every
+// request appears to come from the proxy's IP — collapsing all users into a single
+// rate-limit bucket (one user can lock out everyone) and tripping express-rate-limit's
+// X-Forwarded-For validation. Use 1, not `true`: trusting all hops lets a client spoof
+// X-Forwarded-For to bypass the limiter. Bump if a CDN (e.g. Cloudflare) is added in front.
+app.set('trust proxy', 1);
+
 // Security headers
 app.use(helmet());
 
