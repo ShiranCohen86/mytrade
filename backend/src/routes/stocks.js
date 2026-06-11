@@ -286,18 +286,21 @@ router.put('/portfolio/:ticker', async (req, res) => {
     if (shares !== null && (!isFinite(shares) || shares < 0)) {
       return res.status(400).json({ error: 'shares must be a non-negative number.' });
     }
-    const user = await getUser(req.user.id);
-    if (!user.watchlist.includes(t)) {
+    if (!(await User.exists({ _id: req.user.id, watchlist: t }))) {
       return res.status(403).json({ error: `${t} is not in your watchlist.` });
     }
-    const idx = user.portfolio.findIndex((p) => p.ticker === t);
-    if (idx >= 0) {
-      user.portfolio[idx].entryPrice = entryPrice;
-      user.portfolio[idx].shares = shares;
-    } else {
-      user.portfolio.push({ ticker: t, entryPrice, shares });
+    // Atomic update-or-insert so concurrent edits to *other* tickers aren't
+    // clobbered by a whole-document save (lost-update).
+    const r = await User.updateOne(
+      { _id: req.user.id, 'portfolio.ticker': t },
+      { $set: { 'portfolio.$.entryPrice': entryPrice, 'portfolio.$.shares': shares } }
+    );
+    if (r.matchedCount === 0) {
+      await User.updateOne(
+        { _id: req.user.id, 'portfolio.ticker': { $ne: t } },
+        { $push: { portfolio: { ticker: t, entryPrice, shares } } }
+      );
     }
-    await user.save();
     audit.logUser(req, 'portfolio.set', { symbol: t, sector: getSector(t), entryPrice, shares });
     res.json({ ticker: t, entryPrice, shares });
   } catch (err) {
@@ -309,9 +312,7 @@ router.put('/portfolio/:ticker', async (req, res) => {
 router.delete('/portfolio/:ticker', async (req, res) => {
   try {
     const t = sanitizeTicker(req.params.ticker);
-    const user = await getUser(req.user.id);
-    user.portfolio = user.portfolio.filter((p) => p.ticker !== t);
-    await user.save();
+    await User.updateOne({ _id: req.user.id }, { $pull: { portfolio: { ticker: t } } });
     audit.logUser(req, 'portfolio.removed', { symbol: t, sector: getSector(t) });
     res.status(204).send();
   } catch (err) {
@@ -340,18 +341,19 @@ router.put('/alerts/:ticker', async (req, res) => {
     if (!isFinite(targetPrice) || targetPrice < 0) {
       return res.status(400).json({ error: 'targetPrice must be a non-negative number.' });
     }
-    const user = await getUser(req.user.id);
-    if (!user.watchlist.includes(t)) {
+    if (!(await User.exists({ _id: req.user.id, watchlist: t }))) {
       return res.status(403).json({ error: `${t} is not in your watchlist.` });
     }
-    const idx = user.priceAlerts.findIndex((a) => a.ticker === t);
-    if (idx >= 0) {
-      user.priceAlerts[idx].targetPrice = targetPrice;
-      user.priceAlerts[idx].direction = direction;
-    } else {
-      user.priceAlerts.push({ ticker: t, targetPrice, direction });
+    const r = await User.updateOne(
+      { _id: req.user.id, 'priceAlerts.ticker': t },
+      { $set: { 'priceAlerts.$.targetPrice': targetPrice, 'priceAlerts.$.direction': direction } }
+    );
+    if (r.matchedCount === 0) {
+      await User.updateOne(
+        { _id: req.user.id, 'priceAlerts.ticker': { $ne: t } },
+        { $push: { priceAlerts: { ticker: t, targetPrice, direction } } }
+      );
     }
-    await user.save();
     audit.logUser(req, 'alert.set', { symbol: t, sector: getSector(t), targetPrice, direction });
     res.json({ ticker: t, targetPrice, direction });
   } catch (err) {
@@ -363,9 +365,7 @@ router.put('/alerts/:ticker', async (req, res) => {
 router.delete('/alerts/:ticker', async (req, res) => {
   try {
     const t = sanitizeTicker(req.params.ticker);
-    const user = await getUser(req.user.id);
-    user.priceAlerts = user.priceAlerts.filter((a) => a.ticker !== t);
-    await user.save();
+    await User.updateOne({ _id: req.user.id }, { $pull: { priceAlerts: { ticker: t } } });
     audit.logUser(req, 'alert.removed', { symbol: t, sector: getSector(t) });
     res.status(204).send();
   } catch (err) {
@@ -411,17 +411,19 @@ router.put('/notes/:ticker', async (req, res) => {
   try {
     const t = sanitizeTicker(req.params.ticker);
     const text = String(req.body.text || '').slice(0, 1000);
-    const user = await getUser(req.user.id);
-    if (!user.watchlist.includes(t)) {
+    if (!(await User.exists({ _id: req.user.id, watchlist: t }))) {
       return res.status(403).json({ error: `${t} is not in your watchlist.` });
     }
-    const idx = user.notes.findIndex((n) => n.ticker === t);
-    if (idx >= 0) {
-      user.notes[idx].text = text;
-    } else {
-      user.notes.push({ ticker: t, text });
+    const r = await User.updateOne(
+      { _id: req.user.id, 'notes.ticker': t },
+      { $set: { 'notes.$.text': text } }
+    );
+    if (r.matchedCount === 0) {
+      await User.updateOne(
+        { _id: req.user.id, 'notes.ticker': { $ne: t } },
+        { $push: { notes: { ticker: t, text } } }
+      );
     }
-    await user.save();
     audit.logUser(req, 'note.saved', { symbol: t, sector: getSector(t) });
     res.json({ ticker: t, text });
   } catch (err) {
@@ -433,9 +435,7 @@ router.put('/notes/:ticker', async (req, res) => {
 router.delete('/notes/:ticker', async (req, res) => {
   try {
     const t = sanitizeTicker(req.params.ticker);
-    const user = await getUser(req.user.id);
-    user.notes = user.notes.filter((n) => n.ticker !== t);
-    await user.save();
+    await User.updateOne({ _id: req.user.id }, { $pull: { notes: { ticker: t } } });
     audit.logUser(req, 'note.removed', { symbol: t, sector: getSector(t) });
     res.status(204).send();
   } catch (err) {

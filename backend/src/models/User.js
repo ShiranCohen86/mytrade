@@ -76,5 +76,10 @@ const userSchema = new mongoose.Schema(
   }
 );
 
+// Multikey index on the watchlist array: every stock add/delete runs
+// countDocuments({ watchlist }) to decide shared-doc cleanup, which would
+// otherwise collection-scan at scale.
+userSchema.index({ watchlist: 1 });
+
 module.exports = mongoose.model('User', userSchema);
 module.exports.ROLES = ROLES;

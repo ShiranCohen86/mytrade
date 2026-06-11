@@ -5,6 +5,7 @@ const router = express.Router();
 const { Types } = require('mongoose');
 const AuditLog = require('../models/AuditLog');
 const auth = require('../middleware/auth');
+const logger = require('../utils/logger');
 
 router.use(auth);
 
@@ -47,7 +48,8 @@ router.get('/', async (req, res) => {
 
     res.json({ events, pagination: { page, limit, total, pages: Math.ceil(total / limit) } });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    logger.error('GET /api/timeline', { err: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 
@@ -147,7 +149,8 @@ router.get('/insights', async (req, res) => {
       periodDays:         days,
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    logger.error('GET /api/timeline/insights', { err: err.message });
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 

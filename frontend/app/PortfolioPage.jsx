@@ -98,7 +98,7 @@ export default function PortfolioPage() {
       ? withShares.reduce((s, r) => s + r.currentPrice * r.shares, 0)
       : withPrice.reduce((s, r) => s + r.currentPrice, 0);
     const totalPnlAbs = totalValue - totalCost;
-    const totalPnlPct = (totalPnlAbs / totalCost) * 100;
+    const totalPnlPct = totalCost > 0 ? (totalPnlAbs / totalCost) * 100 : 0;
     return { totalCost, totalValue, totalPnlAbs, totalPnlPct, count: withPrice.length, useShares };
   }, [rows]);
 

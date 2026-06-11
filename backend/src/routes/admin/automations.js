@@ -16,7 +16,8 @@ const MODES = ['all', 'segment', 'multiple', 'single', 'watchlist_holders'];
 function sanitizeAntiSpam(a = {}) {
   const q = a.quietHours || {};
   return {
-    cooldownMinutes: Math.max(0, parseInt(a.cooldownMinutes, 10) || 1440),
+    // Cap at 30 days so a typo can't silently disable a rule for an absurd window.
+    cooldownMinutes: Math.min(43200, Math.max(0, parseInt(a.cooldownMinutes, 10) || 1440)),
     maxPerDay: Math.max(0, parseInt(a.maxPerDay, 10) || 0),
     maxPerHour: Math.max(0, parseInt(a.maxPerHour, 10) || 0),
     quietHours: {

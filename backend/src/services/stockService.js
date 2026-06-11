@@ -40,6 +40,13 @@ async function analyzeStock(ticker) {
       ANALYSIS_TIMEOUT_MS,
       `analyzeStock(${t})`
     );
+  // Guard against a non-positive quote price: the expectation/scenarios engines
+  // divide by currentPrice, so a 0/negative/NaN price would persist NaN/Infinity
+  // targets into the Stock doc. Fail fast (the add flow surfaces a clean error).
+  if (!Number.isFinite(quote?.price) || quote.price <= 0) {
+    throw new Error(`Ticker "${t}" has no valid market price.`);
+  }
+
   const { company: companyInfo, earnings: earningsInfo } = companyAndEarnings;
 
   // Clear stale earnings date — if earnings already passed, treat as no upcoming date.

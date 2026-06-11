@@ -1,8 +1,18 @@
 const express = require('express');
 const router = express.Router();
+const { Types } = require('mongoose');
 const AuditLog = require('../../models/AuditLog');
 const adminAuth = require('../../middleware/adminAuth');
 const audit = require('../../services/auditService');
+
+const escapeRegex = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+// Parse a date param, returning undefined for an invalid/empty value (so a typo'd
+// filter fails loudly via validation rather than silently matching nothing).
+function parseDate(v) {
+  if (!v) return undefined;
+  const d = new Date(v);
+  return Number.isNaN(d.getTime()) ? null : d; // null = present but invalid
+}
 
 // GET /admin/audit — query audit logs with filters + pagination
 router.get('/', adminAuth('logs.read'), async (req, res) => {
@@ -13,15 +23,21 @@ router.get('/', adminAuth('logs.read'), async (req, res) => {
 
     const filter = {};
 
-    if (req.query.userId) filter.userId = req.query.userId;
-    if (req.query.actionType) filter.actionType = { $regex: req.query.actionType, $options: 'i' };
+    if (req.query.userId) {
+      if (!Types.ObjectId.isValid(req.query.userId)) return res.status(400).json({ error: 'Invalid userId.' });
+      filter.userId = req.query.userId;
+    }
+    if (req.query.actionType) filter.actionType = { $regex: escapeRegex(String(req.query.actionType).slice(0, 100)), $options: 'i' };
     if (req.query.severity) filter.severity = req.query.severity;
     if (req.query.actorType) filter['actor.type'] = req.query.actorType;
 
-    if (req.query.from || req.query.to) {
+    const from = parseDate(req.query.from);
+    const to = parseDate(req.query.to);
+    if (from === null || to === null) return res.status(400).json({ error: 'Invalid date filter.' });
+    if (from || to) {
       filter.timestamp = {};
-      if (req.query.from) filter.timestamp.$gte = new Date(req.query.from);
-      if (req.query.to) filter.timestamp.$lte = new Date(req.query.to);
+      if (from) filter.timestamp.$gte = from;
+      if (to) filter.timestamp.$lte = to;
     }
 
     const [logs, total] = await Promise.all([
@@ -42,13 +58,19 @@ router.get('/', adminAuth('logs.read'), async (req, res) => {
 router.get('/export', adminAuth('logs.export'), async (req, res) => {
   try {
     const filter = {};
-    if (req.query.userId) filter.userId = req.query.userId;
+    if (req.query.userId) {
+      if (!Types.ObjectId.isValid(req.query.userId)) return res.status(400).json({ error: 'Invalid userId.' });
+      filter.userId = req.query.userId;
+    }
     if (req.query.actionType) filter.actionType = req.query.actionType;
     if (req.query.severity) filter.severity = req.query.severity;
-    if (req.query.from || req.query.to) {
+    const from = parseDate(req.query.from);
+    const to = parseDate(req.query.to);
+    if (from === null || to === null) return res.status(400).json({ error: 'Invalid date filter.' });
+    if (from || to) {
       filter.timestamp = {};
-      if (req.query.from) filter.timestamp.$gte = new Date(req.query.from);
-      if (req.query.to) filter.timestamp.$lte = new Date(req.query.to);
+      if (from) filter.timestamp.$gte = from;
+      if (to) filter.timestamp.$lte = to;
     }
 
     const format = req.query.format === 'json' ? 'json' : 'csv';
@@ -97,7 +119,9 @@ router.get('/export', adminAuth('logs.export'), async (req, res) => {
 // GET /admin/audit/stats — aggregate counts by actionType and severity
 router.get('/stats', adminAuth('audit.read'), async (req, res) => {
   try {
-    const since = req.query.since ? new Date(req.query.since) : new Date(Date.now() - 7 * 86400_000);
+    const parsedSince = parseDate(req.query.since);
+    if (parsedSince === null) return res.status(400).json({ error: 'Invalid "since" date.' });
+    const since = parsedSince || new Date(Date.now() - 7 * 86400_000);
 
     const [byAction, bySeverity, byDay] = await Promise.all([
       AuditLog.aggregate([

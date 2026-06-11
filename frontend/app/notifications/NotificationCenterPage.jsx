@@ -82,7 +82,9 @@ export default function NotificationCenterPage() {
         )}
       </div>
 
-      {hasMore && tab === 'all' && !typeFilter && (
+      {/* Tabs/type chips filter the loaded items client-side, so keep paging
+          available on every tab — otherwise unread/filtered views get stuck. */}
+      {hasMore && (
         <div className={styles.loadMore}>
           <button className="btn btn-secondary" onClick={loadMore} disabled={loading}>
             {loading ? t('notifications.loading') : t('notifications.loadMore')}

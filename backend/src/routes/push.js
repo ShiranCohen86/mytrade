@@ -50,6 +50,14 @@ router.post('/subscribe', async (req, res) => {
         !subscription.keys.p256dh || !subscription.keys.auth) {
       return res.status(400).json({ error: 'Invalid push subscription.' });
     }
+    // Guard against re-assigning a subscription that already belongs to another
+    // account: the upsert below keys on the endpoint, so without this an endpoint
+    // could be stolen (and the victim's pushes redirected/suppressed).
+    const owner = await PushSubscription.findOne({ endpoint: subscription.endpoint })
+      .select('userId').lean();
+    if (owner && String(owner.userId) !== String(req.user.id)) {
+      return res.status(403).json({ error: 'This subscription is registered to another account.' });
+    }
     const doc = await PushSubscription.findOneAndUpdate(
       { endpoint: subscription.endpoint },
       {

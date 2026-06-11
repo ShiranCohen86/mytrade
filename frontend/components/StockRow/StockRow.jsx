@@ -40,13 +40,15 @@ function StockRowInner({
   useEffect(() => {
     const current = cachedData?.price;
     const prev = prevPriceRef.current;
-    if (prev !== null && current != null && current !== prev) {
+    // Require finite numbers — a NaN price would make `current !== prev` always
+    // true and flash on every render.
+    if (prev !== null && Number.isFinite(current) && Number.isFinite(prev) && current !== prev) {
       setFlash(current > prev ? 'up' : 'down');
       const t = setTimeout(() => setFlash(null), 300);
       prevPriceRef.current = current;
       return () => clearTimeout(t);
     }
-    if (current != null) prevPriceRef.current = current;
+    if (Number.isFinite(current)) prevPriceRef.current = current;
   }, [cachedData?.price]);
 
   const change = cachedData?.changePercent ?? 0;

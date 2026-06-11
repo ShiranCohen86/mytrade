@@ -198,7 +198,13 @@ export function PriceChart({ historical, ticker, entryPrice = null, alertPrice =
     return <div className={styles.empty}>No price data available</div>;
   }
 
-  const prices = visible.flatMap((p) => [p.high ?? p.close, p.low ?? p.close]).filter(Boolean);
+  const prices = visible.flatMap((p) => [p.high ?? p.close, p.low ?? p.close]).filter(Number.isFinite);
+  // `visible` can be empty even when `historical` isn't (e.g. the selected time
+  // window excludes everything) — without price points the domain would collapse
+  // to ±Infinity, so fall back to the empty state.
+  if (prices.length === 0) {
+    return <div className={styles.empty}>No price data available</div>;
+  }
   const allPricePoints = [
     ...prices,
     ...(entryPrice != null ? [entryPrice] : []),

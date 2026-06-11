@@ -18,6 +18,10 @@ const audit = require('../../services/auditService');
 const { runScan } = require('../../jobs/newsTickerScan');
 const { syncUniverseStocks } = require('../../jobs/universeSync');
 
+// Escape regex metacharacters so a search term is matched literally (no ReDoS /
+// unexpected matches). Mirrors admin/users.js & admin/support.js.
+const escapeRegex = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 // ── RBAC guard ─────────────────────────────────────────────────────────────────
 const INTELLIGENCE_ROLES = new Set(['admin', 'super_admin']);
 
@@ -134,7 +138,7 @@ router.get('/hot-stocks', adminAuth('logs.read'), requireIntelligenceRole, async
       : { 'analysis.expectationLabel': { $in: ['VERY_HIGH', 'HIGH', 'MODERATE'] } };
 
     if (req.query.label) filter['analysis.expectationLabel'] = req.query.label;
-    if (req.query.sector) filter.sector = { $regex: req.query.sector, $options: 'i' };
+    if (req.query.sector) filter.sector = { $regex: escapeRegex(String(req.query.sector).slice(0, 100)), $options: 'i' };
     if (req.query.minScore) {
       const min = parseInt(req.query.minScore, 10);
       if (!isNaN(min)) filter['analysis.expectationScore'] = { $gte: min };
