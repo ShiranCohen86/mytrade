@@ -18,6 +18,7 @@
   transition: background $motion-fast, color $motion-fast;
 
   &:hover { background: $surface-raised; color: $text-primary; }
+  &:focus-visible { @include focus-ring; }
 
   // Larger invisible touch target on touch devices
   @media (hover: none) {
@@ -100,6 +101,7 @@
   border-radius: $radius-sm;
   transition: background $motion-fast;
   &:hover { background: $accent-faint; }
+  &:focus-visible { @include focus-ring; }
 }
 
 .list {
@@ -141,4 +143,5 @@
   border-radius: 0 0 $radius-lg $radius-lg;
   transition: background $motion-fast;
   &:hover { background: $accent-faint; }
+  &:focus-visible { @include focus-ring; }
 }

@@ -293,7 +293,7 @@ export default function DashboardPage() {
       <div className={styles.toolbar}>
         <div className={styles.toolbarRow}>
           <div className={styles.toolbarLeft}>
-            <span className={styles.pageTitle}>{t('dashboard.watchlist')}</span>
+            <h1 className={styles.pageTitle}>{t('dashboard.watchlist')}</h1>
             {stocks.length > 0 && (
               <span className={styles.stockCount}>
                 {hasActiveFilters ? `${filteredStocks.length} / ${stocks.length}` : stocks.length}

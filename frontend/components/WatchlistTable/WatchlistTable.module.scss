@@ -145,6 +145,7 @@ $cols-mobile:       56px minmax(80px, 1fr) 140px 68px 68px 48px 92px 34px;
   z-index: 8;
 
   &:hover { background: $surface-hover; }
+  &:focus-visible { @include focus-ring; }
 }
 
 .sectorChevron {

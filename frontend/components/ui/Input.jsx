@@ -13,9 +13,11 @@ export const Input = forwardRef(function Input(
 ) {
   const autoId = useId();
   const inputId = id || autoId;
+  const descId = useId();
+  const describedBy = (error || hint) ? descId : undefined;
 
   return (
-    <Field label={label} hint={hint} error={error} htmlFor={inputId}>
+    <Field label={label} hint={hint} error={error} htmlFor={inputId} descId={describedBy}>
       <div
         className={[styles.control, styles[`size-${size}`], error && styles.invalid]
           .filter(Boolean)
@@ -27,6 +29,7 @@ export const Input = forwardRef(function Input(
           ref={ref}
           className={[styles.input, className].filter(Boolean).join(' ')}
           aria-invalid={error ? 'true' : undefined}
+          aria-describedby={describedBy}
           {...rest}
         />
         {trailing && <span className={styles.affix}>{trailing}</span>}

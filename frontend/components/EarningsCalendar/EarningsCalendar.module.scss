@@ -133,6 +133,8 @@
     background: $surface-raised;
     border-color: $chrome-mid;
   }
+
+  &:focus-visible { @include focus-ring; }
 }
 
 .empty {

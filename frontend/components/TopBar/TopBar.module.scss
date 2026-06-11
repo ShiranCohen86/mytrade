@@ -90,6 +90,8 @@
     span:nth-child(2) { width: 16px; }
   }
 
+  &:focus-visible { @include focus-ring; }
+
   span {
     display: block;
     height: 1.5px;
@@ -119,6 +121,8 @@
 
     .brandName { color: $accent; }
   }
+
+  &:focus-visible { @include focus-ring; }
 }
 
 .brandMark {
@@ -166,6 +170,8 @@
     box-shadow: $shadow-xs;
   }
 
+  &:focus-visible { @include focus-ring; }
+
   @include below-md {
     padding: 0 8px;
     border: none;
@@ -188,7 +194,7 @@
   border: 1px solid $chrome-dim;
   border-radius: $radius-xs;
   padding: 1px 5px;
-  margin-left: $space-1;
+  margin-inline-start: $space-1;
   line-height: 1.6;
 
   @include below-md { display: none; }
@@ -230,6 +236,8 @@
     color: $accent;
     border-color: $accent;
   }
+
+  &:focus-visible { @include focus-ring; }
 }
 
 // ─── Theme toggle ─────────────────────────────────────────────────────────────
@@ -265,6 +273,7 @@
   }
 
   &:active { transform: rotate(30deg) scale(0.9); }
+  &:focus-visible { @include focus-ring; }
 }
 
 // ─── User avatar + dropdown ──────────────────────────────────────────────────
@@ -284,11 +293,26 @@
   padding: 2px;
   border: 1.5px solid $chrome-mid;
   transition: border-color $motion-fast, box-shadow $motion-fast;
+  position: relative;
+
+  // Touch: expand to the 44px iOS hit-area minimum without growing the avatar
+  @media (hover: none) {
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 50% auto auto 50%;
+      transform: translate(-50%, -50%);
+      min-width: 44px;
+      min-height: 44px;
+    }
+  }
 
   &:hover {
     border-color: $accent;
     box-shadow: $shadow-glow;
   }
+
+  &:focus-visible { @include focus-ring; }
 }
 
 .userDropdown {
@@ -355,13 +379,15 @@
   font-size: 13px;
   font-weight: 500;
   color: $text-secondary;
-  text-align: left;
+  text-align: start;
   transition: background $motion-fast, color $motion-fast;
 
   &:hover {
     background: $surface-raised;
     color: $text-primary;
   }
+
+  &:focus-visible { @include focus-ring; }
 }
 
 // ─── Clock ────────────────────────────────────────────────────────────────────

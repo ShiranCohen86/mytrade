@@ -51,7 +51,7 @@ function riskClass(score, styles) {
 }
 
 export default function PortfolioPage() {
-  const { stocks, portfolio, isLoading } = useStocks();
+  const { stocks, portfolio, isLoading, error, reload } = useStocks();
   const { t } = useTranslation();
   const { fmtPrice } = useFmtPrice();
 
@@ -178,10 +178,13 @@ export default function PortfolioPage() {
   const [spyChange, setSpyChange] = useState(null);
 
   useEffect(() => {
+    let cancelled = false;
     getMarketOverview().then((quotes) => {
+      if (cancelled) return;
       const spy = Array.isArray(quotes) ? quotes.find((q) => q.ticker === 'SPY') : null;
       if (spy?.changePercent != null) setSpyChange(spy.changePercent);
     }).catch(() => {});
+    return () => { cancelled = true; };
   }, []);
 
   const portfolioTodayChange = useMemo(() => {
@@ -270,7 +273,7 @@ export default function PortfolioPage() {
   return (
     <div className={styles.page}>
       <div className={styles.toolbar}>
-        <span className={styles.pageTitle}>{t('portfolio.title')}</span>
+        <h1 className={styles.pageTitle}>{t('portfolio.title')}</h1>
         {rows.length > 0 && (
           <>
             <span className={styles.count}>{t('portfolio.positions', { count: rows.length })}</span>
@@ -450,6 +453,14 @@ export default function PortfolioPage() {
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} h={56} radius={12} />
           ))}
+        </div>
+      ) : error && rows.length === 0 ? (
+        <div className={styles.empty} role="alert">
+          <span className={styles.emptyTitle}>{t('common.loadErrorTitle')}</span>
+          <span className={styles.emptySubtitle}>{error}</span>
+          <button className="btn btn-secondary btn-sm" onClick={reload} style={{ marginTop: 12 }}>
+            {t('common.retry')}
+          </button>
         </div>
       ) : rows.length === 0 ? (
         <div className={styles.empty}>

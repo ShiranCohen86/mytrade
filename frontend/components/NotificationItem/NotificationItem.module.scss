@@ -109,6 +109,7 @@
 
   .item:hover & { opacity: 1; }
   &:hover { background: $surface-raised; color: $text-primary; }
+  &:focus-visible { opacity: 1; @include focus-ring; }
 
   // Always visible on touch devices (no hover)
   @media (hover: none) { opacity: 1; }

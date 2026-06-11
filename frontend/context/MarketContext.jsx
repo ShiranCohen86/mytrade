@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { getMarketOverview } from '@/lib/apiClient';
 import { getMarketStatus } from '@/lib/marketHours';
 
@@ -61,8 +61,10 @@ export function MarketProvider({ children }) {
     };
   }, [regime, session]);
 
+  const value = useMemo(() => ({ regime, session, indices }), [regime, session, indices]);
+
   return (
-    <MarketContext.Provider value={{ regime, session, indices }}>
+    <MarketContext.Provider value={value}>
       {children}
     </MarketContext.Provider>
   );

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { adminPreviewRecipients } from '@/lib/apiClient';
 import { NotificationPreview } from './NotificationPreview';
@@ -14,17 +14,67 @@ export function ConfirmSendModal({ content, audience, sendMode, scheduledAt, rec
   const [count, setCount] = useState(recipientCount);
   const [acknowledged, setAcknowledged] = useState(false);
   const isAll = audience.mode === 'all';
+  const dialogRef = useRef(null);
+  const titleId = useId();
 
   useEffect(() => {
-    adminPreviewRecipients(audience).then((r) => setCount(r.count)).catch(() => {});
+    let cancelled = false;
+    adminPreviewRecipients(audience).then((r) => { if (!cancelled) setCount(r.count); }).catch(() => {});
+    return () => { cancelled = true; };
   }, [audience]);
+
+  // Lock body scroll while the dialog is open
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
+  // Esc closes the dialog
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') onCancel?.(); };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [onCancel]);
+
+  // Focus-trap + restore — keep keyboard focus inside while open
+  useEffect(() => {
+    const previouslyFocused = document.activeElement;
+    const dialog = dialogRef.current;
+    const FOCUSABLE = 'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
+    const focusables = () => Array.from(dialog?.querySelectorAll(FOCUSABLE) || []).filter((el) => el.offsetParent !== null);
+    (focusables()[0] || dialog)?.focus?.();
+
+    const onKey = (e) => {
+      if (e.key !== 'Tab') return;
+      const items = focusables();
+      if (!items.length) return;
+      const firstEl = items[0];
+      const lastEl = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === firstEl) { e.preventDefault(); lastEl.focus(); }
+      else if (!e.shiftKey && document.activeElement === lastEl) { e.preventDefault(); firstEl.focus(); }
+    };
+    dialog?.addEventListener('keydown', onKey);
+    return () => {
+      dialog?.removeEventListener('keydown', onKey);
+      if (previouslyFocused && previouslyFocused.focus) previouslyFocused.focus();
+    };
+  }, []);
 
   const blocked = saving || (isAll && !acknowledged) || count === 0;
 
   return (
-    <div className={styles.modalOverlay} onClick={onCancel}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <h2 className={styles.modalTitle}>
+    <div className={styles.modalOverlay} onMouseDown={(e) => { if (e.target === e.currentTarget) onCancel?.(); }}>
+      <div
+        ref={dialogRef}
+        className={styles.modal}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        tabIndex={-1}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 id={titleId} className={styles.modalTitle}>
           {sendMode === 'schedule' ? t('adminNotif.confirmScheduleTitle') : t('adminNotif.confirmSendTitle')}
         </h2>
         <p className={styles.modalSub}>

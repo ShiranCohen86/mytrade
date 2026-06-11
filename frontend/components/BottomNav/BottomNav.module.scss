@@ -59,6 +59,12 @@
     background: $surface-raised;
     transform: scale(0.95);
   }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--accent);
+    border-radius: $radius-md;
+  }
 }
 
 .itemActive {

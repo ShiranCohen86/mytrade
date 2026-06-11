@@ -15,7 +15,7 @@ function riskPipClass(score) {
 }
 
 export default function SectorsPage() {
-  const { stocks, isLoading } = useStocks();
+  const { stocks, isLoading, error, reload } = useStocks();
   const { t } = useTranslation();
   const { fmtPrice } = useFmtPrice();
   const [sortBy, setSortBy] = useState('size');
@@ -75,7 +75,7 @@ export default function SectorsPage() {
   return (
     <div className={styles.page}>
       <div className={styles.toolbar}>
-        <span className={styles.pageTitle}>{t('sectors.title')}</span>
+        <h1 className={styles.pageTitle}>{t('sectors.title')}</h1>
         {sectors.length > 0 && (
           <>
             <span className={styles.count}>{t('sectors.sectors', { count: sectors.length })}</span>
@@ -99,6 +99,14 @@ export default function SectorsPage() {
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} h={64} radius={14} />
           ))}
+        </div>
+      ) : error && sectors.length === 0 ? (
+        <div className={styles.empty} role="alert">
+          <span className={styles.emptyTitle}>{t('common.loadErrorTitle')}</span>
+          <span className={styles.emptySubtitle}>{error}</span>
+          <button className="btn btn-secondary btn-sm" onClick={reload} style={{ marginTop: 12 }}>
+            {t('common.retry')}
+          </button>
         </div>
       ) : sectors.length === 0 ? (
         <div className={styles.empty}>

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 
 const STORAGE_KEY = 'mytrade-currency';
 const FALLBACK_RATE = 3.72; // approximate USD → ILS fallback
@@ -34,8 +34,10 @@ export function CurrencyProvider({ children }) {
     });
   }, []);
 
+  const value = useMemo(() => ({ currency, rate, toggle }), [currency, rate, toggle]);
+
   return (
-    <CurrencyContext.Provider value={{ currency, rate, toggle }}>
+    <CurrencyContext.Provider value={value}>
       {children}
     </CurrencyContext.Provider>
   );

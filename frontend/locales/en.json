@@ -326,6 +326,8 @@
     "or": "or",
     "loading": "Loading…",
     "error": "Error",
+    "loadErrorTitle": "Couldn't load data",
+    "retry": "Try again",
     "dismiss": "Dismiss",
     "cancel": "Cancel",
     "save": "Save",

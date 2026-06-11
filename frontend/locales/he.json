@@ -326,6 +326,8 @@
     "or": "או",
     "loading": "טוען…",
     "error": "שגיאה",
+    "loadErrorTitle": "טעינת הנתונים נכשלה",
+    "retry": "נסה שוב",
     "dismiss": "סגור",
     "cancel": "ביטול",
     "save": "שמור",

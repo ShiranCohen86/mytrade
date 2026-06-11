@@ -38,6 +38,11 @@ export function WatchlistTable({
     });
   }, []);
 
+  // Stable no-op for grouped mode (drag-reorder is disabled when grouping by
+  // sector) — a fresh inline `() => {}` per render would break StockRow's memo
+  // and re-render every grouped row on each price tick.
+  const noop = useCallback(() => {}, []);
+
   const grouped = useMemo(() => {
     if (!groupBySector) return null;
     const map = new Map();
@@ -150,9 +155,9 @@ export function WatchlistTable({
                       onAnalyzeTicker={onAnalyzeTicker}
                       isDragging={false}
                       isDropTarget={false}
-                      onDragStart={() => {}}
-                      onDragOver={() => {}}
-                      onDragEnd={() => {}}
+                      onDragStart={noop}
+                      onDragOver={noop}
+                      onDragEnd={noop}
                     />
                   </ErrorBoundary>
                 ))}

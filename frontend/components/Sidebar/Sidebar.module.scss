@@ -66,6 +66,9 @@
 
   .sidebar.mobileOpen {
     transform: translateX(0);
+    // Lift the open drawer above the fixed BottomNav (z-index 110) so the nav
+    // bar no longer overlaps the drawer's bottom edge.
+    z-index: 120;
   }
 
   .sidebar.mobileOpen .sectionLabel,
@@ -133,6 +136,8 @@
 
     .navIcon { color: $text-secondary; }
   }
+
+  &:focus-visible { @include focus-ring; }
 }
 
 // Filled-pill active state with left accent bar
@@ -258,6 +263,8 @@
     background: $neg-bg;
     color: $neg;
   }
+
+  &:focus-visible { @include focus-ring; }
 }
 
 .settingsLink {
@@ -275,6 +282,8 @@
     background: $surface-raised;
     color: $text-secondary;
   }
+
+  &:focus-visible { @include focus-ring; }
 }
 
 .settingsLinkActive {

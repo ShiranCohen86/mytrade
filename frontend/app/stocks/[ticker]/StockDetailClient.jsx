@@ -453,14 +453,20 @@ export default function StockDetailClient({ ticker }) {
           </PanelCard>
           <PanelCard title="Sentiment">
             <div className={styles.sentimentRow}>
-              <span className={`${styles.sentimentLabel} ${styles[`sent_${analysis.sentiment.label}`]}`}>
-                {analysis.sentiment.label.toUpperCase()}
-              </span>
-              <span className={styles.sentimentMeta}>
-                {analysis.sentiment.headlinesAnalyzed > 0
-                  ? `${analysis.sentiment.headlinesAnalyzed} headlines`
-                  : 'No news data'}
-              </span>
+              {analysis.sentiment?.label ? (
+                <>
+                  <span className={`${styles.sentimentLabel} ${styles[`sent_${analysis.sentiment.label}`]}`}>
+                    {analysis.sentiment.label.toUpperCase()}
+                  </span>
+                  <span className={styles.sentimentMeta}>
+                    {analysis.sentiment.headlinesAnalyzed > 0
+                      ? `${analysis.sentiment.headlinesAnalyzed} headlines`
+                      : 'No news data'}
+                  </span>
+                </>
+              ) : (
+                <span className={styles.sentimentMeta}>No news data</span>
+              )}
             </div>
           </PanelCard>
         </div>

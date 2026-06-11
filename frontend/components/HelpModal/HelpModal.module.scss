@@ -88,6 +88,8 @@
     background: $surface-raised;
     border-color: $chrome-mid;
   }
+
+  &:focus-visible { @include focus-ring; }
 }
 
 .intro {
@@ -219,6 +221,8 @@
     transform: translateY(0);
     box-shadow: 0 1px 4px rgba(99, 102, 241, 0.18);
   }
+
+  &:focus-visible { @include focus-ring; }
 }
 
 .triggerBtn {
@@ -232,6 +236,7 @@
   gap: $space-1;
 
   &:hover { color: $text-secondary; }
+  &:focus-visible { @include focus-ring; }
 }
 
 // ─── Mobile: bottom-sheet ───────────────────────────────────────────────────

@@ -321,6 +321,7 @@
     border-color: $accent;
     box-shadow: $shadow-glow;
   }
+  &:focus-visible { outline: none; box-shadow: var(--shadow-glow); }
   &:disabled { opacity: 0.4; pointer-events: none; }
 }
 
@@ -334,6 +335,7 @@
   transition: color $motion-fast, background $motion-fast;
 
   &:hover { color: $text-secondary; background: $surface-hover; }
+  &:focus-visible { outline: none; box-shadow: var(--shadow-glow); }
   &:disabled { opacity: 0.4; }
 }
 
@@ -466,6 +468,7 @@
   transition: color $motion-fast, background $motion-fast;
 
   &:hover { background: $surface-hover; color: $text-secondary; }
+  &:focus-visible { outline: none; box-shadow: var(--shadow-glow); }
 }
 
 .error {

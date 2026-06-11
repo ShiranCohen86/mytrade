@@ -124,10 +124,11 @@
   width: 100%;
   padding: $space-2 $space-3;
   border-radius: $radius-md;
-  text-align: left;
+  text-align: start;
   transition: background $motion-fast;
 
   &:hover { background: $surface-hover; }
+  &:focus-visible { outline: none; box-shadow: var(--shadow-glow); }
 }
 
 .itemActive {
