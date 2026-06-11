@@ -5,6 +5,9 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
+  # Allow running CI manually from the Actions tab (e.g. to re-gate a deploy
+  # without pushing a new commit).
+  workflow_dispatch:
 
 jobs:
   backend:
