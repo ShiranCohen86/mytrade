@@ -69,7 +69,7 @@ export default function SignupPage() {
         <h1 className={styles.heading}>{t('auth.createAccount')}</h1>
         <p className={styles.subheading}>{t('auth.createAccountSub')}</p>
 
-        {error && <div className={styles.errorBanner}><span>⚠</span> {error}</div>}
+        {error && <div className={styles.errorBanner} role="alert"><span>⚠</span> {error}</div>}
 
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
           <div className={styles.field}>

@@ -38,7 +38,7 @@ export default function ForgotPasswordPage() {
         <h1 className={styles.heading}>{t('auth.resetPassword')}</h1>
         <p className={styles.subheading}>{t('auth.resetPasswordSub')}</p>
 
-        {error && <div className={styles.errorBanner}><span>⚠</span> {error}</div>}
+        {error && <div className={styles.errorBanner} role="alert"><span>⚠</span> {error}</div>}
 
         {sent ? (
           <div className={styles.successBanner}>

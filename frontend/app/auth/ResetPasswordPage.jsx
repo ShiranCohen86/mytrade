@@ -48,7 +48,7 @@ export default function ResetPasswordPage() {
     return (
       <div className={styles.page}>
         <div className={styles.card}>
-          <div className={styles.errorBanner}>⚠ {t('auth.resetLinkInvalid')}</div>
+          <div className={styles.errorBanner} role="alert">⚠ {t('auth.resetLinkInvalid')}</div>
           <p className={styles.footer}><Link to="/forgot-password">{t('auth.sendResetLink')}</Link></p>
         </div>
       </div>
@@ -66,7 +66,7 @@ export default function ResetPasswordPage() {
         <h1 className={styles.heading}>{t('auth.setPassword')}</h1>
         <p className={styles.subheading}>{t('auth.resetPasswordSub')}</p>
 
-        {error && <div className={styles.errorBanner}><span>⚠</span> {error}</div>}
+        {error && <div className={styles.errorBanner} role="alert"><span>⚠</span> {error}</div>}
 
         {done ? (
           <div className={styles.successBanner}>

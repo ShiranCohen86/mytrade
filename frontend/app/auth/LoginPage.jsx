@@ -51,7 +51,7 @@ export default function LoginPage() {
         <h1 className={styles.heading}>{t('auth.welcomeBack')}</h1>
         <p className={styles.subheading}>{t('auth.welcomeBackSub')}</p>
 
-        {error && <div className={styles.errorBanner}><span>⚠</span> {error}</div>}
+        {error && <div className={styles.errorBanner} role="alert"><span>⚠</span> {error}</div>}
 
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
           <div className={styles.field}>
